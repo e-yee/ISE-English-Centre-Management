@@ -1,6 +1,20 @@
-# 🧾 Conventional Commit Message Guide
+# 🧾 Conventional Commit Message Guide <!-- omit in toc -->
 
 This project follows the **Conventional Commits** specification. Writing consistent and meaningful commit messages improves readability, enables automation (e.g., changelogs, versioning), and helps team collaboration.
+
+---
+
+## 📁 Table of Contents <!-- omit in toc -->
+
+- [🧱 Format](#-format)
+- [🔤 Types](#-types)
+- [🏷️ Scope (Optional)](#️-scope-optional)
+- [✍️ Description](#️-description)
+- [📝 Body (Optional)](#-body-optional)
+- [🔚 Footer (Optional)](#-footer-optional)
+- [✅ Examples](#-examples)
+- [🔧 Tools](#-tools)
+- [📚 References](#-references)
 
 ---
 
@@ -66,20 +80,19 @@ This adds a new user profile page displaying basic details.
 Integrated it with the user API and added loading states
 ```
 
-
 ---
 
 ## 🔚 Footer (Optional)
 
 Use footers to declare **breaking changes** or reference issues.
 
-### Breaking Change
+### Breaking Change <!-- omit in toc -->
 
 ```pgsql
 BREAKING CHANGE: login API now requires email instead of username
 ```
 
-### Issue Reference
+### Issue Reference <!-- omit in toc -->
 
 ```nginx
 Closes #45
@@ -90,31 +103,31 @@ Fixes #102
 
 ## ✅ Examples
 
-### Feature
+### Feature <!-- omit in toc -->
 
 ```scss
 feat(cart): add checkout button
 ```
 
-### Fix
+### Fix <!-- omit in toc -->
 
 ```scss
 fix(auth): resolve login redirect bug
 ```
 
-### Documentation
+### Documentation <!-- omit in toc -->
 
 ```scss
 docs(readme): update installation steps
 ```
 
-### Refactor
+### Refactor <!-- omit in toc -->
 
 ```scss
 refactor(api): simplify error handling
 ```
 
-### Revert
+### Revert <!-- omit in toc -->
 
 ```scss
 revert: fix(ui): revert margin fix

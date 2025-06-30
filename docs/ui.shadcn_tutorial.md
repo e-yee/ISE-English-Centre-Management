@@ -1,6 +1,17 @@
-# 📦 Shadcn/UI – Modern UI Components for React
+# 📦 Shadcn/UI – Modern UI Components for React <!-- omit in toc -->
 
 Shadcn/UI is a customizable component library built with Radix UI, Tailwind CSS, and TypeScript. It's not a traditional npm package – instead, you copy components into your codebase, giving you full control and flexibility.
+
+---
+
+## 📁 Table of Contents <!-- omit in toc -->
+
+- [✨ Features](#-features)
+- [🚀 Getting Started](#-getting-started)
+- [📦 Add Components](#-add-components)
+- [🛠 Customize Components](#-customize-components)
+- [📚 Recommended Components to Try](#-recommended-components-to-try)
+- [🛟 Resources](#-resources)
 
 ---
 

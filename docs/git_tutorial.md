@@ -1,21 +1,22 @@
-# 🧠 Git Tutorial for Beginners
+# 🧠 Git Tutorial for Beginners <!-- omit in toc -->
 
 Welcome to the beginner-friendly Git tutorial! This guide covers the most essential Git commands and workflows for everyday development.
 
 ---
 
-## 📁 Table of Contents
+## 📁 Table of Contents <!-- omit in toc -->
 
 - [🔧 Git Setup](#-git-setup)
 - [📥 Clone a Repository](#-clone-a-repository)
 - [📄 Check Status](#-check-status)
 - [📝 Commit Changes](#-commit-changes)
 - [⬆️ Push Changes](#️-push-changes)
-- [⬇️ Pull Updates](#-pull-updates)
+- [⬇️ Pull Updates](#️-pull-updates)
 - [🌱 Branching](#-branching)
 - [🔀 Merging Branches](#-merging-branches)
 - [🍒 Cherry-pick Commits](#-cherry-pick-commits)
 - [📌 Helpful Tips](#-helpful-tips)
+- [🏁 Conclusion](#-conclusion)
 
 ---
 
