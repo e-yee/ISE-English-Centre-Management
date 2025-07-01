@@ -38,6 +38,7 @@ Make sure you have the following installed on your machine:
 
 ```bash
 git clone https://github.com/e-yee/ISE-English-Centre-Management.git
+npm install # to install husky and config commitlint
 cd frontend
 ```
 
