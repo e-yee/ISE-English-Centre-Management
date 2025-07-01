@@ -143,6 +143,18 @@ git merge feature/login
 git cherry-pick <commit-hash>
 ```
 
+**Apply multiple commits from one branch to another:**
+
+```bash
+git cherry-pick <commit-hash1> <commit-hash2>
+```
+
+**Apply a range of commmits from one branch to another:**
+
+```bash
+git cherry-pick <commit-hash1>^..<commit-hash2>
+```
+
 **Example:**
 
 ```bash
