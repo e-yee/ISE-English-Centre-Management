@@ -1,178 +1,178 @@
 -- Constraints Definition --
--- Employee's Constraints
-ALTER TABLE Employee ADD CONSTRAINT CHK_Employee_Role CHECK (
-    Role IN ('Teacher', 'Learning Advisor', 'Manager')
+-- employee's Constraints
+ALTER TABLE employee ADD CONSTRAINT CHK_employee_role CHECK (
+    role IN ('Teacher', 'Learning Advisor', 'Manager')
 );
 
-ALTER TABLE Employee ADD CONSTRAINT CHK_Employee_Status CHECK (
-    (Role = 'Teacher' AND TeacherStatus IN ('Available', 'Unavailable'))
-    OR (Role <> 'Teacher' AND TeacherStatus IS NULL)
+ALTER TABLE employee ADD CONSTRAINT CHK_employee_status CHECK (
+    (role = 'Teacher' AND teacher_status IN ('Available', 'Unavailable'))
+    OR (role <> 'Teacher' AND teacher_status IS NULL)
 );
 
 -----------------------------------------
--- StaffCheckin Constraints
-ALTER TABLE StaffCheckin ADD CONSTRAINT CHK_StaffCheckin_Status CHECK (
-    Status IN ('Not Checked In', 'Checked In', 'Late')
+-- staff_checkin Constraints
+ALTER TABLE staff_checkin ADD CONSTRAINT CHK_staff_checkin_status CHECK (
+    status IN ('Not Checked In', 'Checked In', 'Late')
 );
 
-ALTER TABLE StaffCheckin ADD CONSTRAINT CHK_StaffCheckin_DateTime CHECK (
-    DATEDIFF (CheckoutTime, CheckinTime) >= 0
+ALTER TABLE staff_checkin ADD CONSTRAINT CHK_staff_checkin_datetime CHECK (
+    DATEDIFF (checkout_time, checkin_time) >= 0
 );
 
-ALTER TABLE StaffCheckin ADD CONSTRAINT FK_StaffCheckin_Employee 
-    FOREIGN KEY (EmployeeID) REFERENCES Employee(ID);
+ALTER TABLE staff_checkin ADD CONSTRAINT FK_staff_checkin_employee 
+    FOREIGN KEY (employee_id) REFERENCES employee(id);
 
 ----------------------------------------
--- LeaveRequest Constraints
-ALTER TABLE LeaveRequest ADD CONSTRAINT CHK_LeaveRequest_Date CHECK (
-    DATEDIFF (EndDate, StartDate) > 0
+-- leave_request Constraints
+ALTER TABLE leave_request ADD CONSTRAINT CHK_leave_request_date CHECK (
+    DATEDIFF (end_date, start_date) > 0
 );
 
-ALTER TABLE LeaveRequest ADD CONSTRAINT CHK_LeaveRequest_Status CHECK (
-    Status IN ('Approved', 'Not Approved')
+ALTER TABLE leave_request ADD CONSTRAINT CHK_leave_request_status CHECK (
+    status IN ('Approved', 'Not Approved')
 );
         
-ALTER TABLE LeaveRequest ADD CONSTRAINT CHK_LeaveRequest_SubstituteID CHECK (
-    EmployeeID <> SubstituteID
+ALTER TABLE leave_request ADD CONSTRAINT CHK_leave_request_substitute__id CHECK (
+    employee_id <> substitute_id
 );
 
-ALTER TABLE LeaveRequest ADD CONSTRAINT FK_EmployeeID_Employee
-    FOREIGN KEY (EmployeeID) REFERENCES Employee(ID);
+ALTER TABLE leave_request ADD CONSTRAINT FK_employee_id_employee
+    FOREIGN KEY (employee_id) REFERENCES employee(id);
 
-ALTER TABLE LeaveRequest ADD CONSTRAINT FK_SubstituteID_Employee
-    FOREIGN KEY (SubstituteID) REFERENCES Employee(ID);
-
-----------------------------------------
--- Account Constraints
-ALTER TABLE Account ADD CONSTRAINT FK_Account_Employee
-    FOREIGN KEY (EmployeeID) REFERENCES Employee(ID);
+ALTER TABLE leave_request ADD CONSTRAINT FK_substitute_id_employee
+    FOREIGN KEY (substitute_id) REFERENCES employee(id);
 
 ----------------------------------------
--- Class Constraints
-ALTER TABLE Class ADD CONSTRAINT FK_Class_Employee
-    FOREIGN KEY (TeacherID) REFERENCES Employee(ID);
+-- account Constraints
+ALTER TABLE account ADD CONSTRAINT FK_account_employee
+    FOREIGN KEY (employee_id) REFERENCES employee(id);
 
 ----------------------------------------
--- Contract Constraints
-ALTER TABLE Contract ADD CONSTRAINT CHK_Contract_Status CHECK (
-    PaymentStatus IN ('In Progress', 'Paid')
+-- class Constraints
+ALTER TABLE class ADD CONSTRAINT FK_class_employee
+    FOREIGN KEY (teacher_id) REFERENCES employee(id);
+
+----------------------------------------
+-- contract Constraints
+ALTER TABLE contract ADD CONSTRAINT CHK_contract_status CHECK (
+    payment_status IN ('In Progress', 'Pa_id')
 );
 
-ALTER TABLE Contract ADD CONSTRAINT CHK_Contract_Date CHECK (
-    DATEDIFF (EndDate, StartDate) > 0
+ALTER TABLE contract ADD CONSTRAINT CHK_contract_date CHECK (
+    DATEDIFF (end_date, start_date) > 0
 );
 
-ALTER TABLE Contract ADD CONSTRAINT FK_Contract_Student
-    FOREIGN KEY (StudentID) REFERENCES Student(ID);
+ALTER TABLE contract ADD CONSTRAINT FK_contract_student
+    FOREIGN KEY (student_id) REFERENCES student(id);
 
-ALTER TABLE Contract ADD CONSTRAINT FK_Contract_Employee
-    FOREIGN KEY (EmployeeID) REFERENCES Employee(ID);
+ALTER TABLE contract ADD CONSTRAINT FK_contract_employee
+    FOREIGN KEY (employee_id) REFERENCES employee(id);
 
-ALTER TABLE Contract ADD CONSTRAINT FK_Contract_Class
-    FOREIGN KEY (ClassID, ClassDate) REFERENCES Class(ID, CreatedDate);
-
-----------------------------------------
--- Enrolment Constraints
-ALTER TABLE Enrolment ADD CONSTRAINT FK_Enrolment_Contract
-    FOREIGN KEY (ContractID) REFERENCES Contract(ID);
-
-ALTER TABLE Enrolment ADD CONSTRAINT FK_Enrolment_Student
-    FOREIGN KEY (StudentID) REFERENCES Student(ID);
-
-ALTER TABLE Enrolment ADD CONSTRAINT FK_Enrolment_Class
-    FOREIGN KEY (ClassID, ClassDate) REFERENCES Class(ID, CreatedDate);
+ALTER TABLE contract ADD CONSTRAINT FK_contract_class
+    FOREIGN KEY (class_id, class_date) REFERENCES class(id, created_date);
 
 ----------------------------------------
--- Room Constraints
-ALTER TABLE Room ADD CONSTRAINT CHK_Room_Status CHECK (
-    Status IN ('Free', 'Occupied', 'Maintenance')
+-- enrolment Constraints
+ALTER TABLE enrolment ADD CONSTRAINT FK_enrolment_contract
+    FOREIGN KEY (contract_id) REFERENCES contract(id);
+
+ALTER TABLE enrolment ADD CONSTRAINT FK_enrolment_student
+    FOREIGN KEY (student_id) REFERENCES student(id);
+
+ALTER TABLE enrolment ADD CONSTRAINT FK_enrolment_class
+    FOREIGN KEY (class_id, class_date) REFERENCES class(id, created_date);
+
+----------------------------------------
+-- room Constraints
+ALTER TABLE room ADD CONSTRAINT CHK_room_status CHECK (
+    status IN ('Free', 'Occupied', 'Maintenance')
 );
 
 ----------------------------------------
--- ClassSession Constraints
-ALTER TABLE ClassSession ADD CONSTRAINT CHK_ClassSession_Term CHECK (
-    Term IN (1, 2)
+-- class_session Constraints
+ALTER TABLE class_session ADD CONSTRAINT CHK_class_session_term CHECK (
+    term IN (1, 2)
 );
 
-ALTER TABLE ClassSession ADD CONSTRAINT FK_ClassSession_Class
-    FOREIGN KEY (ClassID, ClassDate) REFERENCES Class(ID, CreatedDate);
+ALTER TABLE class_session ADD CONSTRAINT FK_class_session_class
+    FOREIGN KEY (class_id, class_date) REFERENCES class(id, created_date);
 
-ALTER TABLE ClassSession ADD CONSTRAINT FK_ClassSession_Employee
-    FOREIGN KEY (TeacherID) REFERENCES Employee(ID);
+ALTER TABLE class_session ADD CONSTRAINT FK_class_session_employee
+    FOREIGN KEY (teacher_id) REFERENCES employee(id);
 
-ALTER TABLE ClassSession ADD CONSTRAINT FK_ClassSession_Room
-    FOREIGN KEY (RoomID) REFERENCES Room(ID);
+ALTER TABLE class_session ADD CONSTRAINT FK_class_session_room
+    FOREIGN KEY (room_id) REFERENCES room(id);
 
 ----------------------------------------
--- StudentAttendance Constraints
-ALTER TABLE StudentAttendance ADD CONSTRAINT CHK_StudentAttendance_Status CHECK (
-    Status IN ('Present', 'Absent')
+-- student_attendance Constraints
+ALTER TABLE student_attendance ADD CONSTRAINT CHK_student_attendance_status CHECK (
+    status IN ('Present', 'Absent')
 );
-ALTER TABLE StudentAttendance ADD CONSTRAINT FK_StudentAttendance_Student
-    FOREIGN KEY (StudentID) REFERENCES Student(ID);
+ALTER TABLE student_attendance ADD CONSTRAINT FK_student_attendance_student
+    FOREIGN KEY (student_id) REFERENCES student(id);
 
-ALTER TABLE StudentAttendance ADD CONSTRAINT FK_StudentAttendance_Enrolment
-    FOREIGN KEY (EnrolmentID) REFERENCES Enrolment(ID);
+ALTER TABLE student_attendance ADD CONSTRAINT FK_student_attendance_enrolment
+    FOREIGN KEY (enrolment_id) REFERENCES enrolment(id);
 
-ALTER TABLE StudentAttendance ADD CONSTRAINT FK_StudentAttendance_ClassSession
-    FOREIGN KEY (ClassSessionID, ClassID, ClassDate, Term) 
-    REFERENCES ClassSession(ID, ClassID, ClassDate, Term);
-
-----------------------------------------
--- MakeupClass Constraints
-ALTER TABLE MakeupClass ADD CONSTRAINT FK_MakeupClass_StudentAttendance
-    FOREIGN KEY (StudentID, ClassSessionID, ClassID, ClassDate, Term) 
-    REFERENCES StudentAttendance(StudentID, ClassSessionID, ClassID, ClassDate, Term);
-
-ALTER TABLE MakeupClass ADD CONSTRAINT FK_MakeupClass_Employee
-    FOREIGN KEY (TeacherID) REFERENCES Employee(ID);
-
-ALTER TABLE MakeupClass ADD CONSTRAINT FK_MakeupClass_Room
-    FOREIGN KEY (RoomID) REFERENCES Room(ID);
+ALTER TABLE student_attendance ADD CONSTRAINT FK_student_attendance_class_session
+    FOREIGN KEY (class_session_id, class_id, class_date, term) 
+    REFERENCES class_session(id, class_id, class_date, term);
 
 ----------------------------------------
--- Evaluation Constraints
-ALTER TABLE Evaluation ADD CONSTRAINT CHK_Evaluation_Type CHECK (
-    AssessmentType IN ( 
+-- makeup_class Constraints
+ALTER TABLE makeup_class ADD CONSTRAINT FK_makeup_class_student_attendance
+    FOREIGN KEY (student_id, class_session_id, class_id, class_date, term) 
+    REFERENCES student_attendance(student_id, class_session_id, class_id, class_date, term);
+
+ALTER TABLE makeup_class ADD CONSTRAINT FK_makeup_class_employee
+    FOREIGN KEY (teacher_id) REFERENCES employee(id);
+
+ALTER TABLE makeup_class ADD CONSTRAINT FK_makeup_class_room
+    FOREIGN KEY (room_id) REFERENCES room(id);
+
+----------------------------------------
+-- evaluation Constraints
+ALTER TABLE evaluation ADD CONSTRAINT CHK_evaluation_type CHECK (
+    assessment_type IN ( 
         'Quiz 1', 'Quiz 2', 'Quiz 3', 'Quiz 4',
         'Writing Project 1', 'Writing Project 2',
         'Reading Assessment 1', 'Reading Assessment 2'
     )
 );
 
-ALTER TABLE Evaluation ADD CONSTRAINT FK_Evaluation_Student
-    FOREIGN KEY (StudentID) REFERENCES Student(ID);
+ALTER TABLE evaluation ADD CONSTRAINT FK_evaluation_student
+    FOREIGN KEY (student_id) REFERENCES student(id);
 
-ALTER TABLE Evaluation ADD CONSTRAINT FK_Evaluation_Class
-    FOREIGN KEY (ClassID, ClassDate) REFERENCES Class(ID, CreatedDate);
+ALTER TABLE evaluation ADD CONSTRAINT FK_evaluation_class
+    FOREIGN KEY (class_id, class_date) REFERENCES class(id, created_date);
 
-ALTER TABLE Evaluation ADD CONSTRAINT FK_Evaluation_Employee
-    FOREIGN KEY (TeacherID) REFERENCES Employee(ID);
+ALTER TABLE evaluation ADD CONSTRAINT FK_evaluation_employee
+    FOREIGN KEY (teacher_id) REFERENCES employee(id);
 
-ALTER TABLE Evaluation ADD CONSTRAINT Enrolment 
-    FOREIGN KEY (EnrolmentID) REFERENCES Enrolment(ID);
+ALTER TABLE evaluation ADD CONSTRAINT enrolment 
+    FOREIGN KEY (enrolment_id) REFERENCES enrolment(id);
 
 ----------------------------------------
--- Issue Constraints
-ALTER TABLE Issue ADD CONSTRAINT CHK_Issue_Type CHECK (
-    IssueType IN ('Student Behavior', 'Technical')
+-- issue Constraints
+ALTER TABLE issue ADD CONSTRAINT CHK_issue_type CHECK (
+    issue_type IN ('student Behavior', 'Technical')
 );
 
-ALTER TABLE Issue ADD CONSTRAINT CHK_Issue_Student_Room CHECK (
-    (IssueType LIKE 'Student Behavior' AND StudentID IS NOT NULL AND RoomID IS NULL)
+ALTER TABLE issue ADD CONSTRAINT CHK_issue_student_room CHECK (
+    (issue_type LIKE 'student Behavior' AND student_id IS NOT NULL AND room_id IS NULL)
     OR 
-    (IssueType LIKE 'Technical' AND StudentID IS NULL AND RoomID IS NOT NULL)
+    (issue_type LIKE 'Technical' AND student_id IS NULL AND room_id IS NOT NULL)
 );
 
-ALTER TABLE Issue ADD CONSTRAINT CHK_Issue_Status CHECK (
-    Status IN ('In Progress', 'Done')
+ALTER TABLE issue ADD CONSTRAINT CHK_issue_status CHECK (
+    status IN ('In Progress', 'Done')
 );
 
-ALTER TABLE Issue ADD CONSTRAINT FK_Issue_Student
-    FOREIGN KEY (StudentID) REFERENCES Student(ID);
+ALTER TABLE issue ADD CONSTRAINT FK_issue_student
+    FOREIGN KEY (student_id) REFERENCES student(id);
 
-ALTER TABLE Issue ADD CONSTRAINT FK_Issue_Employee
-    FOREIGN KEY (TeacherID) REFERENCES Employee(ID);
+ALTER TABLE issue ADD CONSTRAINT FK_issue_employee
+    FOREIGN KEY (teacher_id) REFERENCES employee(id);
 
-ALTER TABLE Issue ADD CONSTRAINT FK_Issue_Room
-    FOREIGN KEY (RoomID) REFERENCES Room(ID);
+ALTER TABLE issue ADD CONSTRAINT FK_issue_room
+    FOREIGN KEY (room_id) REFERENCES room(id);

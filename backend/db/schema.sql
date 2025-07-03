@@ -1,182 +1,182 @@
 -- Table Definitions
 CREATE TABLE
-    Employee (
-        ID VARCHAR(10),
-        FullName NVARCHAR (2000) NOT NULL,
-        Email VARCHAR(320) NOT NULL, UNIQUE (Email),
-        PhoneNumber VARCHAR(20),
-        Role VARCHAR(20) NOT NULL,
-        TeacherStatus VARCHAR(20),
+    employee (
+        id VARCHAR(10),
+        full_name NVARCHAR (2000) NOT NULL,
+        email VARCHAR(320) NOT NULL, UNIQUE (email),
+        phone_number VARCHAR(20),
+        role VARCHAR(20) NOT NULL,
+        teacher_status VARCHAR(20),
 
-        PRIMARY KEY (ID)
+        PRIMARY KEY (id)
     );
 
 CREATE TABLE
-    StaffCheckin (
-        ID VARCHAR(10),
-        EmployeeID VARCHAR(10) NOT NULL,
-        CheckinTime DATETIME NOT NULL,
-        CheckoutTime DATETIME NOT NULL,
-        Status VARCHAR(200) NOT NULL DEFAULT 'Not Checked In',
+    staff_checkin (
+        id VARCHAR(10),
+        employee_id VARCHAR(10) NOT NULL,
+        checkin_time DATETIME NOT NULL,
+        checkout_time DATETIME NOT NULL,
+        status VARCHAR(200) NOT NULL DEFAULT 'Not Checked In',
 
-        PRIMARY KEY (ID)
+        PRIMARY KEY (id)
     );
 
 CREATE TABLE
-    LeaveRequest (
-        ID VARCHAR(10),
-        EmployeeID VARCHAR(10) NOT NULL,
-        SubstituteID VARCHAR(10) NOT NULL,
-        StartDate DATE NOT NULL,
-        EndDate DATE NOT NULL,
-        Reason NVARCHAR (200) NOT NULL,
-        Status NVARCHAR (15) NOT NULL DEFAULT 'Not Approved',
-        CreatedDate DATE NOT NULL DEFAULT (CURRENT_DATE),
+    leave_request (
+        id VARCHAR(10),
+        employee_id VARCHAR(10) NOT NULL,
+        substitute_id VARCHAR(10) NOT NULL,
+        start_date DATE NOT NULL,
+        end_date DATE NOT NULL,
+        reason NVARCHAR (200) NOT NULL,
+        status NVARCHAR (15) NOT NULL DEFAULT 'Not Approved',
+        created_date DATE NOT NULL DEFAULT (CURRENT_DATE),
         
-        PRIMARY KEY (ID)
+        PRIMARY KEY (id)
     );
 
 CREATE TABLE
-    Account (
-        ID VARCHAR(10),
-        EmployeeID VARCHAR(10) NOT NULL,
-        Username VARCHAR(200) NOT NULL,
-        PasswordHash VARCHAR(200) NOT NULL,
-        CreatedDate DATE NOT NULL DEFAULT (CURRENT_DATE),
+    account (
+        id VARCHAR(10),
+        employee_id VARCHAR(10) NOT NULL,
+        username VARCHAR(200) NOT NULL,
+        password_hash VARCHAR(200) NOT NULL,
+        created_date DATE NOT NULL DEFAULT (CURRENT_DATE),
 
-        PRIMARY KEY (ID)
+        PRIMARY KEY (id)
     );
 
 CREATE TABLE
-    Student (
-        ID VARCHAR(10),
-        FullName NVARCHAR (2000) NOT NULL,
-        DateOfBirth DATE,
-        ContactInfo VARCHAR(200) NOT NULL,
-        CreatedDate DATE NOT NULL DEFAULT (CURRENT_DATE),
+    student (
+        id VARCHAR(10),
+        full_name NVARCHAR (2000) NOT NULL,
+        date_of_birth DATE,
+        contact_info VARCHAR(200) NOT NULL,
+        created_date DATE NOT NULL DEFAULT (CURRENT_DATE),
 
-        PRIMARY KEY (ID)
+        PRIMARY KEY (id)
     );
 
 CREATE TABLE
-    Class (
-        ID VARCHAR(10),
-        ClassName VARCHAR(200) NOT NULL,
-        ClassDescription VARCHAR(200),
-        Duration INT NOT NULL,
-        StartDate DATE NOT NULL,
-        EndDate DATE GENERATED ALWAYS AS (DATE_ADD(StartDate, INTERVAL Duration MONTH)) STORED,
-        Schedule VARCHAR(200) NOT NULL,
-        TeacherID VARCHAR(10) NOT NULL,
-        Fee INT NOT NULL,
-        Prerequisites VARCHAR(20) NOT NULL,
-        CreatedDate DATE,
+    class (
+        id VARCHAR(10),
+        class_name VARCHAR(200) NOT NULL,
+        class_description VARCHAR(200),
+        duration INT NOT NULL,
+        start_date DATE NOT NULL,
+        end_date DATE GENERATED ALWAYS AS (DATE_ADD(start_date, INTERVAL duration MONTH)) STORED,
+        schedule VARCHAR(200) NOT NULL,
+        teacher_id VARCHAR(10) NOT NULL,
+        fee INT NOT NULL,
+        prerequisites VARCHAR(20) NOT NULL,
+        created_date DATE,
 
-        PRIMARY KEY (ID, CreatedDate)
+        PRIMARY KEY (id, created_date)
     );
 
 CREATE TABLE
-    Contract (
-        ID VARCHAR(10),
-        StudentID VARCHAR(10) NOT NULL,
-        EmployeeID VARCHAR(10) NOT NULL,
-        ClassID VARCHAR(10) NOT NULL,
-        ClassDate DATE NOT NULL,
-        TuitionFee INT NOT NULL,
-        PaymentStatus VARCHAR(20) NOT NULL DEFAULT 'In Progress',
-        StartDate DATE NOT NULL,
-        EndDate DATE NOT NULL,
+    contract (
+        id VARCHAR(10),
+        student_id VARCHAR(10) NOT NULL,
+        employee_id VARCHAR(10) NOT NULL,
+        class_id VARCHAR(10) NOT NULL,
+        class_date DATE NOT NULL,
+        tuition_fee INT NOT NULL,
+        payment_status VARCHAR(20) NOT NULL DEFAULT 'In Progress',
+        start_date DATE NOT NULL,
+        end_date DATE NOT NULL,
 
-        PRIMARY KEY (ID)
+        PRIMARY KEY (id)
     );
 
 CREATE TABLE
-    Enrolment (
-        ID VARCHAR(10),
-        ContractID VARCHAR(10) NOT NULL, 
-        StudentID VARCHAR(10) NOT NULL,
-        ClassID VARCHAR(10) NOT NULL,
-        ClassDate DATE NOT NULL,
-        EnrolmentDate DATE NOT NULL,
+    enrolment (
+        id VARCHAR(10),
+        contract_id VARCHAR(10) NOT NULL, 
+        student_id VARCHAR(10) NOT NULL,
+        class_id VARCHAR(10) NOT NULL,
+        class_date DATE NOT NULL,
+        enrolment_date DATE NOT NULL,
 
-        PRIMARY KEY (ID)
+        PRIMARY KEY (id)
     );
 
 CREATE TABLE
-    Room (
-        ID VARCHAR(10),
-        RoomName VARCHAR(200) NOT NULL,
-        Status VARCHAR(20) NOT NULL DEFAULT 'Free',
+    room (
+        id VARCHAR(10),
+        room_name VARCHAR(200) NOT NULL,
+        status VARCHAR(20) NOT NULL DEFAULT 'Free',
 
-        PRIMARY KEY (ID)
+        PRIMARY KEY (id)
     );
 
 CREATE TABLE
-    ClassSession (
-        ID VARCHAR(10),
-        ClassID VARCHAR(10),
-        ClassDate DATE,
-        Term INT,
-        TeacherID VARCHAR(10) NOT NULL,
-        RoomID VARCHAR(10) NOT NULL,
-        SessionDate DATETIME NOT NULL,
+    class_session (
+        id VARCHAR(10),
+        class_id VARCHAR(10),
+        class_date DATE,
+        term INT,
+        teacher_id VARCHAR(10) NOT NULL,
+        room_id VARCHAR(10) NOT NULL,
+        session_date DATETIME NOT NULL,
 
-        PRIMARY KEY (ID, ClassID, ClassDate, Term)
+        PRIMARY KEY (id, class_id, class_date, term)
     );
 
 CREATE TABLE
-    StudentAttendance (
-        StudentID VARCHAR(10),
-        ClassSessionID VARCHAR(10),
-        ClassID VARCHAR(10),
-        ClassDate DATE,
-        Term INT,
-        EnrolmentID VARCHAR(10) NOT NULL,
-        Status VARCHAR(20) NOT NULL,
+    student_attendance (
+        student_id VARCHAR(10),
+        class_session_id VARCHAR(10),
+        class_id VARCHAR(10),
+        class_date DATE,
+        term INT,
+        enrolment_id VARCHAR(10) NOT NULL,
+        status VARCHAR(20) NOT NULL,
 
-        PRIMARY KEY (StudentID, ClassSessionID, ClassID, ClassDate, Term)
+        PRIMARY KEY (student_id, class_session_id, class_id, class_date, term)
     );
 
 CREATE TABLE
-    MakeupClass (
-        ID VARCHAR(10),
-        StudentID VARCHAR(10) NOT NULL,
-        ClassSessionID VARCHAR(10) NOT NULL,
-        ClassID VARCHAR(10) NOT NULL,
-        ClassDate DATE NOT NULL,
-        Term INT NOT NULL,
-        TeacherID VARCHAR(10) NOT NULL,
-        RoomID VARCHAR(10) NOT NULL,
-        CreatedDate DATE NOT NULL DEFAULT (CURRENT_DATE),
+    makeup_class (
+        id VARCHAR(10),
+        student_id VARCHAR(10) NOT NULL,
+        class_session_id VARCHAR(10) NOT NULL,
+        class_id VARCHAR(10) NOT NULL,
+        class_date DATE NOT NULL,
+        term INT NOT NULL,
+        teacher_id VARCHAR(10) NOT NULL,
+        room_id VARCHAR(10) NOT NULL,
+        created_date DATE NOT NULL DEFAULT (CURRENT_DATE),
 
-        PRIMARY KEY (ID)
+        PRIMARY KEY (id)
     );
 
 CREATE TABLE
-    Evaluation (
-        StudentID VARCHAR(10),
-        ClassID VARCHAR(10),
-        ClassDate DATE,
-        AssessmentType VARCHAR(200),
-        TeacherID VARCHAR(10) NOT NULL,
-        Grade VARCHAR(2) NOT NULL,
-        Comment NVARCHAR (2000) NOT NULL,
-        EnrolmentID VARCHAR(10) NOT NULL,
-        EvaluationDate DATE NOT NULL,
+    evaluation (
+        student_id VARCHAR(10),
+        class_id VARCHAR(10),
+        class_date DATE,
+        assessment_type VARCHAR(200),
+        teacher_id VARCHAR(10) NOT NULL,
+        grade VARCHAR(2) NOT NULL,
+        comment NVARCHAR (2000) NOT NULL,
+        enrolment_id VARCHAR(10) NOT NULL,
+        evaluation_date DATE NOT NULL,
 
-        PRIMARY KEY (StudentID, ClassID, ClassDate, AssessmentType)
+        PRIMARY KEY (student_id, class_id, class_date, assessment_type)
     );
 
 CREATE TABLE
-    Issue (
-        ID VARCHAR(10),
-        TeacherID VARCHAR(10) NOT NULL,
-        StudentID VARCHAR(10),
-        RoomID VARCHAR(10),
-        IssueType VARCHAR(200) NOT NULL,
-        IssueDescription NVARCHAR (200) NOT NULL,
-        Status VARCHAR(20) NOT NULL DEFAULT 'In Progress',
-        ReportedDate DATE NOT NULL DEFAULT (CURRENT_DATE),
+    issue (
+        id VARCHAR(10),
+        teacher_id VARCHAR(10) NOT NULL,
+        student_id VARCHAR(10),
+        room_id VARCHAR(10),
+        issue_type VARCHAR(200) NOT NULL,
+        issue_description NVARCHAR (200) NOT NULL,
+        status VARCHAR(20) NOT NULL DEFAULT 'In Progress',
+        reported_date DATE NOT NULL DEFAULT (CURRENT_DATE),
 
-        PRIMARY KEY (ID)
+        PRIMARY KEY (id)
     );
