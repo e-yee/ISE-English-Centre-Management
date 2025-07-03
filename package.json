@@ -10,5 +10,8 @@
     "@commitlint/config-conventional": "^19.8.1",
     "husky": "^9.1.7",
     "pinst": "^3.0.0"
+  },
+  "dependencies": {
+    "@radix-ui/react-label": "^2.1.7"
   }
 }
