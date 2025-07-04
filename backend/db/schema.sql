@@ -4,7 +4,7 @@ CREATE TABLE
         id VARCHAR(10),
         full_name NVARCHAR (2000) NOT NULL,
         email VARCHAR(320) NOT NULL, UNIQUE (email),
-        phone_number VARCHAR(20),
+        phone_number VARCHAR(20), UNIQUE (phone_number)
         role VARCHAR(20) NOT NULL,
         teacher_status VARCHAR(20),
 
@@ -15,8 +15,8 @@ CREATE TABLE
     staff_checkin (
         id VARCHAR(10),
         employee_id VARCHAR(10) NOT NULL,
-        checkin_time DATETIME NOT NULL,
-        checkout_time DATETIME NOT NULL,
+        checkin_time DATETIME,
+        checkout_time DATETIME,
         status VARCHAR(200) NOT NULL DEFAULT 'Not Checked In',
 
         PRIMARY KEY (id)
