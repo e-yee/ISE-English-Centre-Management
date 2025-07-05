@@ -4,7 +4,7 @@ CREATE TABLE
         id VARCHAR(10),
         full_name NVARCHAR (2000) NOT NULL,
         email VARCHAR(320) NOT NULL, UNIQUE (email),
-        phone_number VARCHAR(20), UNIQUE (phone_number)
+        phone_number VARCHAR(20), UNIQUE (phone_number),
         role VARCHAR(20) NOT NULL,
         teacher_status VARCHAR(20),
 
