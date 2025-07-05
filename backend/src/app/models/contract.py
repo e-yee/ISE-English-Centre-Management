@@ -1,0 +1,36 @@
+from typing import List, TYPE_CHECKING
+from app.models import Base
+from sqlalchemy import CheckConstraint, Date, ForeignKeyConstraint, Index, Integer, String, text
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+import datetime
+
+if TYPE_CHECKING:
+    from app.models import Class, Employee, Enrolment, Student
+
+class Contract(Base):
+    __tablename__ = 'contract'
+    __table_args__ = (
+        CheckConstraint('TO_DAYS(end_date) - TO_DAYS(start_date) > 0', name='CHK_contract_date'),
+        CheckConstraint("payment_status IN ('In Progress', 'Paid')", name='CHK_contract_status'),
+        ForeignKeyConstraint(['class_id', 'class_date'], ['class.id', 'class.created_date'], name='FK_contract_class'),
+        ForeignKeyConstraint(['employee_id'], ['employee.id'], name='FK_contract_employee'),
+        ForeignKeyConstraint(['student_id'], ['student.id'], name='FK_contract_student'),
+        Index('FK_contract_class', 'class_id', 'class_date'),
+        Index('FK_contract_employee', 'employee_id'),
+        Index('FK_contract_student', 'student_id')
+    )
+
+    id: Mapped[str] = mapped_column(String(10), primary_key=True)
+    student_id: Mapped[str] = mapped_column(String(10))
+    employee_id: Mapped[str] = mapped_column(String(10))
+    class_id: Mapped[str] = mapped_column(String(10))
+    class_date: Mapped[datetime.date] = mapped_column(Date)
+    tuition_fee: Mapped[int] = mapped_column(Integer)
+    payment_status: Mapped[str] = mapped_column(String(20), server_default=text("'In Progress'"))
+    start_date: Mapped[datetime.date] = mapped_column(Date)
+    end_date: Mapped[datetime.date] = mapped_column(Date)
+
+    class_: Mapped['Class'] = relationship('Class', back_populates='contract')
+    employee: Mapped['Employee'] = relationship('Employee', back_populates='contract')
+    student: Mapped['Student'] = relationship('Student', back_populates='contract')
+    enrolment: Mapped[List['Enrolment']] = relationship('Enrolment', back_populates='contract')
