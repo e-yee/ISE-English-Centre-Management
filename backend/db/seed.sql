@@ -4,6 +4,7 @@
 employee('EM001', 'Nguyễn Minh Khôi', 'nmkhoi069@gmail.com', '0901298756', 'Teacher', 'Available');
 employee('EM002', 'Hà Thư Hoàng', 'hthoang367@gmail.com', NULL, 'Learning Advisor', NULL);
 employee('EM003', 'Trương Công Thiên Phú', 'tctphu455@gmail.com', '0909088888', 'Manager', NULL);
+employee('EM004', 'Võ Trần Quốc Duy', 'vtqduy359@gmail.com', '0909011111', 'Learning Advisor', NULL);
 
 ------------------------
 
@@ -59,5 +60,20 @@ room('R002', 'English Room', 'Free');
 -- Class Session Samples
 class_session('SES001', 'CL001', '2025-07-04', '1', 'EM001', 'R001', '2025-08-08');
 class_session('SES001', 'CL002', '2025-07-04', '1', 'EM004', 'R002', '2025-08-08');
+
+-- Student Attendance Samples
+student_attendance('ST001', 'SES001', 'CL001', '2025-07-04', '1', 'ER001', 'Abscent')
+student_attendance('ST002', 'SES001', 'CL001', '2025-07-04', '1', 'ER002', 'Present')
+
+-- Make-up Class Samples
+makeup_class('MAK001', 'ST001', 'SES001', 'CL001', '2025-07-04', '1', 'EM001', 'R001', '2025-07-05')
+
+-- Evaluation Samples
+evaluation('ST001', 'CL001', '2025-07-05', 'Quiz 1', 'EM001', 'A+', 'You so great me love you!', '2025-07-05')
+
+-- Issue
+issue('ISS001', 'EM001', 'ST001', NULL, 'Student Behavior', 'This student pee in my class', 'In Progress', '2025-07-05')
+issue('ISS002', 'EM001', NULL, 'R001', 'Technical', 'This room is full of piss', 'In Progress', '2025-07-05')
+
 
 
