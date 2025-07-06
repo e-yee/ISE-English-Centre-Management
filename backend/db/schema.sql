@@ -40,7 +40,7 @@ CREATE TABLE
     account (
         id VARCHAR(10),
         employee_id VARCHAR(10) NOT NULL,
-        username VARCHAR(200) NOT NULL,
+        username VARCHAR(200) NOT NULL, UNIQUE(username),
         password_hash VARCHAR(200) NOT NULL,
         created_date DATE NOT NULL DEFAULT (CURRENT_DATE),
 
