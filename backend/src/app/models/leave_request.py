@@ -1,7 +1,6 @@
 from typing import TYPE_CHECKING
 from app.models import Base
 from sqlalchemy import CheckConstraint, ForeignKeyConstraint, Index, String, Date, text
-from sqlalchemy.dialects.mysql import VARCHAR
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 import datetime
 
@@ -21,13 +20,13 @@ class LeaveRequest(Base):
     )
 
     id: Mapped[str] = mapped_column(String(10), primary_key=True)
-    employee_id: Mapped[str] = mapped_column(String(10))
-    substitute_id: Mapped[str] = mapped_column(String(10))
-    start_date: Mapped[datetime.date] = mapped_column(Date)
-    end_date: Mapped[datetime.date] = mapped_column(Date)
-    reason: Mapped[str] = mapped_column(VARCHAR(200))
-    status: Mapped[str] = mapped_column(VARCHAR(15), server_default=text("Not Approved"))
-    created_date: Mapped[datetime.date] = mapped_column(Date, server_default=text('curdate()'))
+    employee_id: Mapped[str] = mapped_column(String(10), nullable=False)
+    substitute_id: Mapped[str] = mapped_column(String(10), nullable=False)
+    start_date: Mapped[datetime.date] = mapped_column(Date, nullable=False)
+    end_date: Mapped[datetime.date] = mapped_column(Date, nullable=False)
+    reason: Mapped[str] = mapped_column(String(200), nullable=False)
+    status: Mapped[str] = mapped_column(String(15), nullable=False, server_default=text("'Not Approved'"))
+    created_date: Mapped[datetime.date] = mapped_column(Date, nullable=False, server_default=text('curdate()'))
 
-    employee: Mapped['Employee'] = relationship('Employee', foreign_keys=[employee_id], back_populates='leave_request')
-    substitute: Mapped['Employee'] = relationship('Employee', foreign_keys=[substitute_id], back_populates='leave_request_')
+    employee: Mapped['Employee'] = relationship('Employee', foreign_keys=[employee_id], back_populates='leave_request', uselist=False)
+    substitute: Mapped['Employee'] = relationship('Employee', foreign_keys=[substitute_id], back_populates='leave_request_', uselist=False)

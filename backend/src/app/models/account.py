@@ -15,9 +15,9 @@ class Account(Base):
     )
 
     id: Mapped[str] = mapped_column(String(10), primary_key=True)
-    employee_id: Mapped[str] = mapped_column(String(10))
-    username: Mapped[str] = mapped_column(String(200))
-    password_hash: Mapped[str] = mapped_column(String(200))
-    created_date: Mapped[datetime.date] = mapped_column(Date, server_default=text('(curdate())'))
+    employee_id: Mapped[str] = mapped_column(String(10), nullable=False, unique=True)
+    username: Mapped[str] = mapped_column(String(200), nullable=False, unique=True)
+    password_hash: Mapped[str] = mapped_column(String(200), nullable=False)
+    created_date: Mapped[datetime.date] = mapped_column(Date, nullable=False, server_default=text('curdate()'))
 
-    employee: Mapped['Employee'] = relationship('Employee', back_populates='account')
+    employee: Mapped['Employee'] = relationship('Employee', back_populates='account', uselist=False)

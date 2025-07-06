@@ -8,15 +8,14 @@ import datetime
 if TYPE_CHECKING:
     from app.models import Contract, Enrolment, Evaluation, Issue, StudentAttendance
 
-
 class Student(Base):
     __tablename__ = 'student'
 
     id: Mapped[str] = mapped_column(String(10), primary_key=True)
-    full_name: Mapped[str] = mapped_column(VARCHAR(2000))
-    contact_info: Mapped[str] = mapped_column(String(200))
-    created_date: Mapped[datetime.date] = mapped_column(Date, server_default=text('curdate()'))
-    date_of_birth: Mapped[Optional[datetime.date]] = mapped_column(Date)
+    full_name: Mapped[str] = mapped_column(VARCHAR(2000, collation="utf8mb4_vi_ci"), nullable=False)
+    contact_info: Mapped[str] = mapped_column(String(200), nullable=False)
+    created_date: Mapped[datetime.date] = mapped_column(Date, nullable=False, server_default=text('curdate()'))
+    date_of_birth: Mapped[Optional[datetime.date]] = mapped_column(Date, nullable=False)
 
     issue: Mapped[List['Issue']] = relationship('Issue', back_populates='student')
     contract: Mapped[List['Contract']] = relationship('Contract', back_populates='student')

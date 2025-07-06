@@ -1,4 +1,4 @@
-from typing import List, TYPE_CHECKING
+from typing import TYPE_CHECKING
 from app.models import Base
 from sqlalchemy import CheckConstraint, Date, ForeignKeyConstraint, Index, Integer, String, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -21,16 +21,16 @@ class Contract(Base):
     )
 
     id: Mapped[str] = mapped_column(String(10), primary_key=True)
-    student_id: Mapped[str] = mapped_column(String(10))
-    employee_id: Mapped[str] = mapped_column(String(10))
-    class_id: Mapped[str] = mapped_column(String(10))
-    class_date: Mapped[datetime.date] = mapped_column(Date)
-    tuition_fee: Mapped[int] = mapped_column(Integer)
-    payment_status: Mapped[str] = mapped_column(String(20), server_default=text("'In Progress'"))
-    start_date: Mapped[datetime.date] = mapped_column(Date)
-    end_date: Mapped[datetime.date] = mapped_column(Date)
+    student_id: Mapped[str] = mapped_column(String(10), nullable=False)
+    employee_id: Mapped[str] = mapped_column(String(10), nullable=False)
+    class_id: Mapped[str] = mapped_column(String(10), nullable=False)
+    class_date: Mapped[datetime.date] = mapped_column(Date, nullable=False)
+    tuition_fee: Mapped[int] = mapped_column(Integer, nullable=False)
+    payment_status: Mapped[str] = mapped_column(String(20), nullable=False, server_default=text('In Progress'))
+    start_date: Mapped[datetime.date] = mapped_column(Date, nullable=False)
+    end_date: Mapped[datetime.date] = mapped_column(Date, nullable=False)
 
-    class_: Mapped['Class'] = relationship('Class', back_populates='contract')
-    employee: Mapped['Employee'] = relationship('Employee', back_populates='contract')
-    student: Mapped['Student'] = relationship('Student', back_populates='contract')
-    enrolment: Mapped[List['Enrolment']] = relationship('Enrolment', back_populates='contract')
+    class_: Mapped['Class'] = relationship('Class', back_populates='contract', uselist=False)
+    employee: Mapped['Employee'] = relationship('Employee', back_populates='contract', uselist=False)
+    student: Mapped['Student'] = relationship('Student', back_populates='contract', uselist=False)
+    enrolment: Mapped['Enrolment'] = relationship('Enrolment', back_populates='contract', uselist=False)

@@ -10,20 +10,21 @@ if TYPE_CHECKING:
 class Employee(Base):
     __tablename__ = 'employee'
     __table_args__ = (
-        CheckConstraint("((role = 'Teacher') AND ('teacher_status' IN ('Available', 'Unavailable'))) OR ((role <> 'Teacher') AND (teacher_status IS NULL)))", name='CHK_employee_status'),
+        CheckConstraint(
+            "((role = 'Teacher') AND (teacher_status IN ('Available', 'Unavailable'))) OR \
+            ((role <> 'Teacher') AND (teacher_status IS NULL)))", name='CHK_employee_status'
+        ),
         CheckConstraint("role IN ('Teacher', 'Learning Advisor', 'Manager')", name='CHK_employee_role'),
-        Index('email', 'email', unique=True),
-        Index('phone_number', 'phone_number', unique=True)
     )
 
     id: Mapped[str] = mapped_column(String(10), primary_key=True)
-    full_name: Mapped[str] = mapped_column(VARCHAR(2000))
-    email: Mapped[str] = mapped_column(String(320))
-    role: Mapped[str] = mapped_column(String(20))
-    phone_number: Mapped[Optional[str]] = mapped_column(String(20))
+    full_name: Mapped[str] = mapped_column(VARCHAR(2000, collation="utf8mb4_vi_ci"), nullable=False)
+    email: Mapped[str] = mapped_column(String(320), nullable=False, unique=True)
+    role: Mapped[str] = mapped_column(String(20), nullable=False)
+    phone_number: Mapped[Optional[str]] = mapped_column(String(20), unique=True)
     teacher_status: Mapped[Optional[str]] = mapped_column(String(20))
 
-    account: Mapped[List['Account']] = relationship('Account', back_populates='employee')
+    account: Mapped['Account'] = relationship('Account', back_populates='employee', uselist=False)
     class_: Mapped[List['Class']] = relationship('Class', back_populates='teacher')
     issue: Mapped[List['Issue']] = relationship('Issue', back_populates='teacher')
     leave_request: Mapped[List['LeaveRequest']] = relationship('LeaveRequest', foreign_keys='[LeaveRequest.employee_id]', back_populates='employee')
