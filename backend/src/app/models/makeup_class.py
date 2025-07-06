@@ -28,7 +28,7 @@ class MakeupClass(Base):
     class_date: Mapped[datetime.date] = mapped_column(Date, nullable=False)
     term: Mapped[int] = mapped_column(Integer, nullable=False)
     teacher_id: Mapped[str] = mapped_column(String(10), nullable=False)
-    room_id: Mapped[str] = mapped_column(String(10, nullable=False))
+    room_id: Mapped[str] = mapped_column(String(10), nullable=False)
     created_date: Mapped[datetime.date] = mapped_column(Date, nullable=False, server_default=text('curdate()'))
 
     room: Mapped['Room'] = relationship('Room', back_populates='makeup_class', uselist=False)
