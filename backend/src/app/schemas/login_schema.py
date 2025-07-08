@@ -1,4 +1,4 @@
-from backend.src.extensions import ma
+from extensions import ma
 from marshmallow import fields
 
 class LoginSchema(ma.Schema):
