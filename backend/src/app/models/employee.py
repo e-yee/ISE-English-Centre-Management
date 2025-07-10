@@ -1,5 +1,5 @@
 from typing import List, Optional, TYPE_CHECKING
-from app.models import Base
+from extensions import db
 from sqlalchemy import CheckConstraint, Index, String
 from sqlalchemy.dialects.mysql import VARCHAR
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -7,7 +7,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 if TYPE_CHECKING:
     from app.models import Account, Class, Issue, LeaveRequest, StaffCheckin, ClassSession, Contract, Evaluation, MakeupClass
     
-class Employee(Base):
+class Employee(db.Model):
     __tablename__ = 'employee'
     __table_args__ = (
         CheckConstraint(

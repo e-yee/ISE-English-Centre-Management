@@ -1,13 +1,12 @@
 from typing import List, TYPE_CHECKING
-from app.models import Base
+from extensions import db
 from sqlalchemy import CheckConstraint, String, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 if TYPE_CHECKING:
     from app.models import Base, ClassSession, Issue, MakeupClass
 
-
-class Room(Base):
+class Room(db.Model):
     __tablename__ = 'room'
     __table_args__ = (
         CheckConstraint("status IN ('Free', 'Occupied', 'Maintenance')", name='CHK_room_status'),

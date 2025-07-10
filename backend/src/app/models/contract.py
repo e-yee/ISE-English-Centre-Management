@@ -1,5 +1,5 @@
 from typing import TYPE_CHECKING
-from app.models import Base
+from extensions import db
 from sqlalchemy import CheckConstraint, Date, ForeignKeyConstraint, Index, Integer, String, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 import datetime
@@ -7,7 +7,7 @@ import datetime
 if TYPE_CHECKING:
     from app.models import Class, Employee, Enrolment, Student
 
-class Contract(Base):
+class Contract(db.Model):
     __tablename__ = 'contract'
     __table_args__ = (
         CheckConstraint('TO_DAYS(end_date) - TO_DAYS(start_date) > 0', name='CHK_contract_date'),
@@ -26,7 +26,7 @@ class Contract(Base):
     class_id: Mapped[str] = mapped_column(String(10), nullable=False)
     class_date: Mapped[datetime.date] = mapped_column(Date, nullable=False)
     tuition_fee: Mapped[int] = mapped_column(Integer, nullable=False)
-    payment_status: Mapped[str] = mapped_column(String(20), nullable=False, server_default=text('In Progress'))
+    payment_status: Mapped[str] = mapped_column(String(20), nullable=False, server_default=text("'In Progress'"))
     start_date: Mapped[datetime.date] = mapped_column(Date, nullable=False)
     end_date: Mapped[datetime.date] = mapped_column(Date, nullable=False)
 

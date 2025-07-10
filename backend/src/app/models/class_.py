@@ -1,5 +1,5 @@
 from typing import List, Optional, TYPE_CHECKING
-from app.models import Base
+from extensions import db
 from sqlalchemy import Computed, Date, ForeignKeyConstraint, Index, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 import datetime
@@ -7,7 +7,7 @@ import datetime
 if TYPE_CHECKING:
     from app.models import ClassSession, Contract, Employee, Enrolment, Evaluation
     
-class Class(Base):
+class Class(db.Model):
     __tablename__ = 'class'
     __table_args__ = (
         ForeignKeyConstraint(['teacher_id'], ['employee.id'], name='FK_class_employee'),

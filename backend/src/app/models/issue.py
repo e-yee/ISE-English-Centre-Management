@@ -1,5 +1,5 @@
 from typing import Optional, TYPE_CHECKING
-from app.models import Base
+from extensions import db
 from sqlalchemy import CheckConstraint, ForeignKeyConstraint, Index, Date, String, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 import datetime
@@ -7,7 +7,7 @@ import datetime
 if TYPE_CHECKING:
     from app.models import Employee, Room, Student
 
-class Issue(Base):
+class Issue(db.Model):
     __tablename__ = 'issue'
     __table_args__ = (
         CheckConstraint(

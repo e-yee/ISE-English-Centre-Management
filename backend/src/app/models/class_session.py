@@ -1,5 +1,5 @@
 from typing import List, TYPE_CHECKING
-from app.models import Base
+from extensions import db
 from sqlalchemy import CheckConstraint, Date, DateTime, ForeignKeyConstraint, Index, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 import datetime
@@ -7,7 +7,7 @@ import datetime
 if TYPE_CHECKING:
     from app.models import Class, Room, Employee, StudentAttendance
     
-class ClassSession(Base):
+class ClassSession(db.Model):
     __tablename__ = 'class_session'
     __table_args__ = (
         CheckConstraint('term IN (1, 2)', name='CHK_class_session_term'),

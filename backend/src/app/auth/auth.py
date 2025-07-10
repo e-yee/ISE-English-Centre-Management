@@ -1,7 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity
-from extensions import db, pwd_context
-from app import SessionLocal
+from extensions import db, pwd_context, ma
 from app.models import Account
 from app.schemas.login_schema import login_schema
 
@@ -11,19 +10,19 @@ auth_bp = Blueprint('auth', __name__)
 def login():
     json_data = request.get_json()
     login = login_schema.load(json_data)
-    with SessionLocal() as session:
-        user = session.query(Account).filter_by(username=login['username']).first()
 
-        if user and pwd_context.verify(login['password'], user.password_hash):
-            access_token = create_access_token(identity=user.id)
-            refresh_token = create_refresh_token(identity=user.id)
-            
-            return jsonify({
-                'access_token': access_token,
-                'refresh_token': refresh_token
-            }), 200
+    user = db.session.query(Account).filter_by(username=login['username']).first()
+
+    if user and pwd_context.verify(login['password'], user.password_hash):
+        access_token = create_access_token(identity=user.id)
+        refresh_token = create_refresh_token(identity=user.id)
         
-        return jsonify({'message': 'Invalid credentials'}), 401
+        return jsonify({
+            'access_token': access_token,
+            'refresh_token': refresh_token
+        }), 200
+    
+    return jsonify({'message': 'Invalid credentials'}), 401
 
 @auth_bp.route('/refresh', methods=['POST'])
 @jwt_required(refresh=True)

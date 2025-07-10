@@ -1,5 +1,5 @@
 from typing import List, TYPE_CHECKING
-from app.models import Base
+from extensions import db
 from sqlalchemy import CheckConstraint, ForeignKeyConstraint, Index, String, Date, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 import datetime
@@ -7,7 +7,7 @@ import datetime
 if TYPE_CHECKING:
     from app.models import ClassSession, Enrolment, MakeupClass, Student
 
-class StudentAttendance(Base):
+class StudentAttendance(db.Model):
     __tablename__ = 'student_attendance'
     __table_args__ = (
         CheckConstraint("status IN ('Present', 'Absent')", name='CHK_student_attendance_status'),

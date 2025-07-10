@@ -1,5 +1,5 @@
 from typing import List, Optional, TYPE_CHECKING
-from app.models import Base
+from extensions import db
 from sqlalchemy import String, Date, text
 from sqlalchemy.dialects.mysql import VARCHAR
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -8,7 +8,7 @@ import datetime
 if TYPE_CHECKING:
     from app.models import Contract, Enrolment, Evaluation, Issue, StudentAttendance
 
-class Student(Base):
+class Student(db.Model):
     __tablename__ = 'student'
 
     id: Mapped[str] = mapped_column(String(10), primary_key=True)

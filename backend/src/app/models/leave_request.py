@@ -1,5 +1,5 @@
 from typing import TYPE_CHECKING
-from app.models import Base
+from extensions import db
 from sqlalchemy import CheckConstraint, ForeignKeyConstraint, Index, String, Date, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 import datetime
@@ -7,7 +7,7 @@ import datetime
 if TYPE_CHECKING:
     from app.models import Employee
 
-class LeaveRequest(Base):
+class LeaveRequest(db.Model):
     __tablename__ = 'leave_request'
     __table_args__ = (
         CheckConstraint('TO_DAYS(end_date) - TO_DAYS(start_date) > 0', name='CHK_leave_request_date'),

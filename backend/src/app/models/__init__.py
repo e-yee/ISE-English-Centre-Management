@@ -13,9 +13,10 @@ from .enrolment import Enrolment
 from .evaluation import Evaluation
 from .student_attendace import StudentAttendance
 from .makeup_class import MakeupClass
+from .token_blocklist import TokenBlocklist
 
 __all__ = [
     "Base", "Employee", "Room", "Student", "Account", "Class", "Issue",
     "LeaveRequest", "StaffCheckin", "ClassSession", "Contract",
-    "Enrolment", "Evaluation", "StudentAttendance", "MakeupClass"
+    "Enrolment", "Evaluation", "StudentAttendance", "MakeupClass", "TokenBlocklist"
 ]
