@@ -1,4 +1,3 @@
-from .base import Base
 from .employee import Employee
 from .room import Room
 from .student import Student
@@ -16,7 +15,7 @@ from .makeup_class import MakeupClass
 from .token_blocklist import TokenBlocklist
 
 __all__ = [
-    "Base", "Employee", "Room", "Student", "Account", "Class", "Issue",
+    "Employee", "Room", "Student", "Account", "Class", "Issue",
     "LeaveRequest", "StaffCheckin", "ClassSession", "Contract",
     "Enrolment", "Evaluation", "StudentAttendance", "MakeupClass", "TokenBlocklist"
 ]

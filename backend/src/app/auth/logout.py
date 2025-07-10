@@ -6,7 +6,7 @@ from app.models import TokenBlocklist
 logout_bp = Blueprint('logout_bp', __name__)
 
 @logout_bp.route("/logout", methods=["DELETE"])
-@jwt_required
+@jwt_required()
 def logout():
     jti = get_jwt()["jti"]
     db.session.add(TokenBlocklist(jti=jti))

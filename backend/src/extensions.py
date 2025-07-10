@@ -2,7 +2,7 @@ from flask_marshmallow import Marshmallow
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
-from app.models import Base
+from sqlalchemy.orm import DeclarativeBase
 from flask_cors import CORS
 from passlib.context import CryptContext
 
@@ -12,6 +12,7 @@ jwt = JWTManager()
 
 migrate = Migrate()
 
+class Base(DeclarativeBase): pass
 db = SQLAlchemy(model_class=Base)
 
 cors = CORS()
