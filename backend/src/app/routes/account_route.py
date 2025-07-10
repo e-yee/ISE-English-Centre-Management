@@ -4,9 +4,9 @@ from app.models import Account
 from app.schemas.account_schema import account_schema, accounts_schema
 from marshmallow import ValidationError
 
-account_bp = Blueprint('account_bp', __name__)
+account_bp = Blueprint('account_bp', __name__, url_prefix='/account')
 
-@account_bp.route('/account/add', methods=['POST'])
+@account_bp.route('/add', methods=['POST'])
 def add_account():
     try:
         json_data = request.get_json()        
