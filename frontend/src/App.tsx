@@ -1,4 +1,5 @@
-import AuthPage from './pages/AuthPage';
+import AuthPage from './pages/auth/AuthPage';
+
 
 function App() {
   return (
