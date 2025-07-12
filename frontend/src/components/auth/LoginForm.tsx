@@ -7,9 +7,11 @@ import { Input } from "@/components/ui/input";
 
 interface LoginFormProps {
   onForgotPassword: () => void;
+  onSubmit?: (username: string, password: string) => Promise<void>;
+  isLoading?: boolean;
 }
 
-export function LoginForm({ onForgotPassword }: LoginFormProps) {
+export function LoginForm({ onForgotPassword, onSubmit, isLoading = false }: LoginFormProps) {
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -19,10 +21,13 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Login attempt:", { username: formData.username, password: formData.password });
-    // Add your login logic here
+    if (onSubmit) {
+      await onSubmit(formData.username, formData.password);
+    } else {
+      console.log("Login attempt:", { username: formData.username, password: formData.password });
+    }
   };
 
   return (
@@ -35,23 +40,25 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
       <CardContent className="pt-4 px-8 pb-8">
         <form onSubmit={handleLogin} className="space-y-6">
           <div className="space-y-4">
-            <Input 
-              id="username" 
-              type="text" 
+            <Input
+              id="username"
+              type="text"
               placeholder="Username"
               value={formData.username}
               onChange={(e) => handleInputChange("username", e.target.value)}
               className="h-12 rounded-full border-2 border-black bg-white px-4 text-gray-700 placeholder:text-gray-500 focus:border-black focus:ring-0"
               required
+              disabled={isLoading}
             />
-            <Input 
-              id="password" 
-              type="password" 
+            <Input
+              id="password"
+              type="password"
               placeholder="Password"
               value={formData.password}
               onChange={(e) => handleInputChange("password", e.target.value)}
               className="h-12 rounded-full border-2 border-black bg-white px-4 text-gray-700 placeholder:text-gray-500 focus:border-black focus:ring-0"
               required
+              disabled={isLoading}
             />
           </div>
           <div className="flex items-center justify-between pt-4">
@@ -60,14 +67,16 @@ export function LoginForm({ onForgotPassword }: LoginFormProps) {
               type="button"
               onClick={onForgotPassword}
               className="text-black text-[22px] hover:underline p-0"
+              disabled={isLoading}
             >
               Forget Password
             </Button>
             <Button
               type="submit"
-              className="bg-[#7181DD] hover:bg-[#5A6ACF] text-black text-[30px] px-8 py-6 rounded-[30px] border-2 border-black leading-none"
+              className="bg-[#7181DD] hover:bg-[#5A6ACF] text-black text-[30px] px-8 py-6 rounded-[30px] border-2 border-black leading-none disabled:opacity-50"
+              disabled={isLoading}
             >
-              Log in
+              {isLoading ? "Logging in..." : "Log in"}
             </Button>
           </div>
         </form>
