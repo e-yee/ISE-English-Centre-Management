@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { User } from "lucide-react";
 import { cn } from "@/lib/utils";
+import UserProfile from "@/components/ui/UserProfile";
 
 interface HeaderProps {
   isRegistered?: boolean;
@@ -34,7 +34,7 @@ const Header: React.FC<HeaderProps> = ({ isRegistered = false }) => {
 
   // Registered header layout
   return (
-    <header className="bg-[#4F5F9C] h-24 flex items-stretch shadow-lg z-10 border-b-[1px] border-black">
+    <header className="bg-[#4A5B8C] h-24 flex items-stretch shadow-lg z-10 border-b-[1px] border-black">
       {/* Left Frame - Logo only */}
       <div className="flex items-center pl-4 pr-6 border-r-[2.5px] border-black">
         <div className="relative flex items-center justify-center">
@@ -88,12 +88,11 @@ const Header: React.FC<HeaderProps> = ({ isRegistered = false }) => {
         </button>
 
         {/* User Profile */}
-        <button
-          className="flex items-center justify-center w-12 h-12 bg-white border-4 border-black rounded-full hover:bg-gray-50 transition-colors"
-          aria-label="User profile"
-        >
-          <User className="w-6 h-6 text-black" />
-        </button>
+        <UserProfile
+          onProfileClick={() => console.log("Profile clicked")}
+          onSettingClick={() => console.log("Setting clicked")}
+          onLogoutClick={() => console.log("Logout clicked")}
+        />
       </div>
     </header>
   );

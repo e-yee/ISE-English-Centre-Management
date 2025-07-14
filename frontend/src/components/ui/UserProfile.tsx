@@ -1,0 +1,120 @@
+import React, { useState } from "react";
+import { cn } from "@/lib/utils";
+
+interface UserProfileProps {
+  className?: string;
+  onProfileClick?: () => void;
+  onSettingClick?: () => void;
+  onLogoutClick?: () => void;
+}
+
+interface ProfileMenuItem {
+  id: string;
+  label: string;
+  onClick?: () => void;
+}
+
+const UserProfile: React.FC<UserProfileProps> = ({
+  className,
+  onProfileClick,
+  onSettingClick,
+  onLogoutClick,
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const menuItems: ProfileMenuItem[] = [
+    {
+      id: "profile",
+      label: "Profile",
+      onClick: onProfileClick,
+    },
+    {
+      id: "setting",
+      label: "Setting",
+      onClick: onSettingClick,
+    },
+    {
+      id: "logout",
+      label: "Log out",
+      onClick: onLogoutClick,
+    },
+  ];
+
+  const handleItemClick = (item: ProfileMenuItem) => {
+    if (item.onClick) {
+      item.onClick();
+    }
+    setIsOpen(false);
+  };
+
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen);
+  };
+
+  return (
+    <div className={cn("relative", className)}>
+      {/* Profile Picture/Avatar Button */}
+      <button
+        onClick={toggleDropdown}
+        className={cn(
+          "w-12 h-12 rounded-full bg-white border-4 border-black",
+          "flex items-center justify-center",
+          "hover:scale-105 transition-transform duration-300 ease-out",
+          "focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
+        )}
+        aria-label="User profile menu"
+        aria-expanded={isOpen}
+      >
+        {/* Placeholder for user avatar - could be an image or initials */}
+        <div className="w-6 h-6 rounded-full bg-gray-500 flex items-center justify-center">
+          <span className="text-white text-sm font-medium">U</span>
+        </div>
+      </button>
+
+      {/* Dropdown Menu */}
+      {isOpen && (
+        <div
+          className={cn(
+            "absolute right-0 top-full mt-2 z-50",
+            "bg-white border border-black rounded-[30px]",
+            "shadow-[0px_4px_8px_rgba(0,0,0,0.25)]",
+            "min-w-[240px]",
+            "animate-in fade-in-0 zoom-in-95 duration-200"
+          )}
+        >
+          {/* Menu Items */}
+          <div className="overflow-hidden rounded-[30px]">
+            {menuItems.map((item, index) => (
+              <button
+                key={item.id}
+                onClick={() => handleItemClick(item)}
+                className={cn(
+                  "w-full px-8 py-4 text-left",
+                  "font-['Rhodium_Libre'] text-[24px] font-normal text-black",
+                  "transition-all duration-200 ease-out",
+                  "hover:bg-[#D9D9D9]",
+                  "focus:outline-none focus:bg-[#D9D9D9]",
+                  // Add border between items (except last)
+                  index < menuItems.length - 1 && "border-b border-black"
+                )}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Overlay to close dropdown when clicking outside */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-40"
+          onClick={() => setIsOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+    </div>
+  );
+};
+
+export default UserProfile;
