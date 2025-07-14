@@ -4,7 +4,7 @@ from extensions import db, pwd_context, ma
 from app.models import Account
 from app.schemas.login_schema import login_schema
 
-auth_bp = Blueprint('auth', __name__)
+auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 @auth_bp.route('/login', methods=['POST'])
 def login():

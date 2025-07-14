@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
-from models import staff_checkin, db, class_
+from ..models import staff_checkin, class_
+from extensions import db
 import datetime
 import re
 
@@ -53,7 +54,8 @@ def checkin():
         today_start_time = []
 
         for item in session:
-            # Sample schedule format: "Mon - Wed, 09:00 - 10:30"
+            # Sample schedule format: "Mon - Wed, 09:00 - 10:30"   
+            #Please follow the following format
             matched = re.search(r"(\w{3}) - (\w{3}), (\d{1,2}:\d{2}) - (\d{1,2}:\d{2})", item.schedule)
             if matched:
                 first_day_of_week = matched.group(1)
