@@ -2,6 +2,8 @@
 // import AuthRoutes from './routes/AuthRoutes';
 // import HomescreenPage from './pages/homescreen/HomescreenPage';
 import ExamplePage from './pages/ExamplePage';
+import ClassScreen from './pages/ClassScreen';
+import ClassScreenTest from './pages/ClassScreenTest';
 
 // function App() {
 //   return (
@@ -27,7 +29,8 @@ import ExamplePage from './pages/ExamplePage';
 function App() {
   return (
     <div>
-      <ExamplePage />
+      {/* <ExamplePage /> */}
+      <ClassScreen classId="CL001" />
     </div>
   );
 }

@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
 @custom-variant dark (&:is(.dark *));
 
@@ -119,28 +120,36 @@
   }
 }
 
-/* Custom scrollbar styles for homescreen class list */
+/* Font family utilities */
+.font-roboto {
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Custom scrollbar styles matching Figma design */
 .custom-scrollbar::-webkit-scrollbar {
-  width: 8px;
+  width: 12px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
+  background: #FFFFFF;
   border-radius: 40px;
   border: 3px solid #C2E8FA;
+  margin: 4px 0;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(217, 217, 217, 0.8);
+  background: rgba(217, 217, 217, 0.5);
   border-radius: 40px;
+  border: 1px solid transparent;
+  background-clip: padding-box;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(217, 217, 217, 1);
+  background: rgba(217, 217, 217, 0.8);
 }
 
 /* Firefox scrollbar */
 .custom-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: rgba(217, 217, 217, 0.8) transparent;
+  scrollbar-color: rgba(217, 217, 217, 0.5) #FFFFFF;
 }

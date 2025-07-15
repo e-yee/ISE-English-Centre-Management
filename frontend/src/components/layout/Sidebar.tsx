@@ -86,7 +86,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className }) => {
         <button
           onClick={toggleExpanded}
           className={cn(
-            "absolute hover:opacity-80 transition-opacity",
+            "absolute hover:opacity-80 transition-opacity select-none",
             isExpanded ? "right-4 top-2 w-10 h-10" : "left-1/2 transform -translate-x-1/2 top-2 w-8 h-8"
           )}
           aria-label={isExpanded ? "Collapse sidebar" : "Expand sidebar"}
@@ -95,7 +95,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className }) => {
             src="/src/assets/sidebar/back-button.svg"
             alt="Back button"
             className={cn(
-              "w-full h-full transition-transform duration-300",
+              "w-full h-full transition-transform duration-300 select-none pointer-events-none",
               !isExpanded && "rotate-180"
             )}
           />
@@ -114,7 +114,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className }) => {
                 key={item.id}
                 onClick={() => handleItemClick(item.id)}
                 className={cn(
-                  "group cursor-pointer transition-all duration-300 ease-out",
+                  "group cursor-pointer transition-all duration-300 ease-out select-none",
                   "transform-gpu", // Enable hardware acceleration for smoother animations
                   isExpanded
                     ? "bg-white rounded-2xl border-b border-black shadow-[0px_4px_4px_rgba(0,0,0,0.25)] hover:scale-105 hover:shadow-[0px_8px_12px_rgba(0,0,0,0.4)] flex items-center gap-3 p-3"
@@ -126,18 +126,18 @@ const Sidebar: React.FC<SidebarProps> = ({ className }) => {
                 {/* Icon */}
                 <div className={cn(
                   isExpanded ? "h-16 w-16" : "h-8 w-8",
-                  "flex-shrink-0 transition-transform duration-300 ease-out group-hover:scale-105"
+                  "flex-shrink-0 transition-transform duration-300 ease-out group-hover:scale-105 select-none"
                 )}>
                   <img
                     src={item.icon}
                     alt={`${item.title} icon`}
-                    className="w-full h-full object-contain"
+                    className="w-full h-full object-contain select-none pointer-events-none"
                   />
                 </div>
 
                 {/* Label - only show when expanded */}
                 {isExpanded && (
-                  <span className="text-lg font-normal text-black font-['Rhodium_Libre'] text-center">
+                  <span className="text-lg font-normal text-black font-['Rhodium_Libre'] text-center select-none">
                     {item.title}
                   </span>
                 )}

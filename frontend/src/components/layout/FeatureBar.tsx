@@ -103,7 +103,7 @@ const FeatureBar: React.FC<FeatureBarProps> = ({ className }) => {
       className={cn(
         // Main container with black border, no shadow
         'bg-white rounded-[30px] border-2 border-black',
-        'w-full transition-all duration-300 ease-in-out h-full',
+        'w-full transition-all duration-300 ease-in-out h-full select-none cursor-pointer',
         // Remove max-width constraint and mx-auto to match ClassList positioning
         className
       )}
@@ -127,7 +127,7 @@ const FeatureBar: React.FC<FeatureBarProps> = ({ className }) => {
                 'cursor-pointer transition-all duration-300 ease-out',
                 'hover:scale-110',
                 // Active state
-                activeFeature === item.id && 'scale-125',
+                activeFeature === item.id,
               )}
               title={item.title}
             >
