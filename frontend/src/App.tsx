@@ -1,6 +1,7 @@
 // import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 // import AuthRoutes from './routes/AuthRoutes';
-import HomescreenPage from './pages/homescreen/HomescreenPage';
+// import HomescreenPage from './pages/homescreen/HomescreenPage';
+import ExamplePage from './pages/ExamplePage';
 
 // function App() {
 //   return (
@@ -26,7 +27,7 @@ import HomescreenPage from './pages/homescreen/HomescreenPage';
 function App() {
   return (
     <div>
-      <HomescreenPage /> 
+      <ExamplePage />
     </div>
   );
 }

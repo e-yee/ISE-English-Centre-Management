@@ -74,7 +74,7 @@ const Header: React.FC<HeaderProps> = ({ isRegistered = false }) => {
             alt="Theme switch"
             className={cn(
               "absolute top-1/2 transform -translate-y-1/2 w-6 h-6 transition-transform duration-200",
-              isDarkMode ? "translate-x-8" : "translate-x-1"
+              isDarkMode ? "translate-x-8" : "translate-x-2"
             )}
           />
         </button>

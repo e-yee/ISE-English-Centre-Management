@@ -76,7 +76,7 @@ const HomescreenPageContent: React.FC<HomescreenPageProps> = ({ className }) => 
                     <img
                       src={selectedStatusOption.icon}
                       alt={selectedStatusOption.label}
-                      className="w-full h-full"
+                      className="w-50 h-full"
                     />
                   )}
                   <svg
