@@ -45,37 +45,33 @@ const ClassScreenContent: React.FC<ClassScreenProps> = ({ classId = 'CL001', cla
         )}>
           {/* Feature Bar Container - Fixed height */}
           <div className="flex-shrink-0 pt-4 pb-2">
-            {/* Container to align with StudentList */}
-            <div className={cn(
-              "flex justify-center transition-all duration-300 ease-in-out",
-              isExpanded ? "pl-8" : "pl-4"
-            )}>
-              {/* Feature Bar - Positioned to align with left side of StudentList */}
-              <div className="max-w-6xl w-full flex justify-start">
-                <FeatureBar className={cn(
-                  "transition-all duration-300 ease-in-out",
-                  isExpanded ? "ml-0" : "ml-4"
-                )} />
+            <div className="flex-1 flex overflow-hidden">
+              {/* Left padding spacer - reduced when sidebar is compressed */}
+              <div className={cn(
+                "flex-shrink-0 transition-all duration-300 ease-in-out",
+                isExpanded ? "w-8" : "w-2"
+              )}></div>
+              {/* Feature Bar - extends to right edge, expands from left */}
+              <div className="flex-1 overflow-hidden">
+                <FeatureBar className="w-full h-[120px]" />
               </div>
             </div>
           </div>
 
           {/* Class Information Container - Fixed height */}
-          <div className="flex-shrink-0 pb-2">
-            {/* Container to align with StudentList */}
-            <div className={cn(
-              "flex justify-center transition-all duration-300 ease-in-out",
-              isExpanded ? "pl-8" : "pl-4"
-            )}>
-              {/* Class Info - Positioned to align with left side of StudentList */}
-              <div className="max-w-6xl w-full flex justify-start">
+          <div className="flex-shrink-0">
+            <div className="flex-1 flex overflow-hidden">
+              {/* Left padding spacer - reduced when sidebar is compressed */}
+              <div className={cn(
+                "flex-shrink-0 transition-all duration-300 ease-in-out",
+                isExpanded ? "w-8" : "w-2"
+              )}></div>
+              {/* Class Info - extends to right edge, expands from left */}
+              <div className="flex-1 overflow-hidden">
                 <ClassInfo
                   classData={classData}
                   studentCount={studentCount}
-                  className={cn(
-                    "transition-all duration-300 ease-in-out w-full",
-                    isExpanded ? "ml-0" : "ml-4"
-                  )}
+                  className="w-full"
                 />
               </div>
             </div>
@@ -83,23 +79,18 @@ const ClassScreenContent: React.FC<ClassScreenProps> = ({ classId = 'CL001', cla
 
           {/* Student List Container - Flexible height to fill remaining space */}
           <div className="flex-1 flex overflow-hidden pb-2">
-            {/* Left padding spacer - matches feature bar alignment */}
+            {/* Left padding spacer - reduced when sidebar is compressed */}
             <div className={cn(
               "flex-shrink-0 transition-all duration-300 ease-in-out",
-              isExpanded ? "w-8" : "w-4"
+              isExpanded ? "w-8" : "w-2"
             )}></div>
 
-            {/* Student List - extends to right edge, matches FeatureBar width */}
+            {/* Student List - extends to right edge, expands from left */}
             <div className="flex-1 overflow-hidden">
-              <div className="max-w-6xl mx-auto h-full">
-                <StudentList
-                  students={students}
-                  className={cn(
-                    "transition-all duration-300 ease-in-out h-full",
-                    isExpanded ? "mx-0" : "mx-4"
-                  )}
-                />
-              </div>
+              <StudentList
+                students={students}
+                className="w-full h-full"
+              />
             </div>
           </div>
         </div>

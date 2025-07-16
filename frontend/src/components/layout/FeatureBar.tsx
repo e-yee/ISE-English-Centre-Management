@@ -97,14 +97,13 @@ const FeatureBar: React.FC<FeatureBarProps> = ({ className }) => {
   );
   */
 
-  // NEW LAYOUT - Same size as ClassList with 5 feature icons
+  // NEW LAYOUT - Expands like ClassList with responsive icon positioning
   return (
     <div
       className={cn(
         // Main container with black border, no shadow
         'bg-white rounded-[30px] border-2 border-black',
         'w-full transition-all duration-300 ease-in-out h-full select-none cursor-pointer',
-        // Remove max-width constraint and mx-auto to match ClassList positioning
         className
       )}
     >
@@ -114,18 +113,19 @@ const FeatureBar: React.FC<FeatureBarProps> = ({ className }) => {
         // Match ClassList padding logic exactly
         isExpanded ? "p-6" : "p-4"
       )}>
-        {/* Feature Icons Container - Distributed across full width */}
+        {/* Feature Icons Container - Distributed across full width with responsive sizing */}
         <div className="h-full flex items-center justify-between">
           {featureItems.map((item) => (
             <div
               key={item.id}
               onClick={() => handleFeatureClick(item.id)}
               className={cn(
-                // Icon container - no background, just the icon
+                // Icon container - enlarge when sidebar is compressed
                 'flex items-center justify-center',
-                'w-[120px] h-[120px]', // Enlarged icons for better fitting
                 'cursor-pointer transition-all duration-300 ease-out',
                 'hover:scale-110',
+                // Icon sizing - larger when sidebar compressed, smaller when expanded
+                isExpanded ? 'w-[100px] h-[100px]' : 'w-[130px] h-[130px]',
                 // Active state
                 activeFeature === item.id,
               )}

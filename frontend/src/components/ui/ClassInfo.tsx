@@ -43,7 +43,7 @@ const ClassInfo: React.FC<ClassInfoProps> = ({ classData, studentCount, classNam
       </div>
 
       {/* Right Side - Date Information */}
-      <div className="flex flex-col items-end space-y-1">
+      <div className="flex flex-col items-end space-y-1 mr-2">
         <p className="text-[30px] font-normal text-[rgba(0,0,0,0.5)] leading-[1.33em] font-roboto">
           Start date: {classData.startDate}
         </p>

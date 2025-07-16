@@ -4,6 +4,7 @@
 import ExamplePage from './pages/ExamplePage';
 import ClassScreen from './pages/ClassScreen';
 import ClassScreenTest from './pages/ClassScreenTest';
+import HomescreenPage from './pages/homescreen/Homescreen';
 
 // function App() {
 //   return (

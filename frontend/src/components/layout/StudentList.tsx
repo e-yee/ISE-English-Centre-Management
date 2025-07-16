@@ -17,10 +17,10 @@ const StudentList: React.FC<StudentListProps> = ({ students, className }) => {
       className={cn(
         // Main container with white background and inset shadow (matching ClassList)
         'bg-white shadow-[inset_5px_4px_4px_0px_rgba(0,0,0,0.25)] relative', // Inset shadow as per Figma
-        'w-full max-w-6xl mx-auto transition-all duration-300 ease-in-out',
+        'w-full transition-all duration-300 ease-in-out',
         // Use full height and enable scrolling
         'h-full overflow-y-auto custom-scrollbar',
-        // Adjust padding based on sidebar state (matching ClassList)
+        // Adjust padding based on sidebar state (matching homescreen ClassList behavior)
         isExpanded ? 'p-6' : 'p-4',
         className
       )}
@@ -35,8 +35,6 @@ const StudentList: React.FC<StudentListProps> = ({ students, className }) => {
           />
         ))}
       </div>
-
-
     </div>
   );
 };
