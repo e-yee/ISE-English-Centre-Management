@@ -1,4 +1,3 @@
--- Table Definitions
 CREATE TABLE
     employee (
         id VARCHAR(10),
