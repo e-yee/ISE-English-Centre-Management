@@ -3,7 +3,7 @@ ALTER TABLE employee ADD CONSTRAINT CHK_employee_role CHECK (
 );
 
 ALTER TABLE employee ADD CONSTRAINT CHK_employee_status CHECK (
-    (role = 'Teacher' AND teacher_status IN ('Available', 'Unavailable'))
+    (role = 'Teacher' AND teacher_status IS NOT NULL AND teacher_status IN ('Available', 'Unavailable'))
     OR (role <> 'Teacher' AND teacher_status IS NULL)
 );
 

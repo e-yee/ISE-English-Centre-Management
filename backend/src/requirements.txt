@@ -19,6 +19,7 @@ MarkupSafe==3.0.2
 marshmallow==4.0.0
 marshmallow-sqlalchemy==1.4.2
 more-itertools==10.7.0
+mysql-connector-python==9.3.0
 passlib==1.7.4
 pycparser==2.22
 PyJWT==2.10.1
