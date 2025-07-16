@@ -6,7 +6,7 @@ from marshmallow import ValidationError
 
 account_bp = Blueprint('account_bp', __name__, url_prefix='/account')
 
-@account_bp.route('/add', methods=['POST'])
+@account_bp.post('/add')
 def add_account():
     try:
         json_data = request.get_json()        
@@ -23,20 +23,25 @@ def add_account():
         
         return account_schema.jsonify(account), 201
     
-    except ValidationError as err:
-        return jsonify({"errors": err.messages}), 400
+    except ValidationError as ve:
+        return jsonify({"errors": ve.messages}), 400
     
-@account_bp.route('/accounts', methods=['GET'])
-def get_accounts():
+@account_bp.get('/')
+def get_all():
     accounts = db.session.query(Account).all()
     return jsonify(accounts_schema.dump(accounts)), 200
 
-@account_bp.route('/account/<string:id>', methods=['GET'])
-def get_account(id):
-    account = db.session.get(Account, id)
+@account_bp.get('/search')
+def get_account():
+    try:
+        id = request.args.get('id')
+        account = db.session.get(Account, id)
+        
+        if not account:
+            return jsonify({"message": "Account not found"}), 400
+        
+        return jsonify({"Employee ID": account.employee_id}), 200
     
-    if not account:
-        return jsonify({"message": "Account not found"}), 400
-    
-    return jsonify({"Employee ID": account.employee_id}), 200
+    except Exception as e:
+        return jsonify({'message': 'Unexpected error occured', 'error': str(e)}), 500
     

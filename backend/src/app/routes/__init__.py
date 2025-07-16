@@ -5,8 +5,8 @@ from .manager.dashboard_route import dashboard_bp
 from .checkin_route import checkin_bp
 from .homepage_route import homepage_bp
 from app.auth.auth import auth_bp
-from app.auth.logout import logout_bp
 from .account_route import account_bp
+from .employee_route import employee_bp
 
 def register_blueprints(app):
     all_blueprints = [
@@ -16,9 +16,9 @@ def register_blueprints(app):
         contract_bp, 
         checkin_bp, 
         dashboard_bp, 
-        evaluation_bp, 
-        homepage_bp, 
-        logout_bp
+        evaluation_bp,
+        employee_bp, 
+        homepage_bp
     ]
     
     for bp in all_blueprints:

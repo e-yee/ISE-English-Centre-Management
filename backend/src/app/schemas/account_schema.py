@@ -1,4 +1,3 @@
-from app.models import Account
 from extensions import ma
 from marshmallow import fields
 

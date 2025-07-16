@@ -6,7 +6,7 @@ import re
 
 checkin_bp = Blueprint('checkin_bp', __name__, url_prefix='/checkin')
 
-@checkin_bp.route('/in', methods=['POST'])
+@checkin_bp.post('/in')
 def checkin():
     data = request.get_json()
 
@@ -93,7 +93,7 @@ def checkin():
 
     return jsonify({'message': 'Check-in successful', 'checkin_id': checkin_record.id}), 201
 
-@checkin_bp.route('/out', methods=['POST'])
+@checkin_bp.post('/out')
 def checkout():
     now = datetime.datetime.now()
     if now.time() < datetime.time(20, 15, 0):
