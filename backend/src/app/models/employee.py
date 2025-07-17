@@ -1,11 +1,11 @@
 from typing import List, Optional, TYPE_CHECKING
 from extensions import db
-from sqlalchemy import CheckConstraint, Index, String
+from sqlalchemy import CheckConstraint, String
 from sqlalchemy.dialects.mysql import VARCHAR
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 if TYPE_CHECKING:
-    from app.models import Account, Class, Issue, LeaveRequest, StaffCheckin, ClassSession, Contract, Evaluation, MakeupClass
+    from app.models import Account, Course, Issue, LeaveRequest, StaffCheckin, Class, Contract, Evaluation, MakeupClass
     
 class Employee(db.Model):
     __tablename__ = 'employee'
@@ -25,12 +25,12 @@ class Employee(db.Model):
     teacher_status: Mapped[Optional[str]] = mapped_column(String(20))
 
     account: Mapped['Account'] = relationship('Account', back_populates='employee', uselist=False)
-    class_: Mapped[List['Class']] = relationship('Class', back_populates='teacher')
+    course: Mapped[List['Course']] = relationship('Course', back_populates='learning_advisor')
     issue: Mapped[List['Issue']] = relationship('Issue', back_populates='teacher')
     leave_request: Mapped[List['LeaveRequest']] = relationship('LeaveRequest', foreign_keys='[LeaveRequest.employee_id]', back_populates='employee')
     leave_request_: Mapped[List['LeaveRequest']] = relationship('LeaveRequest', foreign_keys='[LeaveRequest.substitute_id]', back_populates='substitute')
     staff_checkin: Mapped[List['StaffCheckin']] = relationship('StaffCheckin', back_populates='employee')
-    class_session: Mapped[List['ClassSession']] = relationship('ClassSession', back_populates='teacher')
+    class_: Mapped[List['Class']] = relationship('Class', back_populates='teacher')
     contract: Mapped[List['Contract']] = relationship('Contract', back_populates='employee')
     evaluation: Mapped[List['Evaluation']] = relationship('Evaluation', back_populates='teacher')
     makeup_class: Mapped[List['MakeupClass']] = relationship('MakeupClass', back_populates='teacher')

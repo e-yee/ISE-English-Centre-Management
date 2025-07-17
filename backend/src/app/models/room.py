@@ -4,7 +4,7 @@ from sqlalchemy import CheckConstraint, String, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 if TYPE_CHECKING:
-    from app.models import Base, ClassSession, Issue, MakeupClass
+    from app.models import Class, Issue, MakeupClass
 
 class Room(db.Model):
     __tablename__ = 'room'
@@ -17,5 +17,5 @@ class Room(db.Model):
     status: Mapped[str] = mapped_column(String(20), nullable=False, server_default=text("'Free'"))
 
     issue: Mapped[List['Issue']] = relationship('Issue', back_populates='room')
-    class_session: Mapped[List['ClassSession']] = relationship('ClassSession', back_populates='room')
+    class_: Mapped[List['Class']] = relationship('Class', back_populates='room')
     makeup_class: Mapped[List['MakeupClass']] = relationship('MakeupClass', back_populates='room')

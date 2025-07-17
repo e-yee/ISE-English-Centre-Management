@@ -5,7 +5,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 import datetime
 
 if TYPE_CHECKING:
-    from app.models import Class, Employee, Enrolment, Student
+    from app.models import Course, Employee, Enrolment, Student
 
 class Evaluation(db.Model):
     __tablename__ = 'evaluation'
@@ -18,20 +18,20 @@ class Evaluation(db.Model):
             )", name='CHK_evaluation_type'
         ),
         ForeignKeyConstraint(
-            ['class_id', 'class_date'], 
-            ['class.id', 'class.created_date'], name='FK_evaluation_class'
+            ['course_id', 'course_date'], 
+            ['course.id', 'course.created_date'], name='FK_evaluation_course'
         ),
         ForeignKeyConstraint(['enrolment_id'], ['enrolment.id'], name='enrolment'),
         ForeignKeyConstraint(['student_id'], ['student.id'], name='FK_evaluation_student'),
         ForeignKeyConstraint(['teacher_id'], ['employee.id'], name='FK_evaluation_employee'),
-        Index('FK_evaluation_class', 'class_id', 'class_date'),
+        Index('FK_evaluation_course', 'course_id', 'course_date'),
         Index('FK_evaluation_employee', 'teacher_id'),
         Index('enrolment', 'enrolment_id')
     )
 
     student_id: Mapped[str] = mapped_column(String(10), primary_key=True)
-    class_id: Mapped[str] = mapped_column(String(10), primary_key=True)
-    class_date: Mapped[datetime.date] = mapped_column(Date, primary_key=True)
+    course_id: Mapped[str] = mapped_column(String(10), primary_key=True)
+    course_date: Mapped[datetime.date] = mapped_column(Date, primary_key=True)
     assessment_type: Mapped[str] = mapped_column(String(200), primary_key=True)
     teacher_id: Mapped[str] = mapped_column(String(10), nullable=False)
     grade: Mapped[str] = mapped_column(String(2), nullable=False)
@@ -39,7 +39,7 @@ class Evaluation(db.Model):
     enrolment_id: Mapped[str] = mapped_column(String(10), nullable=False)
     evaluation_date: Mapped[datetime.date] = mapped_column(Date, nullable=False)
 
-    class_: Mapped['Class'] = relationship('Class', back_populates='evaluation', uselist=False)
+    course: Mapped['Course'] = relationship('Course', back_populates='evaluation', uselist=False)
     enrolment: Mapped['Enrolment'] = relationship('Enrolment', back_populates='evaluation', uselist=False)
     student: Mapped['Student'] = relationship('Student', back_populates='evaluation', uselist=False)
     teacher: Mapped['Employee'] = relationship('Employee', back_populates='evaluation', uselist=False)
