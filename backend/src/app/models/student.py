@@ -12,7 +12,7 @@ class Student(db.Model):
     __tablename__ = 'student'
 
     id: Mapped[str] = mapped_column(String(10), primary_key=True)
-    full_name: Mapped[str] = mapped_column(VARCHAR(2000, collation="utf8mb4_vi_ci"), nullable=False)
+    full_name: Mapped[str] = mapped_column(VARCHAR(2000, collation="utf8mb4_0900_ai_ci"), nullable=False)
     contact_info: Mapped[str] = mapped_column(String(200), nullable=False)
     created_date: Mapped[datetime.date] = mapped_column(Date, nullable=False, server_default=text('curdate()'))
     date_of_birth: Mapped[Optional[datetime.date]] = mapped_column(Date, nullable=False)

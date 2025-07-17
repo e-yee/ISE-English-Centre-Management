@@ -18,7 +18,7 @@ class Employee(db.Model):
     )
 
     id: Mapped[str] = mapped_column(String(10), primary_key=True)
-    full_name: Mapped[str] = mapped_column(VARCHAR(2000, collation="utf8mb4_vi_ci"), nullable=False)
+    full_name: Mapped[str] = mapped_column(VARCHAR(2000, collation="utf8mb4_0900_ai_ci"), nullable=False)
     email: Mapped[str] = mapped_column(String(320), nullable=False, unique=True)
     role: Mapped[str] = mapped_column(String(20), nullable=False)
     phone_number: Mapped[Optional[str]] = mapped_column(String(20), unique=True)

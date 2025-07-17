@@ -54,13 +54,13 @@ def refresh_token():
 @auth_bp.delete('/logout')
 @jwt_required()
 def logout():
-    jti = get_jwt()["jti"]
+    jti = get_jwt()['jti']
     db.session.add(TokenBlocklist(jti=jti))
     db.session.commit()
-    return jsonify({"message": "Successfully logged out!"}), HTTPStatus.OK
+    return jsonify({'message': 'Successfully logged out!'}), HTTPStatus.OK
 
 
 @jwt.token_in_blocklist_loader
 def check_token_in_blocklist(jwt_header, jwt_payload):
-    jti = jwt_payload["jti"]
+    jti = jwt_payload['jti']
     return db.session.query(TokenBlocklist).filter_by(jti=jti).scalar() is not None
