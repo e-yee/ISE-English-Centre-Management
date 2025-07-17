@@ -43,7 +43,7 @@ ALTER TABLE course ADD CONSTRAINT FK_course_employee
     FOREIGN KEY (learning_advisor_id) REFERENCES employee(id);
 
 ALTER TABLE contract ADD CONSTRAINT CHK_contract_status CHECK (
-    payment_status IN ('In Progress', 'Pa_id')
+    payment_status IN ('In Progress', 'Paid')
 );
 
 ALTER TABLE contract ADD CONSTRAINT CHK_contract_date CHECK (

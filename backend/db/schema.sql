@@ -38,7 +38,7 @@ CREATE TABLE
 CREATE TABLE
     account (
         id VARCHAR(10),
-        employee_id VARCHAR(10) NOT NULL,
+        employee_id VARCHAR(10) NOT NULL, UNIQUE(employee_id),
         username VARCHAR(200) NOT NULL, UNIQUE(username),
         password_hash VARCHAR(200) NOT NULL,
         created_date DATE NOT NULL DEFAULT (CURRENT_DATE),
@@ -50,7 +50,7 @@ CREATE TABLE
     student (
         id VARCHAR(10),
         full_name NVARCHAR (2000) NOT NULL,
-        date_of_birth DATE,
+        date_of_birth DATE NOT NULL,
         contact_info VARCHAR(200) NOT NULL,
         created_date DATE NOT NULL DEFAULT (CURRENT_DATE),
 
@@ -68,7 +68,7 @@ CREATE TABLE
         schedule VARCHAR(200) NOT NULL,
         learning_advisor_id VARCHAR(10) NOT NULL,
         fee INT NOT NULL,
-        prerequisites VARCHAR(20) NOT NULL,
+        prerequisites VARCHAR(200) NOT NULL,
         created_date DATE,
 
         PRIMARY KEY (id, created_date)
@@ -183,7 +183,7 @@ CREATE TABLE
 CREATE TABLE
     token_blocklist (
         id INT AUTO_INCREMENT,
-        jti VARCHAR(36) NOT NULL,
+        jti VARCHAR(36) NOT NULL, UNIQUE(jti),
         created_date DATE NOT NULL DEFAULT(CURRENT_DATE),
 
         PRIMARY KEY(id)

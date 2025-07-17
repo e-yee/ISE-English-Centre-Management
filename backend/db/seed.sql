@@ -1,10 +1,7 @@
--- Sample or initial data --
-/*
--- Employee Samples
-employee('EM001', 'Nguyễn Minh Khôi', 'nmkhoi069@gmail.com', '0901298756', 'Teacher', 'Available');
-employee('EM002', 'Hà Thư Hoàng', 'hthoang367@gmail.com', NULL, 'Learning Advisor', NULL);
-employee('EM003', 'Trương Công Thiên Phú', 'tctphu455@gmail.com', '0909088888', 'Manager', NULL);
-employee('EM004', 'Võ Trần Quốc Duy', 'vtqduy359@gmail.com', '0909011111', 'Learning Advisor', NULL);
+INSERT INTO employee VALUES('EM001', 'Nguyễn Minh Khôi', 'nmkhoi069@gmail.com', '0901298756', 'Teacher', 'Available');
+INSERT INTO employee VALUES('EM002', 'Hà Thư Hoàng', 'hthoang367@gmail.com', NULL, 'Learning Advisor', NULL);
+INSERT INTO employee VALUES('EM003', 'Trương Công Thiên Phú', 'tctphu455@gmail.com', '0909088888', 'Manager', NULL);
+INSERT INTO employee VALUES('EM004', 'Võ Trần Quốc Duy', 'vtqduy359@gmail.com', '0909011111', 'Learning Advisor', NULL);
 
 ------------------------
 
@@ -20,22 +17,17 @@ leave_request('LR001', 'EM001', 'EM004', '2025-07-04', '2025-07-07', 'Sick', 'Ap
 
 ------------------------
 
--- Account Samples
-account('ACC001', 'EM001', 'nmkhoi069', '123456', '2025-06-20');
-account('ACC002', 'EM002', 'hthoang367', '123456', '2025-06-20');
-account('ACC003', 'EM003', 'tctphu455', '123456', '2025-06-20');
-
-------------------------
-
 -- Student Samples
-student('ST001', 'Võ Trần Quốc Duy', '2005-06-27', '0900123468 - Mom', '2025-07-01');
-student('ST002', 'Võ Minh Tuấn', '2005-04-30', '0904143468 - Dad', '2025-07-01');
+INSERT INTO student VALUES('ST001', 'Võ Quốc Triệu', '2005-06-27', '0900123468 - Mom', '2025-07-17');
+INSERT INTO student VALUES('ST002', 'Võ Minh Tuấn', '2005-04-30', '0904143468 - Dad', '2025-07-17');
 
 ------------------------
 
--- Class Samples
-class('CL001', '7th Grade Math', 'Math for 7th grade', 6, '2025-08-07', '2026-02-07', 'Mon - Tue, 06:45 - 09:45', 'EM001', 32000000, 'Passed 6th Grade', '2025-07-04');
-class('CL002', 'Destination B2', 'Destination B2', 6, '2025-08-07', '2026-02-07', 'Wed - Thu, 06:45 - 09:45', 'EM004', 32000000, 'Passed Destination B1', '2025-07-04');
+-- Course Samples
+INSERT INTO course(id, name, description, duration, start_date, schedule, learning_advisor_id, fee, prerequisites, created_date) 
+    VALUES('C001', '7th Grade Math', 'Math for 7th grade', 6, '2025-08-07', 'Mon - Tue, 06:45 - 09:45', 'EM002', 32000000, 'Passed 6th Grade', '2025-07-04');
+INSERT INTO course(id, name, description, duration, start_date, schedule, learning_advisor_id, fee, prerequisites, created_date) 
+    VALUES('C002', 'Destination B2', 'Destination B2', 6, '2025-08-07', 'Wed - Thu, 06:45 - 09:45', 'EM004', 32000000, 'Passed Destination B1', '2025-07-04');
 
 ------------------------
 
