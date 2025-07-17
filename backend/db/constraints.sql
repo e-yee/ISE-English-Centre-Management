@@ -39,8 +39,8 @@ ALTER TABLE leave_request ADD CONSTRAINT FK_substitute_id_employee
 ALTER TABLE account ADD CONSTRAINT FK_account_employee
     FOREIGN KEY (employee_id) REFERENCES employee(id);
 
-ALTER TABLE class ADD CONSTRAINT FK_class_employee
-    FOREIGN KEY (teacher_id) REFERENCES employee(id);
+ALTER TABLE course ADD CONSTRAINT FK_course_employee
+    FOREIGN KEY (learning_advisor_id) REFERENCES employee(id);
 
 ALTER TABLE contract ADD CONSTRAINT CHK_contract_status CHECK (
     payment_status IN ('In Progress', 'Pa_id')
@@ -56,8 +56,8 @@ ALTER TABLE contract ADD CONSTRAINT FK_contract_student
 ALTER TABLE contract ADD CONSTRAINT FK_contract_employee
     FOREIGN KEY (employee_id) REFERENCES employee(id);
 
-ALTER TABLE contract ADD CONSTRAINT FK_contract_class
-    FOREIGN KEY (class_id, class_date) REFERENCES class(id, created_date);
+ALTER TABLE contract ADD CONSTRAINT FK_contract_course
+    FOREIGN KEY (course_id, course_date) REFERENCES course(id, created_date);
 
 ALTER TABLE enrolment ADD CONSTRAINT FK_enrolment_contract
     FOREIGN KEY (contract_id) REFERENCES contract(id);
@@ -65,24 +65,24 @@ ALTER TABLE enrolment ADD CONSTRAINT FK_enrolment_contract
 ALTER TABLE enrolment ADD CONSTRAINT FK_enrolment_student
     FOREIGN KEY (student_id) REFERENCES student(id);
 
-ALTER TABLE enrolment ADD CONSTRAINT FK_enrolment_class
-    FOREIGN KEY (class_id, class_date) REFERENCES class(id, created_date);
+ALTER TABLE enrolment ADD CONSTRAINT FK_enrolment_course
+    FOREIGN KEY (course_id, course_date) REFERENCES course(id, created_date);
 
 ALTER TABLE room ADD CONSTRAINT CHK_room_status CHECK (
     status IN ('Free', 'Occupied', 'Maintenance')
 );
 
-ALTER TABLE class_session ADD CONSTRAINT CHK_class_session_term CHECK (
+ALTER TABLE class ADD CONSTRAINT CHK_class_term CHECK (
     term IN (1, 2)
 );
 
-ALTER TABLE class_session ADD CONSTRAINT FK_class_session_class
-    FOREIGN KEY (class_id, class_date) REFERENCES class(id, created_date);
+ALTER TABLE class ADD CONSTRAINT FK_class_course
+    FOREIGN KEY (course_id, course_date) REFERENCES course(id, created_date);
 
-ALTER TABLE class_session ADD CONSTRAINT FK_class_session_employee
+ALTER TABLE class ADD CONSTRAINT FK_class_employee
     FOREIGN KEY (teacher_id) REFERENCES employee(id);
 
-ALTER TABLE class_session ADD CONSTRAINT FK_class_session_room
+ALTER TABLE class ADD CONSTRAINT FK_class_room
     FOREIGN KEY (room_id) REFERENCES room(id);
 
 ALTER TABLE student_attendance ADD CONSTRAINT CHK_student_attendance_status CHECK (
@@ -94,13 +94,13 @@ ALTER TABLE student_attendance ADD CONSTRAINT FK_student_attendance_student
 ALTER TABLE student_attendance ADD CONSTRAINT FK_student_attendance_enrolment
     FOREIGN KEY (enrolment_id) REFERENCES enrolment(id);
 
-ALTER TABLE student_attendance ADD CONSTRAINT FK_student_attendance_class_session
-    FOREIGN KEY (class_session_id, class_id, class_date, term) 
-    REFERENCES class_session(id, class_id, class_date, term);
+ALTER TABLE student_attendance ADD CONSTRAINT FK_student_attendance_class
+    FOREIGN KEY (class_id, course_id, course_date, term) 
+    REFERENCES class(id, course_id, course_date, term);
 
 ALTER TABLE makeup_class ADD CONSTRAINT FK_makeup_class_student_attendance
-    FOREIGN KEY (student_id, class_session_id, class_id, class_date, term) 
-    REFERENCES student_attendance(student_id, class_session_id, class_id, class_date, term);
+    FOREIGN KEY (student_id, class_id, course_id, course_date, term) 
+    REFERENCES student_attendance(student_id, class_id, course_id, course_date, term);
 
 ALTER TABLE makeup_class ADD CONSTRAINT FK_makeup_class_employee
     FOREIGN KEY (teacher_id) REFERENCES employee(id);
@@ -119,8 +119,8 @@ ALTER TABLE evaluation ADD CONSTRAINT CHK_evaluation_type CHECK (
 ALTER TABLE evaluation ADD CONSTRAINT FK_evaluation_student
     FOREIGN KEY (student_id) REFERENCES student(id);
 
-ALTER TABLE evaluation ADD CONSTRAINT FK_evaluation_class
-    FOREIGN KEY (class_id, class_date) REFERENCES class(id, created_date);
+ALTER TABLE evaluation ADD CONSTRAINT FK_evaluation_course
+    FOREIGN KEY (course_id, course_date) REFERENCES course(id, created_date);
 
 ALTER TABLE evaluation ADD CONSTRAINT FK_evaluation_employee
     FOREIGN KEY (teacher_id) REFERENCES employee(id);

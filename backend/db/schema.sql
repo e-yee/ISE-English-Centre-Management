@@ -58,15 +58,15 @@ CREATE TABLE
     );
 
 CREATE TABLE
-    class (
+    course (
         id VARCHAR(10),
-        class_name VARCHAR(200) NOT NULL,
-        class_description VARCHAR(200),
+        name VARCHAR(200) NOT NULL,
+        description VARCHAR(200),
         duration INT NOT NULL,
         start_date DATE NOT NULL,
         end_date DATE GENERATED ALWAYS AS (DATE_ADD(start_date, INTERVAL duration MONTH)) STORED,
         schedule VARCHAR(200) NOT NULL,
-        teacher_id VARCHAR(10) NOT NULL,
+        learning_advisor_id VARCHAR(10) NOT NULL,
         fee INT NOT NULL,
         prerequisites VARCHAR(20) NOT NULL,
         created_date DATE,
@@ -79,8 +79,8 @@ CREATE TABLE
         id VARCHAR(10),
         student_id VARCHAR(10) NOT NULL,
         employee_id VARCHAR(10) NOT NULL,
-        class_id VARCHAR(10) NOT NULL,
-        class_date DATE NOT NULL,
+        course_id VARCHAR(10) NOT NULL,
+        course_date DATE NOT NULL,
         tuition_fee INT NOT NULL,
         payment_status VARCHAR(20) NOT NULL DEFAULT 'In Progress',
         start_date DATE NOT NULL,
@@ -94,8 +94,8 @@ CREATE TABLE
         id VARCHAR(10),
         contract_id VARCHAR(10) NOT NULL, 
         student_id VARCHAR(10) NOT NULL,
-        class_id VARCHAR(10) NOT NULL,
-        class_date DATE NOT NULL,
+        course_id VARCHAR(10) NOT NULL,
+        course_date DATE NOT NULL,
         enrolment_date DATE NOT NULL,
 
         PRIMARY KEY (id)
@@ -111,38 +111,38 @@ CREATE TABLE
     );
 
 CREATE TABLE
-    class_session (
+    class (
         id VARCHAR(10),
-        class_id VARCHAR(10),
-        class_date DATE,
+        course_id VARCHAR(10),
+        course_date DATE,
         term INT,
         teacher_id VARCHAR(10) NOT NULL,
         room_id VARCHAR(10) NOT NULL,
-        session_date DATETIME NOT NULL,
+        class_date DATETIME NOT NULL,
 
-        PRIMARY KEY (id, class_id, class_date, term)
+        PRIMARY KEY (id, course_id, course_date, term)
     );
 
 CREATE TABLE
     student_attendance (
         student_id VARCHAR(10),
-        class_session_id VARCHAR(10),
         class_id VARCHAR(10),
-        class_date DATE,
+        course_id VARCHAR(10),
+        course_date DATE,
         term INT,
         enrolment_id VARCHAR(10) NOT NULL,
         status VARCHAR(20) NOT NULL,
 
-        PRIMARY KEY (student_id, class_session_id, class_id, class_date, term)
+        PRIMARY KEY (student_id, class_id, course_id, course_date, term)
     );
 
 CREATE TABLE
     makeup_class (
         id VARCHAR(10),
         student_id VARCHAR(10) NOT NULL,
-        class_session_id VARCHAR(10) NOT NULL,
         class_id VARCHAR(10) NOT NULL,
-        class_date DATE NOT NULL,
+        course_id VARCHAR(10) NOT NULL,
+        course_date DATE NOT NULL,
         term INT NOT NULL,
         teacher_id VARCHAR(10) NOT NULL,
         room_id VARCHAR(10) NOT NULL,
@@ -154,8 +154,8 @@ CREATE TABLE
 CREATE TABLE
     evaluation (
         student_id VARCHAR(10),
-        class_id VARCHAR(10),
-        class_date DATE,
+        course_id VARCHAR(10),
+        course_date DATE,
         assessment_type VARCHAR(200),
         teacher_id VARCHAR(10) NOT NULL,
         grade VARCHAR(2) NOT NULL,
@@ -163,7 +163,7 @@ CREATE TABLE
         enrolment_id VARCHAR(10) NOT NULL,
         evaluation_date DATE NOT NULL,
 
-        PRIMARY KEY (student_id, class_id, class_date, assessment_type)
+        PRIMARY KEY (student_id, course_id, course_date, assessment_type)
     );
 
 CREATE TABLE
