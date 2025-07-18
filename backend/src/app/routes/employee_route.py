@@ -1,13 +1,17 @@
 from flask import Blueprint, request, jsonify
-from app.models import Employee
-from extensions import db
-from app.schemas.employee_schema import employee_schema, employees_schema
 from marshmallow import ValidationError
+from extensions import db
+from ..http_status import HTTPStatus
+from ..models import Employee
+from ..schemas.employee_schema import employee_schema, employees_schema
 
 employee_bp = Blueprint('employee_bp', __name__,  url_prefix='/employee')
 
 @employee_bp.post('/add')
 def add_employee():
+    if not request.is_json:
+         return jsonify({'message': 'Missing or invalid JSON'}), HTTPStatus.BAD_REQUEST
+     
     try:
         json_data = request.get_json()
         validated = employee_schema.load(json_data)
@@ -23,12 +27,12 @@ def add_employee():
         db.session.add(employee)
         db.session.commit()
         
-        return employee_schema.jsonify(employee), 201
+        return employee_schema.jsonify(employee), HTTPStatus.CREATED
     
     except ValidationError as ve:
-        return jsonify({'message': 'Invalid input', 'error': ve.messages}), 400
+        return jsonify({'message': 'Invalid input', 'error': ve.messages}), HTTPStatus.BAD_REQUEST
 
 @employee_bp.get('/')
 def get_all():
     employees = db.session.query(Employee).all()
-    return jsonify(employees_schema.dump(employees)), 200
+    return jsonify(employees_schema.dump(employees)), HTTPStatus.OK

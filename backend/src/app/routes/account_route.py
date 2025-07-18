@@ -1,15 +1,18 @@
 from flask import Blueprint, request, jsonify
+from marshmallow import ValidationError
+from sqlalchemy.exc import IntegrityError
 from extensions import db, pwd_context
 from ..models import Account
 from ..schemas.account_schema import account_schema, accounts_schema
 from ..http_status import HTTPStatus
-from marshmallow import ValidationError
-from sqlalchemy.exc import IntegrityError, NoResultFound
 
 account_bp = Blueprint('account_bp', __name__, url_prefix='/account')
 
 @account_bp.post('/add')
 def add_account():
+    if not request.is_json:
+        return jsonify({'message': 'Missing or invalid JSON'}), HTTPStatus.BAD_REQUEST
+    
     try:
         json_data = request.get_json()        
         validated = account_schema.load(json_data)
@@ -20,9 +23,9 @@ def add_account():
             username=validated['username'],
             password_hash=pwd_context.hash(validated['password'])
         )
+        
         db.session.add(account)
         db.session.commit()
-        
         return account_schema.jsonify(account), HTTPStatus.CREATED
     
     except ValidationError as ve:
@@ -41,6 +44,9 @@ def get_all():
 def get_account():
     try:
         id = request.args.get('id')
+        if not id:
+            return jsonify({'message': 'Missing contract ID in query params'}), HTTPStatus.BAD_REQUEST
+        
         account = db.session.get(Account, id)
         if not account:
             return jsonify({'message': 'No account found'})
