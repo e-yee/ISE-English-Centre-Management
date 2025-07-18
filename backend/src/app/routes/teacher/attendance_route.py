@@ -9,8 +9,8 @@ from extensions import db
 
 attendance_bp = Blueprint('attendance_bp', __name__, url_prefix='/attendance')
 
-@role_required('Teacher')
 @attendance_bp.route('/attendance/<date>', methods=['POST'])
+@role_required('Teacher')
 def mark_attendance(date):
     try: 
         data = request.get_json()
@@ -42,12 +42,9 @@ def mark_attendance(date):
     
     except Exception as e:
         return ({'message': 'Unexpected error occurred', 'error': str(e)}), HTTPStatus.INTERNAL_SERVER_ERROR
-    
 
-
-
-@role_required('Teacher', 'Leaning Advisor')
 @attendance_bp.route('/view', methods=['GET'])
+@role_required('Teacher', 'Leaning Advisor')
 def view_attendance():
     try:
         student_id = request.args.get('student_id')
