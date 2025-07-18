@@ -1,10 +1,11 @@
 from flask import Blueprint, request, jsonify
+from flask_jwt_extended import get_jwt_identity
 from app.auth import role_required
 from marshmallow import ValidationError
 from http_status import HTTPStatus
 from sqlalchemy.exc import SQLAlchemyError
 from ...schemas.attendance_schema import attendance_schema
-from ...models import StudentAttendance
+from ...models import StudentAttendance, Account
 from extensions import db
 
 attendance_bp = Blueprint('attendance_bp', __name__, url_prefix='/attendance')
@@ -12,7 +13,15 @@ attendance_bp = Blueprint('attendance_bp', __name__, url_prefix='/attendance')
 @attendance_bp.route('/attendance/<date>', methods=['POST'])
 @role_required('Teacher')
 def mark_attendance(date):
+    if not request.is_json:
+        return jsonify({'message': 'Missing or invalid JSON'}), HTTPStatus.BAD_REQUEST
     try: 
+        identity = get_jwt_identity()
+        user = db.session.get(Account, identity)
+
+        if not user or not user.employee_id:
+            return jsonify({'message': 'Unauthorized or employee profile missing'}), HTTPStatus.FORBIDDEN
+
         data = request.get_json()
         validated = attendance_schema.load(data)
 
@@ -46,7 +55,15 @@ def mark_attendance(date):
 @attendance_bp.route('/view', methods=['GET'])
 @role_required('Teacher', 'Leaning Advisor')
 def view_attendance():
+    if not request.is_json:
+        return jsonify({'message': 'Missing or invalid JSON'}), HTTPStatus.BAD_REQUEST
     try:
+        identity = get_jwt_identity()
+        user = db.session.get(Account, identity)
+
+        if not user or not user.employee_id:
+            return jsonify({'message': 'Unauthorized or employee profile missing'}), HTTPStatus.FORBIDDEN
+
         student_id = request.args.get('student_id')
         if not student_id:
             return jsonify({'message': 'Student ID is required'}), HTTPStatus.BAD_REQUEST
