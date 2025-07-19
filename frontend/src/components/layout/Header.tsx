@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
-import UserProfile from "@/components/ui/UserProfile";
 
 interface HeaderProps {
   isRegistered?: boolean;
@@ -19,34 +18,41 @@ const Header: React.FC<HeaderProps> = ({ isRegistered = false }) => {
   };
 
   if (!isRegistered) {
-    // Default header layout
+    // Default header layout - white background with logo and company name
     return (
-      <header className="bg-[#4A5B8C] h-24 flex items-stretch shadow-md z-10 border-b-[1px] border-black">
-        <div className="flex items-center gap-4 text-white pl-0 pr-8">
-          <div className="relative flex items-center justify-center w-30 h-30">
-            <img src="/src/assets/logo.svg" alt="Hammer & Grammar Logo" className="w-24 h-24" />
+      <header className="bg-white h-24 flex items-center shadow-md z-10 border-b border-black/50">
+        <div className="flex items-center gap-6 pl-8 pr-8">
+          <div className="flex items-center gap-6">
+            {/* Logo - Remove background, increase size */}
+            <img src="/src/assets/logo.svg" alt="Logo" className="w-20 h-20 object-contain" />
+            {/* Company Name - Increase size */}
+            <img src="/src/assets/name.svg" alt="HAMMER & GRAMMAR" className="h-12" />
           </div>
         </div>
-        <div className="w-0.5 bg-black"></div>
+        <div className="w-px h-20 bg-black/50"></div>
       </header>
     );
   }
 
-  // Registered header layout
+  // Registered header layout - white background with full features
   return (
-    <header className="bg-[#4A5B8C] h-24 flex items-stretch shadow-lg z-10 border-b-[1px] border-black">
-      {/* Left Frame - Logo only */}
-      <div className="flex items-center pl-4 pr-6 border-r-[2.5px] border-black">
-        <div className="relative flex items-center justify-center">
-          <img src="/src/assets/logo.svg" alt="Hammer & Grammar Logo" className="w-20 h-20" />
-        </div>
+    <header className="bg-white h-24 flex items-center shadow-md z-10 border-b border-black/50">
+      {/* Left Frame - Logo and Company Name */}
+      <div className="flex items-center gap-6 pl-6 pr-6">
+        {/* Logo - Remove background, increase size */}
+        <img src="/src/assets/logo.svg" alt="Logo" className="w-20 h-20 object-contain" />
+        {/* Company Name - Increase size */}
+        <img src="/src/assets/name.svg" alt="HAMMER & GRAMMAR" className="h-12 mt-2" />
       </div>
 
-      {/* Middle section - How to use? text positioned at bottom */}
-      <div className="flex items-end pb-2 pl-6 flex-1">
+      {/* Vertical Line Separator */}
+      <div className="w-px h-12 bg-black/50 mt-2"></div>
+
+      {/* Middle section - How to use? text */}
+      <div className="flex items-center pl-6 flex-1">
         <button
           onClick={handleHowToUseClick}
-          className="text-black text-2xl font-normal font-['Rhodium_Libre'] hover:underline transition-all duration-200"
+          className="text-black text-[28px] font-normal font-['Rhodium_Libre'] hover:underline transition-all duration-200 mt-2"
         >
           How to use?
         </button>
@@ -56,43 +62,43 @@ const Header: React.FC<HeaderProps> = ({ isRegistered = false }) => {
       <div className="flex items-center gap-4 px-6">
         {/* Search */}
         <button
-          className="flex items-center justify-center hover:opacity-80 transition-opacity"
+          className="flex items-center justify-center hover:scale-105 transition-transform duration-200"
           aria-label="Search"
         >
-          <img src="/src/assets/HeaderIcons/search.svg" alt="Search" className="w-12 h-12" />
+          <img src="/src/assets/header/search.svg" alt="Search" className="w-6 h-6" />
         </button>
 
-        {/* Theme Toggle */}
+        {/* Theme Toggle Switch */}
         <button
           onClick={toggleTheme}
-          className="relative hover:opacity-80 transition-opacity"
+          className="relative hover:scale-105 transition-transform duration-200"
           aria-label="Toggle theme"
         >
-          <img src="/src/assets/HeaderIcons/frame.svg" alt="Theme toggle frame" className="w-16 h-8" />
-          <img
-            src="/src/assets/HeaderIcons/themeSwitch.svg"
-            alt="Theme switch"
-            className={cn(
-              "absolute top-1/2 transform -translate-y-1/2 w-6 h-6 transition-transform duration-200",
-              isDarkMode ? "translate-x-8" : "translate-x-2"
-            )}
-          />
+          <div className="w-[60px] h-[30px] bg-white border-2 border-black rounded-full flex items-center p-1">
+            <div
+              className={cn(
+                "w-[23px] h-[23px] bg-white border border-black rounded-full transition-transform duration-200",
+                isDarkMode ? "translate-x-[26px]" : "translate-x-0"
+              )}
+            />
+          </div>
         </button>
 
         {/* Notification Bell */}
         <button
-          className="flex items-center justify-center hover:opacity-80 transition-opacity"
+          className="flex items-center justify-center hover:scale-105 transition-transform duration-200"
           aria-label="Notifications"
         >
-          <img src="/src/assets/HeaderIcons/bell.svg" alt="Notifications" className="w-12 h-12" />
+          <img src="/src/assets/header/bell.svg" alt="Notifications" className="w-6 h-6" />
         </button>
 
-        {/* User Profile */}
-        <UserProfile
-          onProfileClick={() => console.log("Profile clicked")}
-          onSettingClick={() => console.log("Setting clicked")}
-          onLogoutClick={() => console.log("Logout clicked")}
-        />
+        {/* User Avatar */}
+        <button
+          className="flex items-center justify-center hover:scale-105 transition-transform duration-200"
+          aria-label="User profile"
+        >
+          <img src="/src/assets/header/avatar.svg" alt="User Avatar" className="w-12 h-12" />
+        </button>
       </div>
     </header>
   );

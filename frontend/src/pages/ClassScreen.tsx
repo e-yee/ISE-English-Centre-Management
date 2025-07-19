@@ -5,7 +5,7 @@ import Sidebar from '@/components/layout/Sidebar';
 import FeatureBar from '@/components/layout/FeatureBar';
 import StudentList from '@/components/layout/StudentList';
 import ClassInfo from '@/components/ui/ClassInfo';
-import { SidebarProvider, useSidebar } from '@/hooks/useSidebar';
+import { SidebarProvider, useSidebar } from '@/components/ui/sidebar';
 import { getStudentsByClassId, getFormattedStudentCount } from '@/mockData/studentListMock';
 import { classListMockData } from '@/mockData/classListMock';
 
@@ -16,7 +16,8 @@ interface ClassScreenProps {
 
 // Internal component that uses the sidebar context
 const ClassScreenContent: React.FC<ClassScreenProps> = ({ classId = 'CL001', className }) => {
-  const { isExpanded } = useSidebar();
+  const { state } = useSidebar();
+  const isExpanded = state === "expanded";
 
   // Get class data
   const classData = classListMockData.find(cls => cls.id === classId);
@@ -102,7 +103,7 @@ const ClassScreenContent: React.FC<ClassScreenProps> = ({ classId = 'CL001', cla
 // Main wrapper component that provides sidebar context
 const ClassScreen: React.FC<ClassScreenProps> = ({ classId, className }) => {
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={true}>
       <ClassScreenContent classId={classId} className={className} />
     </SidebarProvider>
   );

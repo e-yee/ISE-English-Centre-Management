@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { useSidebar } from '@/hooks/useSidebar';
+import { useSidebar } from '@/components/ui/sidebar';
 
 // Import SVG icons
 import ScoringIcon from '@/assets/feature_bar/scoring.svg';
@@ -21,7 +21,8 @@ interface FeatureItem {
 
 const FeatureBar: React.FC<FeatureBarProps> = ({ className }) => {
   const [activeFeature, setActiveFeature] = useState<string | null>(null);
-  const { isExpanded } = useSidebar();
+  const { state } = useSidebar();
+  const isExpanded = state === "expanded";
 
   // Feature items - limited to 5 features
   const featureItems: FeatureItem[] = [

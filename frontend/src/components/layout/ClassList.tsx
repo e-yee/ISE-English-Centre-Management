@@ -1,6 +1,6 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { useSidebar } from '@/hooks/useSidebar';
+import { useSidebar } from '@/components/ui/sidebar';
 import Class from '@/components/class/Class';
 import type { ClassData } from '@/mockData/classListMock';
 import { classListMockData } from '@/mockData/classListMock';
@@ -14,7 +14,8 @@ const ClassList: React.FC<ClassListProps> = ({
   classes = classListMockData,
   className
 }) => {
-  const { isExpanded } = useSidebar();
+  const { state } = useSidebar();
+  const isExpanded = state === "expanded";
 
   return (
     <div
@@ -22,8 +23,8 @@ const ClassList: React.FC<ClassListProps> = ({
         // Main container with light grey background, square corners, and drop shadow
         'bg-white shadow-[inset_5px_4px_4px_0px_rgba(0,0,0,0.25)]', // Inset shadow as per Figma
         'w-full max-w-6xl mx-auto transition-all duration-300 ease-in-out',
-        // Height constraint and scrollbar
-        'max-h-[calc(100vh-300px)] overflow-y-auto custom-scrollbar',
+        // Height constraint and scrollbar - use full height of container
+        'h-full overflow-y-auto custom-scrollbar',
         // Adjust padding based on sidebar state
         isExpanded ? 'p-6' : 'p-4',
         className

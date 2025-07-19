@@ -5,6 +5,7 @@ import ExamplePage from './pages/ExamplePage';
 import ClassScreen from './pages/ClassScreen';
 import ClassScreenTest from './pages/ClassScreenTest';
 import HomescreenPage from './pages/homescreen/Homescreen';
+import SidebarTestPage from './pages/SidebarTestPage';
 
 // function App() {
 //   return (
@@ -27,13 +28,19 @@ import HomescreenPage from './pages/homescreen/Homescreen';
 // }
 
 
+{/* THIS IS FOR TESTING EACH PAGE INDIVIDUALLY */}
+
 function App() {
   return (
     <div>
-      {/* <ExamplePage /> */}
-      <ClassScreen classId="CL001" />
+      {/* <HomescreenPage /> */}
+      {/* <ClassScreen classId="CL001" /> */}
+      {/* <SidebarTestPage /> */}
+      <ExamplePage />
     </div>
   );
 }
+
+{/* THIS IS FOR TESTING EACH PAGE INDIVIDUALLY */}
 
 export default App;
