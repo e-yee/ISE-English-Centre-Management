@@ -1,6 +1,6 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { useSidebar } from '@/hooks/useSidebar';
+import { useSidebar } from '@/components/ui/sidebar';
 import StudentTab from '@/components/class/StudentTab';
 import type { StudentData } from '@/mockData/studentListMock';
 
@@ -10,7 +10,8 @@ interface StudentListProps {
 }
 
 const StudentList: React.FC<StudentListProps> = ({ students, className }) => {
-  const { isExpanded } = useSidebar();
+  const { state } = useSidebar();
+  const isExpanded = state === "expanded";
 
   return (
     <div
