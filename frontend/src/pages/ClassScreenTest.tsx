@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import ClassScreen from './ClassScreen';
+import ClassScreen from './class/ClassScreen';
 import { classListMockData } from '@/mockData/classListMock';
 
 const ClassScreenTest: React.FC = () => {

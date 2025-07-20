@@ -1,7 +1,7 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import Header from "@/components/layout/Header";
-import SidebarShadcn from "@/components/layout/sidebar/SidebarShadcn";
+import MainSidebar from "@/components/layout/Sidebar";
 import ClassList from "@/components/layout/ClassList";
 import FeatureBar from "@/components/layout/FeatureBar";
 import { SidebarProvider, useSidebar } from "@/components/ui/sidebar";
@@ -22,7 +22,7 @@ const SidebarTestPageContent: React.FC<SidebarTestPageProps> = ({ className }) =
       <Header isRegistered={true} />
 
       {/* Sidebar - Fixed position, only shown for registered users */}
-      <SidebarShadcn />
+      <MainSidebar />
 
       {/* Main Content Area */}
       <div className="relative">

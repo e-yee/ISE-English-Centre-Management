@@ -7,8 +7,7 @@ import LoginForm from "../../components/auth/LoginForm";
 import ForgotPasswordEmailForm from "../../components/auth/ForgotPasswordEmailForm";
 import ForgotPasswordVerifyForm from "../../components/auth/ForgotPasswordVerifyForm";
 import ForgotPasswordNewPasswordForm from "../../components/auth/ForgotPasswordNewPasswordForm";
-import Header from "../../components/layout/Header";
-import Footer from "../../components/layout/Footer";
+import classroomBG from "../../assets/classroomBG.svg";
 
 const AuthPage: React.FC = () => {
   const location = useLocation();
@@ -158,22 +157,35 @@ const AuthPage: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-100">
+    <div className="h-screen w-screen overflow-hidden bg-[#F5F5F5]">
       <style>
-        {`@import url('https://fonts.googleapis.com/css2?family=Rhodium+Libre&display=swap');`}
+        {`@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap');`}
       </style>
-      <Header />
 
-      <main className="flex flex-grow items-center justify-center p-4">
-        {error && (
-          <div className="absolute top-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-            {error}
+      <div className="flex h-full">
+        {/* Left Half - Auth Form */}
+        <div className="w-1/2 flex items-center justify-center p-8 bg-[#F5F5F5] relative">
+          {error && (
+            <div className="absolute top-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded z-20">
+              {error}
+            </div>
+          )}
+          <div className="w-full max-w-lg">
+            {renderCurrentForm()}
           </div>
-        )}
-        {renderCurrentForm()}
-      </main>
+        </div>
 
-      <Footer />
+        {/* Right Half - Background Image */}
+        <div
+          className="w-1/2 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: `url(${classroomBG})`,
+          }}
+        >
+          {/* Optional overlay for better image presentation */}
+          <div className="w-full h-full bg-black/5"></div>
+        </div>
+      </div>
     </div>
   );
 };

@@ -8,6 +8,7 @@ export interface ClassData {
   endDate: string;
   status: 'Today' | 'Tomorrow' | 'Coming soon' | 'Expired' | string;
   statusColor: 'today' | 'tomorrow' | 'coming-soon' | 'expired' | 'custom';
+  progress: number; // Progress percentage (0-100)
 }
 
 export const classListMockData: ClassData[] = [
@@ -19,7 +20,8 @@ export const classListMockData: ClassData[] = [
     startDate: '20/06/2025',
     endDate: '20/08/2025',
     status: 'Today',
-    statusColor: 'today'
+    statusColor: 'today',
+    progress: 60
   },
   {
     id: 'CL002',
@@ -29,7 +31,8 @@ export const classListMockData: ClassData[] = [
     startDate: '20/06/2025',
     endDate: '20/08/2025',
     status: 'Today',
-    statusColor: 'today'
+    statusColor: 'today',
+    progress: 75
   },
   {
     id: 'CL003',
@@ -39,7 +42,8 @@ export const classListMockData: ClassData[] = [
     startDate: '20/06/2025',
     endDate: '20/08/2025',
     status: 'Today',
-    statusColor: 'today'
+    statusColor: 'today',
+    progress: 30
   },
   {
     id: 'CL004',
@@ -49,7 +53,8 @@ export const classListMockData: ClassData[] = [
     startDate: '28/06/2025',
     endDate: '28/08/2025',
     status: 'Coming soon',
-    statusColor: 'coming-soon'
+    statusColor: 'coming-soon',
+    progress: 90
   },
   {
     id: 'CL005',

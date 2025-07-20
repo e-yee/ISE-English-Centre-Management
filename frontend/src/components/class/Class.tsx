@@ -1,7 +1,8 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { useSidebar } from '@/hooks/useSidebar';
 import type { ClassData } from '@/mockData/classListMock';
+import { Card, CardContent } from '@/components/ui/card';
+import { useSidebar } from '@/components/ui/sidebar';
 
 // Status icon imports
 import TodayIcon from '@/assets/status/today.svg';
@@ -10,13 +11,20 @@ import ComingSoonIcon from '@/assets/status/coming_soon.svg';
 import ExpiredIcon from '@/assets/status/expired.svg';
 import FutureIcon from '@/assets/status/future.svg';
 
+// New class-specific icon imports
+import CalendarIcon from '@/assets/class/calendar.svg';
+import MapPinIcon from '@/assets/class/map-pin.svg';
+import ClockIcon from '@/assets/class/clock.svg';
+import ChevronRightIcon from '@/assets/class/chevron-right.svg';
+
 interface ClassProps {
   classData: ClassData;
   className?: string;
 }
 
 const Class: React.FC<ClassProps> = ({ classData, className }) => {
-  const { isExpanded } = useSidebar();
+  const { state } = useSidebar();
+  const isExpanded = state === "expanded";
 
   // Function to get the appropriate status icon
   const getStatusIcon = (statusColor: string) => {
@@ -52,70 +60,98 @@ const Class: React.FC<ClassProps> = ({ classData, className }) => {
   const { number, name } = getClassNameWithoutNumber(classData.className);
   const StatusIconComponent = getStatusIcon(classData.statusColor);
 
+  // Get progress value from classData, fallback to 0 if not provided
+  const progressValue = classData.progress || 0;
+
   return (
-    <div
-      className={cn(
-        // Main container with light blue background and rounded corners
-        'bg-[#C2E8FA] rounded-[30px] shadow-[2px_5px_4px_0px_rgba(0,0,0,0.25)] relative',
-        'w-full min-h-[90px] flex flex-col transition-all duration-300 ease-in-out',
-        // Adjust padding based on sidebar state
-        isExpanded ? 'p-4' : 'p-3',
-        className
-      )}
-    >
-      {/* Top Section - Class Name (left), Status Button (middle), Room & Time (right) */}
-      <div className="flex items-start justify-between mb-3">
-        {/* Top Left - Class Name with number prefix and dates below */}
-        <div className="flex flex-col">
-          <div className="flex items-baseline mb-1">
-            <span className="text-3xl font-bold text-black mr-1">{number}</span>
-            <h2 className="text-3xl font-bold text-black">
-              {name}
-            </h2>
+    <Card className={cn(
+      "class-card-container bg-white border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 ease-in-out",
+      "w-full min-h-[160px] rounded-[15px]",
+      className
+    )}>
+      <CardContent className={cn(
+        "transition-all duration-300 ease-in-out",
+        isExpanded ? "p-6" : "p-5"
+      )}>
+        {/* Top Row - Class Name (left), Status Button (center), Room & Time (right) */}
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-3xl font-bold text-black">
+            <span className="mr-1">{number}</span>
+            {name}
+          </h3>
+
+          <div className="flex items-center justify-center">
+            <img
+              src={StatusIconComponent}
+              alt={classData.status}
+              className="w-32 h-10"
+            />
           </div>
-          {/* Date Information under class name */}
-          <div className="space-y-0.5 ml-1">
-            <p className="text-sm font-normal text-black">
-              Start date: {classData.startDate}
-            </p>
-            <p className="text-sm font-normal text-black">
-              End date: {classData.endDate}
-            </p>
+
+          <div className="text-right space-y-0.5">
+            <div className="flex items-center justify-end gap-1">
+              <img src={MapPinIcon} alt="Room" className="w-4 h-4" />
+              <span className="text-base font-normal text-black">Room: {classData.room}</span>
+            </div>
+            <div className="flex items-center justify-end gap-1">
+              <img src={ClockIcon} alt="Time" className="w-4 h-4" />
+              <span className="text-base font-normal text-black">Time: {classData.time}</span>
+            </div>
           </div>
         </div>
 
-        {/* Top Middle - Status Icon (sized to match class name height) */}
-        <div className="flex items-center justify-center px-4 py-1">
-          <img
-            src={StatusIconComponent}
-            alt={classData.status}
-            className="w-40 h-12"
-          />
+        {/* Dates Row */}
+        <div className="flex gap-4 mb-6">
+          <div className="flex items-center gap-2">
+            <img src={CalendarIcon} alt="Start Date" className="w-4 h-4" />
+            <span className="text-sm font-normal text-black">Start: {classData.startDate}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <img src={CalendarIcon} alt="End Date" className="w-4 h-4" />
+            <span className="text-sm font-normal text-black">End: {classData.endDate}</span>
+          </div>
         </div>
 
-        {/* Top Right - Room and Time */}
-        <div className="flex flex-col items-end space-y-0.5">
-          <p className="text-base font-normal text-black">
-            Room: {classData.room}
-          </p>
-          <p className="text-base font-normal text-gray-600 underline">
-            Time: {classData.time}
-          </p>
+        {/* Progress Section */}
+        <div className="space-y-3 relative">
+          {/* Progress Label */}
+          <div className="flex items-center">
+            <span className="text-sm font-normal text-black/60">Progress</span>
+          </div>
+
+          {/* Progress Bar Container - 60% width of card */}
+          <div className="relative w-[60%]">
+            {/* Progress Bar */}
+            <div className={cn(
+              "h-2 bg-black/20 rounded-[30px] relative overflow-hidden transition-all duration-300 ease-in-out"
+            )}>
+              {/* Progress fill */}
+              <div
+                className="absolute left-0 top-0 h-full bg-black rounded-[30px] transition-all duration-300 ease-in-out"
+                style={{ width: `${progressValue}%` }}
+              ></div>
+            </div>
+
+            {/* Percentage text positioned above the right end of progress bar */}
+            <span
+              className="absolute text-xs font-medium text-black/60 z-10 whitespace-nowrap"
+              style={{
+                left: `${progressValue}%`,
+                top: '20px',
+                transform: 'translateX(-50%)'
+              }}
+            >
+              {progressValue}%
+            </span>
+          </div>
+
+          {/* Chevron positioned to align with progress bar center */}
+          <div className="absolute right-0" style={{ top: '80%', transform: 'translateY(-50%)' }}>
+            <img src={ChevronRightIcon} alt="Navigate" className="w-10 h-10" />
+          </div>
         </div>
-      </div>
-
-      {/* Bottom Section - Progress Bar at the bottom with padding */}
-      <div className="flex items-center mt-auto mb-2">
-        {/* Left spacer to align with status icon */}
-        <div className="flex-1"></div>
-
-        {/* Progress bar - spans from status icon to right edge, widens when sidebar compressed */}
-        <div className={cn(
-          "h-6 bg-white rounded-lg border border-gray-200 flex items-center justify-center transition-all duration-300 ease-in-out",
-          isExpanded ? "flex-[1.25] ml-4" : "flex-[1.20] ml-2"
-        )}></div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };
 

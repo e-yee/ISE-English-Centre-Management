@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { cn } from '@/lib/utils';
-import { useSidebar } from '@/hooks/useSidebar';
+import { useSidebar } from '@/components/ui/sidebar';
 import type { StudentData } from '@/mockData/studentListMock';
-import StudentInfo from './StudentInfo';
-
-// Import expand icon
-import ExpandIcon from '@/assets/class/expanded.svg';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import RevealOnScroll from '@/components/ui/RevealOnScroll';
+import CopyIcon from '@/assets/class/copy.svg';
 
 interface StudentTabProps {
   studentData: StudentData;
@@ -13,83 +13,186 @@ interface StudentTabProps {
 }
 
 const StudentTab: React.FC<StudentTabProps> = ({ studentData, className }) => {
-  const { isExpanded } = useSidebar();
+  const { state } = useSidebar();
+  const isExpanded = state === "expanded";
   const { index, name, studentId } = studentData;
-  const [isInfoExpanded, setIsInfoExpanded] = useState(false);
 
-  const handleTabClick = () => {
-    setIsInfoExpanded(!isInfoExpanded);
+  const handleCopy = (text: string | undefined) => {
+    if (text && text.trim()) {
+      navigator.clipboard.writeText(text);
+    }
   };
 
   return (
-    <div className={cn("w-full", className)}>
-      {/* Student Tab */}
-      <div
-        onClick={handleTabClick}
-        className={cn(
-          // Main container with blue background and rounded corners (matching Figma)
-          'bg-[rgba(112,169,255,0.8)] shadow-[5px_4px_4px_0px_rgba(0,0,0,0.25)] relative',
-          'w-full min-h-[80px] flex items-center justify-between transition-all duration-300 ease-in-out',
-          'border-2 border-[#D9D9D9] cursor-pointer hover:opacity-90', // Light grey border as per Figma
-          // Adjust padding based on sidebar state (matching homescreen behavior)
-          isExpanded ? 'px-6 py-3' : 'px-4 py-2',
-          // Conditional border radius based on expansion state
-          isInfoExpanded ? 'rounded-t-[20px]' : 'rounded-[20px]'
-        )}
-      >
-      {/*Left Section - Student Name and ID */}
-      <div className="flex items-start">
-        {/* Index Number */}
-        <span className="w-[40px] flex-shrink-0 pr-2 text-right text-[40px] font-normal text-black leading-[1em] font-roboto">
-          {index}.
-        </span>
+    <RevealOnScroll
+      variant="slide-down"
+      delay={100}
+      threshold={0.2}
+      className="w-full"
+    >
+      <Card className={cn(
+        "student-tab-container bg-white border border-[rgba(0,0,0,0.2)] shadow-[5px_4px_4px_0px_rgba(0,0,0,0.25)] transition-all duration-300 ease-in-out",
+        "w-full min-h-[120px] rounded-[15px]", // Reduced height to match Class component size
+        className
+      )}>
+        <CardContent className={cn(
+          "transition-all duration-300 ease-in-out",
+          isExpanded ? "p-3" : "p-2" // Further reduced padding for more compact size
+        )}>
+          {/* Student Name and ID Section - Reduced sizes */}
+          <div className="flex items-start mb-2">
+            {/* Index Number - Reduced size */}
+            <span className="w-[20px] flex-shrink-0 pr-1 text-right text-[24px] font-semibold text-[rgba(0,0,0,0.75)] leading-[1.2em] font-roboto">
+              {index}.
+            </span>
 
-        {/* Name and ID Column - Vertically aligned */}
-        <div className="flex flex-col justify-center">
-          {/* Student Name */}
-          <div className="text-[40px] font-normal text-black leading-[1em] font-roboto">
-            {name}
+            {/* Name and ID Column - Vertically aligned with reduced sizes */}
+            <div className="flex flex-col justify-center">
+              {/* Student Name - Reduced from 40px to 24px */}
+              <div className="text-[24px] font-semibold text-[rgba(0,0,0,0.75)] leading-[1.2em] font-roboto">
+                {name}
+              </div>
+
+              {/* Student ID - Reduced from 20px to 14px */}
+              <div className="text-[14px] font-medium text-[rgba(0,0,0,0.9)] leading-[1.2em] font-roboto">
+                ID: {studentId}
+              </div>
+            </div>
           </div>
 
-          {/* Student ID - Aligned with name using same container approach */}
-          <div className="text-[30px] font-normal text-[rgba(0,0,0,0.55)] leading-[1.33em] font-roboto">
-            ID: {studentId}
+          {/* Student Information Grid - 2x3 layout with reduced sizes */}
+          <div className="grid grid-cols-2 grid-rows-3 gap-x-2 gap-y-1">
+            {/* Row 1 - Email and DoB */}
+            <div className="space-y-0.5">
+              <label className="text-[12px] font-normal text-[rgba(0,0,0,0.5)] font-roboto leading-[1.2em]">
+                Email:
+              </label>
+              <div className="relative flex items-center gap-1">
+                <Input
+                  value=""
+                  readOnly
+                  className="flex-1 h-6 rounded-[3px] border border-[rgba(0,0,0,0.45)] bg-[rgba(217,217,217,0.3)] px-2 text-[12px] font-normal text-[rgba(0,0,0,0.65)] font-roboto text-center"
+                  placeholder=""
+                />
+                <button
+                  onClick={() => handleCopy("")}
+                  className="flex-shrink-0 w-3 h-3 hover:scale-110 transition-transform"
+                  aria-label="Copy email"
+                >
+                  <img
+                    src={CopyIcon}
+                    alt="Copy"
+                    className="w-full h-full object-contain opacity-50"
+                  />
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-0.5">
+              <label className="text-[12px] font-normal text-[rgba(0,0,0,0.5)] font-roboto leading-[1.2em]">
+                DoB:
+              </label>
+              <div className="relative flex items-center gap-1">
+                <Input
+                  value=""
+                  readOnly
+                  className="flex-1 h-6 rounded-[3px] border border-[rgba(0,0,0,0.45)] bg-[rgba(217,217,217,0.3)] px-2 text-[12px] font-normal text-[rgba(0,0,0,0.65)] font-roboto text-center"
+                  placeholder=""
+                />
+                <button
+                  onClick={() => handleCopy("")}
+                  className="flex-shrink-0 w-3 h-3 hover:scale-110 transition-transform"
+                  aria-label="Copy date of birth"
+                >
+                  <img
+                    src={CopyIcon}
+                    alt="Copy"
+                    className="w-full h-full object-contain opacity-50"
+                  />
+                </button>
+              </div>
+            </div>
+
+            {/* Row 2 - Phone and Presence */}
+            <div className="space-y-0.5">
+              <label className="text-[12px] font-normal text-[rgba(0,0,0,0.5)] font-roboto leading-[1.2em]">
+                Phone:
+              </label>
+              <div className="relative flex items-center gap-1">
+                <Input
+                  value=""
+                  readOnly
+                  className="flex-1 h-6 rounded-[3px] border border-[rgba(0,0,0,0.45)] bg-[rgba(217,217,217,0.3)] px-2 text-[12px] font-normal text-[rgba(0,0,0,0.65)] font-roboto text-center"
+                  placeholder=""
+                />
+                <button
+                  onClick={() => handleCopy("")}
+                  className="flex-shrink-0 w-3 h-3 hover:scale-110 transition-transform"
+                  aria-label="Copy phone"
+                >
+                  <img
+                    src={CopyIcon}
+                    alt="Copy"
+                    className="w-full h-full object-contain opacity-50"
+                  />
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-0.5">
+              <label className="text-[12px] font-normal text-[rgba(0,0,0,0.5)] font-roboto leading-[1.2em]">
+                Presence:
+              </label>
+              <div className="relative flex items-center gap-1">
+                <Input
+                  value=""
+                  readOnly
+                  className="flex-1 h-6 rounded-[3px] border border-[rgba(0,0,0,0.45)] bg-[rgba(217,217,217,0.3)] px-2 text-[12px] font-normal text-[rgba(0,0,0,0.65)] font-roboto text-center"
+                  placeholder=""
+                />
+                <button
+                  onClick={() => handleCopy("")}
+                  className="flex-shrink-0 w-3 h-3 hover:scale-110 transition-transform"
+                  aria-label="Copy presence"
+                >
+                  <img
+                    src={CopyIcon}
+                    alt="Copy"
+                    className="w-full h-full object-contain opacity-50"
+                  />
+                </button>
+              </div>
+            </div>
+
+            {/* Row 3 - Note spans both columns */}
+            <div className="col-span-2 space-y-0.5">
+              <label className="text-[12px] font-normal text-[rgba(0,0,0,0.5)] font-roboto leading-[1.2em]">
+                Note:
+              </label>
+              <div className="relative flex items-start gap-1">
+                <textarea
+                  value=""
+                  readOnly
+                  className="flex-1 h-10 rounded-[3px] border border-[rgba(0,0,0,0.45)] bg-[rgba(217,217,217,0.3)] px-2 py-1 text-[12px] font-normal text-[rgba(0,0,0,0.65)] font-roboto resize-none focus:outline-none focus:border-black focus:ring-0"
+                  placeholder=""
+                />
+                <button
+                  onClick={() => handleCopy("")}
+                  className="flex-shrink-0 w-3 h-3 hover:scale-110 transition-transform mt-1"
+                  aria-label="Copy note"
+                >
+                  <img
+                    src={CopyIcon}
+                    alt="Copy"
+                    className="w-full h-full object-contain opacity-50"
+                  />
+                </button>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-
-  
-
-      {/* Right Section - Expand Icon */}
-      <div className="flex items-center justify-center">
-        <div className="w-[31px] h-[27px] flex items-center justify-center select-none cursor-pointer">
-          <img
-            src={ExpandIcon}
-            alt="Expand"
-            className={cn(
-              "w-full h-full object-contain transition-transform duration-300 ",
-              isInfoExpanded && "rotate-180"
-            )}
-            style={{
-              filter: 'drop-shadow(3px 2px 4px rgba(0,0,0,0.25))'
-            }}
-          />
-        </div>
-      </div>
-      </div>
-
-      {/* Student Info - Expandable Section */}
-      <StudentInfo
-        isExpanded={isInfoExpanded}
-        studentData={{
-          email: undefined, // Will show placeholder until real data is available
-          phone: undefined, // Will show placeholder until real data is available
-          dateOfBirth: undefined, // Will show placeholder until real data is available
-          presence: undefined, // Will show placeholder until real data is available
-          note: undefined // Will show placeholder until real data is available
-        }}
-      />
-    </div>
+        </CardContent>
+      </Card>
+    </RevealOnScroll>
   );
 };
 

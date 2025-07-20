@@ -8,12 +8,12 @@ import { Button } from "@/components/ui/button";
 import { SidebarProvider, useSidebar } from "@/components/ui/sidebar";
 import { classListMockData } from "@/mockData/classListMock";
 
-interface HomescreenPageProps {
+interface HomescreenDemoProps {
   className?: string;
 }
 
 // Internal component that uses the sidebar context
-const HomescreenPageContent: React.FC<HomescreenPageProps> = ({ className }) => {
+const HomescreenDemoContent: React.FC<HomescreenDemoProps> = ({ className }) => {
   const { state } = useSidebar();
   const isExpanded = state === "expanded";
   const [selectedStatus, setSelectedStatus] = useState("ALL");
@@ -107,12 +107,12 @@ const HomescreenPageContent: React.FC<HomescreenPageProps> = ({ className }) => 
 
 
 // Main wrapper component that provides sidebar context
-const HomescreenPage: React.FC<HomescreenPageProps> = ({ className }) => {
+const HomescreenDemo: React.FC<HomescreenDemoProps> = ({ className }) => {
   return (
     <SidebarProvider defaultOpen={true}>
-      <HomescreenPageContent className={className} />
+      <HomescreenDemoContent className={className} />
     </SidebarProvider>
   );
 };
 
-export default HomescreenPage;
+export default HomescreenDemo;

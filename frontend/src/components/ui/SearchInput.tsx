@@ -36,47 +36,47 @@ const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
     return (
       <form onSubmit={handleSubmit} className="relative">
         <div className="relative flex items-center">
+          {showIcon && (
+            <button
+              type="submit"
+              className={cn(
+                "absolute left-4 flex items-center justify-center z-10",
+                "hover:scale-105 transition-transform duration-200",
+                "focus:outline-none focus:scale-105"
+              )}
+              aria-label="Search"
+            >
+              <img
+                src="/src/assets/header/search.svg"
+                alt="Search"
+                className="w-6 h-6"
+              />
+            </button>
+          )}
+
           <input
             ref={ref}
             type="text"
             value={value}
             onChange={handleChange}
             className={cn(
-              // Base styling matching Figma design
-              "flex h-14 w-full rounded-[50px] border-[4px] border-black bg-white",
-              "px-6 py-3 text-[30px] font-normal font-['Rhodium_Libre']",
+              // Base styling matching Figma design - reduced border width
+              "flex rounded-[10px] border border-black/20 bg-white",
+              "py-2 text-[20px] font-medium font-['Roboto']",
               "text-black placeholder:text-black/50",
               // Focus states
-              "focus:outline-none focus:border-black focus:ring-0",
-              // Shadow effect from Figma
-              "shadow-[4px_6px_4px_0px_rgba(0,0,0,0.25)]",
+              "focus:outline-none focus:border-black/20 focus:ring-0",
               // Disabled state
               "disabled:cursor-not-allowed disabled:opacity-50",
               // Add padding for icon if shown
-              showIcon && "pr-16",
+              showIcon ? "pl-12 pr-6" : "px-6",
+              // Set width and height to match button dimensions
+              "w-[500px] h-10",
               className
             )}
-            placeholder="Search..."
+            placeholder="Search classes"
             {...props}
           />
-          
-          {showIcon && (
-            <button
-              type="submit"
-              className={cn(
-                "absolute right-4 flex items-center justify-center",
-                "hover:scale-105 transition-transform duration-200",
-                "focus:outline-none focus:scale-105"
-              )}
-              aria-label="Search"
-            >
-              <img 
-                src="/src/assets/HeaderIcons/search.svg" 
-                alt="Search" 
-                className="w-8 h-8"
-              />
-            </button>
-          )}
         </div>
       </form>
     );

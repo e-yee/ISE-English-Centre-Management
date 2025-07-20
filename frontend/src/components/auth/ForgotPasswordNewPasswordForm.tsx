@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import logoSvg from "../../assets/logo.svg";
 
 interface ForgotPasswordNewPasswordFormProps {
   onSubmit: (newPassword: string, confirmPassword: string) => void;
@@ -57,60 +58,82 @@ export function ForgotPasswordNewPasswordForm({
   };
 
   return (
-    <Card className="w-full max-w-md bg-[#B7D5F4] border-[5px] border-black rounded-[30px] shadow-lg font-['Rhodium_Libre']">
-      <CardHeader className="text-center pb-2">
-        <CardTitle className="text-[57px] font-normal text-[#121212] leading-tight">
-          HAMMER & GRAMMAR
+    <Card className="w-full max-w-lg mx-auto bg-[#EFECE7] border-black border-2 rounded-[30px] shadow-[10px_4px_4px_0px_rgba(0,0,0,0.25)] font-roboto">
+      <CardHeader className="text-center pb-6">
+        {/* Logo */}
+        <div className="flex justify-center mb-4">
+          <img src={logoSvg} alt="Logo" className="w-48 h-auto" />
+        </div>
+
+        {/* Title */}
+        <CardTitle className="text-[50px] font-roboto font-semibold text-[#78746C] leading-[1.4]">
+          NEW PASSWORD
         </CardTitle>
       </CardHeader>
-      <CardContent className="pt-4 px-8 pb-8">
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2 text-center">
-            <p className="text-[22px] text-black">Set New Password:</p>
-            <p className="text-[15px] text-black">
+
+      <CardContent className="space-y-8 px-12 pb-12">
+        <form onSubmit={handleSubmit} className="space-y-8">
+          <div className="text-center space-y-2">
+            <p className="text-[20px] font-roboto text-[#78746C] leading-relaxed">
               Enter your new password for
             </p>
-            <p className="text-[15px] text-black font-semibold">{email}</p>
+            <p className="text-[22px] font-roboto font-semibold text-[#121212]">{email}</p>
           </div>
 
+          {/* New Password Field */}
           <div className="space-y-4">
-            <div>
-              <Input 
-                id="newPassword" 
-                type="password" 
-                placeholder="New Password"
-                value={formData.newPassword}
-                onChange={(e) => handleInputChange("newPassword", e.target.value)}
-                className="h-12 rounded-full border-2 border-black bg-white px-4 text-gray-700 placeholder:text-gray-500 focus:border-black focus:ring-0"
-                required
-                disabled={isLoading}
-              />
-              {errors.newPassword && (
-                <p className="text-red-600 text-sm mt-1 px-4">{errors.newPassword}</p>
-              )}
-            </div>
-            
-            <div>
-              <Input 
-                id="confirmPassword" 
-                type="password" 
-                placeholder="Confirm New Password"
-                value={formData.confirmPassword}
-                onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
-                className="h-12 rounded-full border-2 border-black bg-white px-4 text-gray-700 placeholder:text-gray-500 focus:border-black focus:ring-0"
-                required
-                disabled={isLoading}
-              />
-              {errors.confirmPassword && (
-                <p className="text-red-600 text-sm mt-1 px-4">{errors.confirmPassword}</p>
-              )}
-            </div>
+            <label
+              htmlFor="newPassword"
+              className="block text-[30px] font-roboto font-semibold text-[#121212] text-center"
+            >
+              New Password
+            </label>
+            <Input
+              id="newPassword"
+              type="password"
+              value={formData.newPassword}
+              onChange={(e) => handleInputChange("newPassword", e.target.value)}
+              className="w-full bg-transparent border-0 border-b-2 border-black rounded-none px-0 py-2 text-[25px] font-roboto text-[#121212] placeholder-[#78746C] focus:ring-0 focus:border-black focus-visible:ring-0 focus-visible:ring-offset-0"
+              placeholder="Enter new password"
+              required
+              disabled={isLoading}
+            />
+            {errors.newPassword && (
+              <p className="text-red-600 text-[18px] font-roboto text-center">{errors.newPassword}</p>
+            )}
           </div>
 
-          <div className="flex justify-end pt-4">
+          {/* Confirm Password Field */}
+          <div className="space-y-4">
+            <label
+              htmlFor="confirmPassword"
+              className="block text-[30px] font-roboto font-semibold text-[#121212] text-center"
+            >
+              Confirm Password
+            </label>
+            <Input
+              id="confirmPassword"
+              type="password"
+              value={formData.confirmPassword}
+              onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
+              className="w-full bg-transparent border-0 border-b-2 border-black rounded-none px-0 py-2 text-[25px] font-roboto text-[#121212] placeholder-[#78746C] focus:ring-0 focus:border-black focus-visible:ring-0 focus-visible:ring-offset-0"
+              placeholder="Confirm new password"
+              required
+              disabled={isLoading}
+            />
+            {errors.confirmPassword && (
+              <p className="text-red-600 text-[18px] font-roboto text-center">{errors.confirmPassword}</p>
+            )}
+          </div>
+
+          {/* Submit Button */}
+          <div className="pt-6">
             <Button
               type="submit"
-              className="bg-[#7181DD] hover:bg-[#5A6ACF] text-black text-[30px] px-8 py-6 rounded-[30px] border-2 border-black leading-none disabled:opacity-50"
+              className="w-full bg-[rgba(203,175,135,0.3)] text-[#121212] hover:bg-[rgba(203,175,135,0.5)] border-2 border-black rounded-[30px] py-6 text-[40px] font-roboto font-semibold backdrop-blur-[100px] transition-all duration-200 disabled:opacity-50"
+              style={{
+                background: 'linear-gradient(0deg, rgba(203, 175, 135, 0.3), rgba(203, 175, 135, 0.3)), linear-gradient(0deg, rgba(0, 0, 0, 1), rgba(0, 0, 0, 1))'
+              }}
               disabled={isLoading || !formData.newPassword || !formData.confirmPassword}
             >
               {isLoading ? "Updating..." : "Confirm"}

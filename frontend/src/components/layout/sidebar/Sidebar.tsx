@@ -32,7 +32,7 @@ interface SidebarItem {
   url: string;
 }
 
-const SidebarShadcn: React.FC<SidebarProps> = ({ className }) => {
+const MainSidebar: React.FC<SidebarProps> = ({ className }) => {
   const { state } = useSidebar();
   const [activeItem, setActiveItem] = useState("dashboard");
 
@@ -190,4 +190,4 @@ const SidebarShadcn: React.FC<SidebarProps> = ({ className }) => {
   );
 };
 
-export default SidebarShadcn;
+export default MainSidebar;

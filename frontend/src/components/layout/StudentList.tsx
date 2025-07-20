@@ -2,6 +2,7 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { useSidebar } from '@/components/ui/sidebar';
 import StudentTab from '@/components/class/StudentTab';
+import RevealOnScroll from '@/components/ui/RevealOnScroll';
 import type { StudentData } from '@/mockData/studentListMock';
 
 interface StudentListProps {
@@ -14,26 +15,46 @@ const StudentList: React.FC<StudentListProps> = ({ students, className }) => {
   const isExpanded = state === "expanded";
 
   return (
-    <div
-      className={cn(
-        // Main container with white background and inset shadow (matching ClassList)
-        'bg-white shadow-[inset_5px_4px_4px_0px_rgba(0,0,0,0.25)] relative', // Inset shadow as per Figma
-        'w-full transition-all duration-300 ease-in-out',
-        // Use full height and enable scrolling
-        'h-full overflow-y-auto custom-scrollbar',
-        // Adjust padding based on sidebar state (matching homescreen ClassList behavior)
-        isExpanded ? 'p-6' : 'p-4',
-        className
-      )}
-    >
-      {/* Students Grid */}
-      <div className="space-y-4">
-        {students.map((studentData) => (
-          <StudentTab
+    <div className={cn(
+      // Main container - transparent background, full height with animations
+      'bg-transparent h-full w-full transition-all duration-300 ease-in-out',
+      className
+    )}>
+      {/* Students Grid with Scroll View and animations */}
+      <div className={cn(
+        "h-full overflow-y-auto space-y-3 custom-scrollbar transition-all duration-300 ease-in-out",
+        // Padding animation - more space when sidebar is collapsed
+        isExpanded ? "p-4" : "p-6"
+      )}>
+        {students.map((studentData, index) => (
+          <RevealOnScroll
             key={studentData.id}
-            studentData={studentData}
+            delay={50}
+            variant="fade-up"
             className="w-full"
-          />
+          >
+            <div
+              className={cn(
+                "transition-all duration-300 ease-in-out transform",
+                // Staggered animation effect for sidebar state
+                isExpanded ? "scale-100" : "scale-[1.01]"
+              )}
+              style={{
+                transitionDelay: `${index * 30}ms`
+              }}
+            >
+              <StudentTab
+                studentData={studentData}
+                className={cn(
+                  "w-full transition-all duration-300 ease-in-out",
+                  // Enhanced styling when sidebar is collapsed
+                  isExpanded
+                    ? "shadow-sm hover:shadow-md"
+                    : "shadow-md hover:shadow-lg border border-gray-200"
+                )}
+              />
+            </div>
+          </RevealOnScroll>
         ))}
       </div>
     </div>
