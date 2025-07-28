@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import {
   Sidebar,
@@ -35,6 +36,15 @@ interface SidebarItem {
 const MainSidebar: React.FC<SidebarProps> = ({ className }) => {
   const { state } = useSidebar();
   const [activeItem, setActiveItem] = useState("dashboard");
+
+  // Safely get navigate function - only works in router context
+  let navigate: ((path: string) => void) | null = null;
+  try {
+    navigate = useNavigate();
+  } catch (error) {
+    // Not in router context (demo mode), navigation will be disabled
+    console.log("Sidebar: Not in router context, navigation disabled");
+  }
 
   const menuItems: SidebarItem[] = [
     {
@@ -77,7 +87,18 @@ const MainSidebar: React.FC<SidebarProps> = ({ className }) => {
 
   const handleItemClick = (itemId: string) => {
     setActiveItem(itemId);
-    console.log(`Navigating to ${itemId}`);
+
+    // Handle navigation based on item clicked
+    if (itemId === "dashboard") {
+      if (navigate) {
+        navigate("/home");
+      } else {
+        console.log("Navigation to /home (demo mode - navigation disabled)");
+      }
+    } else {
+      // For other items, just log for now (can be extended later)
+      console.log(`Navigating to ${itemId}`);
+    }
   };
 
   return (

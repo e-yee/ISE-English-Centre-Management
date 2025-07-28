@@ -49,9 +49,45 @@ export const authService = {
       }
 
       return response;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Login failed:', error);
-      throw error;
+
+      // Enhanced error handling with specific error messages
+      let errorMessage = 'Login failed. Please try again.';
+
+      if (error.message) {
+        const message = error.message.toLowerCase();
+
+        // Check for specific error types
+        if (message.includes('invalid credentials') ||
+            message.includes('wrong username') ||
+            message.includes('wrong password') ||
+            message.includes('incorrect username') ||
+            message.includes('incorrect password') ||
+            message.includes('authentication failed') ||
+            message.includes('unauthorized')) {
+          errorMessage = 'Invalid username or password. Please check your credentials and try again.';
+        } else if (message.includes('network error') ||
+                   message.includes('connection') ||
+                   message.includes('timeout')) {
+          errorMessage = 'Unable to connect to the server. Please check your internet connection and try again.';
+        } else if (message.includes('server error') ||
+                   message.includes('internal server error') ||
+                   message.includes('500')) {
+          errorMessage = 'Server error occurred. Please try again later or contact support.';
+        } else if (message.includes('service unavailable') ||
+                   message.includes('503')) {
+          errorMessage = 'Service is temporarily unavailable. Please try again later.';
+        } else {
+          // Use the original error message if it's user-friendly
+          errorMessage = error.message;
+        }
+      }
+
+      // Create a new error with the enhanced message
+      const enhancedError = new Error(errorMessage);
+      enhancedError.name = 'AuthenticationError';
+      throw enhancedError;
     }
   },
 

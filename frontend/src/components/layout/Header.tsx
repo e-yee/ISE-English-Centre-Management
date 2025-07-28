@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 interface HeaderProps {
@@ -7,6 +8,15 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ isRegistered = false }) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
+
+  // Safely get navigate function - only works in router context
+  let navigate: ((path: string) => void) | null = null;
+  try {
+    navigate = useNavigate();
+  } catch (error) {
+    // Not in router context (demo mode), navigation will be disabled
+    console.log("Header: Not in router context, navigation disabled");
+  }
 
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
@@ -17,16 +27,24 @@ const Header: React.FC<HeaderProps> = ({ isRegistered = false }) => {
     console.log("How to use clicked");
   };
 
+  const handleLogoClick = () => {
+    if (navigate) {
+      navigate("/home");
+    } else {
+      console.log("Navigation to /home (demo mode - navigation disabled)");
+    }
+  };
+
   if (!isRegistered) {
     // Default header layout - white background with logo and company name
     return (
       <header className="bg-white h-24 flex items-center shadow-md z-10 border-b border-black/50">
         <div className="flex items-center gap-6 pl-8 pr-8">
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-6 cursor-pointer" onClick={handleLogoClick}>
             {/* Logo - Remove background, increase size */}
-            <img src="/src/assets/logo.svg" alt="Logo" className="w-20 h-20 object-contain" />
+            <img src="/src/assets/logo.svg" alt="Logo" className="w-20 h-20 object-contain hover:scale-105 transition-transform duration-200" />
             {/* Company Name - Increase size */}
-            <img src="/src/assets/name.svg" alt="HAMMER & GRAMMAR" className="h-12" />
+            <img src="/src/assets/name.svg" alt="HAMMER & GRAMMAR" className="h-12 hover:scale-105 transition-transform duration-200" />
           </div>
         </div>
         <div className="w-px h-20 bg-black/50"></div>
@@ -38,11 +56,11 @@ const Header: React.FC<HeaderProps> = ({ isRegistered = false }) => {
   return (
     <header className="bg-white h-24 flex items-center shadow-md z-10 border-b border-black/50">
       {/* Left Frame - Logo and Company Name */}
-      <div className="flex items-center gap-6 pl-6 pr-6">
+      <div className="flex items-center gap-6 pl-6 pr-6 cursor-pointer" onClick={handleLogoClick}>
         {/* Logo - Remove background, increase size */}
-        <img src="/src/assets/logo.svg" alt="Logo" className="w-20 h-20 object-contain" />
+        <img src="/src/assets/logo.svg" alt="Logo" className="w-20 h-20 object-contain hover:scale-105 transition-transform duration-200" />
         {/* Company Name - Increase size */}
-        <img src="/src/assets/name.svg" alt="HAMMER & GRAMMAR" className="h-12 mt-2" />
+        <img src="/src/assets/name.svg" alt="HAMMER & GRAMMAR" className="h-12 mt-2 hover:scale-105 transition-transform duration-200" />
       </div>
 
       {/* Vertical Line Separator */}

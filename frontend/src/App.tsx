@@ -1,9 +1,14 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import AuthRoutes from './routes/AuthRoutes';
+import ProtectedRoute from './components/auth/ProtectedRoute';
 import ExamplePage from './pages/ExamplePage';
 import ClassScreen from './pages/class/ClassScreen';
 import HomescreenPage from './pages/homescreen/Homescreen';
 // import HomescreenDemo from './components/demo/HomescreenDemo'; // Uncomment if needed for testing
+
+{/*For development */}
+import { StagewiseToolbar } from '@stagewise/toolbar-react';
+import ReactPlugin from '@stagewise-plugins/react';
 
 // 🔧 EASY TOGGLE: Set to true for production routes, false for demo mode
 const USE_PRODUCTION_ROUTES = false;
@@ -12,30 +17,50 @@ function App() {
   // 🚀 PRODUCTION MODE: Full routing setup
   if (USE_PRODUCTION_ROUTES) {
     return (
-      <BrowserRouter>
-        <Routes>
-          {/* Auth routes */}
-          <Route path="/auth/*" element={<AuthRoutes />} />
+      <>
+        <StagewiseToolbar config={{ plugins: [ReactPlugin] }} />
+        <BrowserRouter>
+          <Routes>
+            {/* Auth routes */}
+            <Route path="/auth/*" element={<AuthRoutes />} />
 
-          {/* Protected routes - add your production routes here */}
-          <Route path="/homescreen" element={<HomescreenPage />} />
-          <Route path="/class/:id" element={<ClassScreen />} />
+            {/* Protected routes - add your production routes here */}
+            <Route
+              path="/home"
+              element={
+                <ProtectedRoute>
+                  <HomescreenPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/class/:id"
+              element={
+                <ProtectedRoute>
+                  <ClassScreen />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* Default route redirects to auth */}
-          <Route path="/" element={<Navigate to="/auth/login" replace />} />
+            {/* Default route redirects to auth */}
+            <Route path="/" element={<Navigate to="/auth/login" replace />} />
 
-          {/* Catch all routes - redirect to auth for now */}
-          <Route path="*" element={<Navigate to="/auth/login" replace />} />
-        </Routes>
-      </BrowserRouter>
+            {/* Catch all routes - redirect to auth for now */}
+            <Route path="*" element={<Navigate to="/auth/login" replace />} />
+          </Routes>
+        </BrowserRouter>
+      </>
     );
   }
 
   // 🎨 DEMO MODE: Individual page testing without routes
   return (
-    <div>
-      <ExamplePage />
-    </div>
+    <>
+      <StagewiseToolbar config={{ plugins: [ReactPlugin] }} />
+      <div>
+        <ExamplePage />
+      </div>
+    </>
   );
 }
 

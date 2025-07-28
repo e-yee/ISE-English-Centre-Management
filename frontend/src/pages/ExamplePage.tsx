@@ -7,8 +7,10 @@ import { Button } from "@/components/ui/button";
 import AuthPageDemo from "@/components/demo/AuthPageDemo";
 import HomescreenDemo from "@/components/demo/HomescreenDemo";
 import ClassScreenDemo from "@/components/demo/ClassScreenDemo";
+import ClassInformationDemo from "@/components/demo/ClassInformationDemo";
 import RevealOnScroll from "@/components/ui/RevealOnScroll";
 import ClassScreen from "./class/ClassScreen";
+import AddMaterialsDemo from "@/components/demo/AddMaterialsDemo";
 
 interface ExamplePageProps {
   className?: string;
@@ -21,6 +23,8 @@ const ExamplePageContent: React.FC<ExamplePageProps> = ({ className }) => {
   const [showAuthPage, setShowAuthPage] = useState(false);
   const [showHomescreenDemo, setShowHomescreenDemo] = useState(false);
   const [showClassScreenDemo, setShowClassScreenDemo] = useState(false);
+  const [showClassInformationDemo, setShowClassInformationDemo] = useState(false);
+  const [showAddMaterialsDemo, setShowAddMaterialsDemo] = useState(false);
 
   // If showing homescreen demo, render it instead of the example content
   if (showHomescreenDemo) {
@@ -56,6 +60,43 @@ const ExamplePageContent: React.FC<ExamplePageProps> = ({ className }) => {
           </Button>
         </div>
         <ClassScreenDemo />
+      </div>
+    );
+  }
+
+  // If showing class information demo, render it instead of the example content
+  if (showClassInformationDemo) {
+    return (
+      <div className="relative">
+        {/* Back button overlay */}
+        <div className="absolute bottom-4 left-4 z-50">
+          <Button
+            onClick={() => setShowClassInformationDemo(false)}
+            variant="outline"
+            className="bg-white/90 backdrop-blur-sm border-2 border-black hover:bg-gray-100 font-semibold"
+          >
+            ← Back to Example
+          </Button>
+        </div>
+        <ClassInformationDemo />
+      </div>
+    );
+  }
+
+  if (showAddMaterialsDemo) {
+    return (
+      <div className="relative">
+        {/* Back button overlay */}
+        <div className="absolute bottom-4 left-4 z-50">
+          <Button
+            onClick={() => setShowAddMaterialsDemo(false)}
+            variant="outline"
+            className="bg-white/90 backdrop-blur-sm border-2 border-black hover:bg-gray-100 font-semibold"
+          >
+            ← Back to Example
+          </Button>
+        </div>
+        <AddMaterialsDemo />
       </div>
     );
   }
@@ -178,6 +219,44 @@ const ExamplePageContent: React.FC<ExamplePageProps> = ({ className }) => {
                 className="bg-[#22E2F8] hover:bg-[#1BC7DC] text-black px-6 py-3 rounded-[30px] border-2 border-black font-semibold transition-all duration-200"
               >
                 📚 View Class Screen Demo
+              </Button>
+            </div>
+
+            {/* Class Information Demo Button */}
+            <div className="mt-6 p-6 bg-white rounded-lg shadow-lg border-2 border-purple-200">
+              <h2 className="text-xl font-semibold mb-4">📋 Class Information Demo - Glassmorphism Card Layout</h2>
+              <p className="text-gray-600 mb-4">
+                View the new class information page with glassmorphism card design featuring expanded class details,
+                student count, dates, room/time information, and progress tracking. Includes function buttons for
+                class management actions.
+              </p>
+              <p className="text-sm text-purple-600 mb-4">
+                <strong>✨ New Features:</strong> Glassmorphism styling with semi-transparent background, gradient borders,
+                backdrop blur effects, icon integration for calendar/clock/location, and reused progress bar styling.
+              </p>
+              <Button
+                onClick={() => setShowClassInformationDemo(true)}
+                className="bg-[#AB2BAF] hover:bg-[#471249] text-white px-6 py-3 rounded-[30px] border-2 border-black font-semibold transition-all duration-200"
+              >
+                🎨 View Class Information Demo
+              </Button>
+            </div>
+
+            {/* Add Materials Demo Button */}
+            <div className="mt-6 p-6 bg-white rounded-lg shadow-lg border-2 border-yellow-200">
+              <h2 className="text-xl font-semibold mb-4">📂 File Management Demo - Materials Page</h2>
+              <p className="text-gray-600 mb-4">
+                View the new materials management page, featuring list, grid, and tree views,
+                drag-and-drop uploads, and a Google Drive-style upload toast notification.
+              </p>
+              <p className="text-sm text-yellow-600 mb-4">
+                <strong>✨ New Features:</strong> View switcher, file/folder creation, and real-time upload progress.
+              </p>
+              <Button
+                onClick={() => setShowAddMaterialsDemo(true)}
+                className="bg-[#F8D222] hover:bg-[#E2BE1B] text-black px-6 py-3 rounded-[30px] border-2 border-black font-semibold transition-all duration-200"
+              >
+                📂 View Materials Demo
               </Button>
             </div>
 

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import authService from '../services/authService';
 import { 
   isAuthenticated, 
@@ -25,6 +25,7 @@ interface ForgotPasswordState {
 
 export const useAuthFlow = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   
   // Authentication state
   const [authState, setAuthState] = useState<AuthState>({
@@ -74,8 +75,11 @@ export const useAuthFlow = () => {
     setError(null);
 
     try {
+      console.log('Attempting login for user:', credentials.username);
       const response = await authService.login(credentials);
-      
+
+      console.log('Login successful for user:', credentials.username);
+
       setAuthState({
         user: response.user || null,
         isLoading: false,
@@ -83,13 +87,26 @@ export const useAuthFlow = () => {
         isAuthenticated: true,
       });
 
-      // Navigate to home page after successful login
-      navigate('/home');
-      
+      // Navigate to intended destination or home page after successful login
+      const from = location.state?.from || '/home';
+      navigate(from, { replace: true });
+
       return response;
     } catch (error: any) {
-      setError(error.message || 'Login failed');
+      console.error('Login failed for user:', credentials.username, 'Error:', error.message);
+
+      // Set user-friendly error message
+      const errorMessage = error.message || 'Login failed. Please try again.';
+      setError(errorMessage);
       setLoading(false);
+
+      // Log additional error details for debugging
+      if (error.name === 'AuthenticationError') {
+        console.warn('Authentication error:', errorMessage);
+      } else {
+        console.error('Unexpected login error:', error);
+      }
+
       throw error;
     }
   }, [navigate, setLoading, setError]);
