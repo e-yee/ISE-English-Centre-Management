@@ -62,7 +62,7 @@ const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
             className={cn(
               // Base styling matching Figma design - reduced border width
               "flex rounded-[10px] border border-black/20 bg-white",
-              "py-2 text-[20px] font-medium font-['Roboto']",
+              "py-2 text-[20px] font-medium font-comfortaa",
               "text-black placeholder:text-black/50",
               // Focus states
               "focus:outline-none focus:border-black/20 focus:ring-0",

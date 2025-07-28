@@ -90,7 +90,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
                 onClick={() => handleItemClick(item)}
                 className={cn(
                   "w-full px-8 py-4 text-left",
-                  "font-['Rhodium_Libre'] text-[24px] font-normal text-black",
+                  "font-comfortaa text-[24px] font-normal text-black",
                   "transition-all duration-200 ease-out",
                   "hover:bg-[#D9D9D9]",
                   "focus:outline-none focus:bg-[#D9D9D9]",

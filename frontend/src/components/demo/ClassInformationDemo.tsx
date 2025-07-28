@@ -67,7 +67,7 @@ const ClassInformationDemoContent: React.FC<ClassInformationDemoProps> = ({ clas
               {/* Left side - Class Name */}
               <div className="flex items-center flex-1">
                 <h1
-                  className="text-[60px] font-normal leading-[1.4em] font-roboto"
+                  className="text-[60px] font-normal leading-[1.4em] font-comfortaa"
                   style={{
                     background: 'linear-gradient(135deg, #AB2BAF 0%, #471249 100%), linear-gradient(90deg, #E634E1 0%, #E634E1 100%)',
                     WebkitBackgroundClip: 'text',

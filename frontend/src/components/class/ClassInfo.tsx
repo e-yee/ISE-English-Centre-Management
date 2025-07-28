@@ -51,7 +51,7 @@ const ClassInfo: React.FC<ClassInfoProps> = ({ classData, studentCount, classNam
                 >
                   <img src={AvatarIcon} alt="Students" className="w-6 h-6" style={{ stroke: 'rgba(30, 30, 30, 0.6)', strokeWidth: '3px' }} />
                   <span
-                    className="font-roboto font-normal leading-[1.4em]"
+                    className="font-comfortaa font-normal leading-[1.4em]"
                     style={{
                       fontSize: '40px',
                       color: 'rgba(0, 0, 0, 0.6)'
@@ -71,7 +71,7 @@ const ClassInfo: React.FC<ClassInfoProps> = ({ classData, studentCount, classNam
                 <div className="flex items-center gap-2">
                   <img src={CalendarIcon} alt="Start Date" className="w-5 h-5" style={{ stroke: 'rgba(30, 30, 30, 0.5)', strokeWidth: '2px' }} />
                   <span
-                    className="font-roboto font-normal leading-[1.4em]"
+                    className="font-comfortaa font-normal leading-[1.4em]"
                     style={{
                       fontSize: '19px',
                       color: 'rgba(0, 0, 0, 0.5)'
@@ -85,7 +85,7 @@ const ClassInfo: React.FC<ClassInfoProps> = ({ classData, studentCount, classNam
                 <div className="flex items-center gap-2">
                   <img src={MapPinIcon} alt="Room" className="w-5 h-5" style={{ stroke: 'rgba(30, 30, 30, 0.6)', strokeWidth: '2px' }} />
                   <span
-                    className="font-roboto font-normal leading-[1.4em]"
+                    className="font-comfortaa font-normal leading-[1.4em]"
                     style={{
                       fontSize: '20px',
                       color: 'rgba(0, 0, 0, 0.6)'
@@ -102,7 +102,7 @@ const ClassInfo: React.FC<ClassInfoProps> = ({ classData, studentCount, classNam
                 <div className="flex items-center gap-2">
                   <img src={CalendarIcon} alt="End Date" className="w-5 h-5" style={{ stroke: 'rgba(30, 30, 30, 0.5)', strokeWidth: '2px' }} />
                   <span
-                    className="font-roboto font-normal leading-[1.4em]"
+                    className="font-comfortaa font-normal leading-[1.4em]"
                     style={{
                       fontSize: '19px',
                       color: 'rgba(0, 0, 0, 0.5)'
@@ -116,7 +116,7 @@ const ClassInfo: React.FC<ClassInfoProps> = ({ classData, studentCount, classNam
                 <div className="flex items-center gap-2">
                   <img src={ClockIcon} alt="Time" className="w-5 h-5" style={{ stroke: 'rgba(30, 30, 30, 0.6)', strokeWidth: '2px' }} />
                   <span
-                    className="font-roboto font-normal leading-[1.4em]"
+                    className="font-comfortaa font-normal leading-[1.4em]"
                     style={{
                       fontSize: '20px',
                       color: 'rgba(0, 0, 0, 0.6)'
@@ -148,7 +148,7 @@ const ClassInfo: React.FC<ClassInfoProps> = ({ classData, studentCount, classNam
 
                 {/* Progress text label at the start */}
                 <span
-                  className="absolute left-3 top-1/2 transform -translate-y-1/2 font-roboto font-normal z-10"
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 font-comfortaa font-normal z-10"
                   style={{
                     fontSize: '16px',
                     lineHeight: '1.4em',
@@ -160,7 +160,7 @@ const ClassInfo: React.FC<ClassInfoProps> = ({ classData, studentCount, classNam
 
                 {/* Percentage text at the end */}
                 <span
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 font-roboto font-normal z-10"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 font-comfortaa font-normal z-10"
                   style={{
                     fontSize: '16px',
                     lineHeight: '1.4em',
@@ -191,7 +191,7 @@ const ClassInfo: React.FC<ClassInfoProps> = ({ classData, studentCount, classNam
           )}
         >
           <h1
-            className="text-[60px] font-normal leading-[1.4em] text-center font-roboto"
+            className="text-[60px] font-normal leading-[1.4em] text-center font-comfortaa"
             style={{
               background: 'linear-gradient(135deg, #AB2BAF 0%, #471249 100%), linear-gradient(90deg, #E634E1 0%, #E634E1 100%)',
               WebkitBackgroundClip: 'text',
@@ -229,7 +229,7 @@ const ClassInfo: React.FC<ClassInfoProps> = ({ classData, studentCount, classNam
 
             {/* Student Count Text */}
             <span
-              className="text-[40px] font-normal leading-[1.4em] text-center font-roboto"
+              className="text-[40px] font-normal leading-[1.4em] text-center font-comfortaa"
               style={{
                 color: 'rgba(0, 0, 0, 0.6)'
               }}

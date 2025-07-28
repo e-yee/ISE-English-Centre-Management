@@ -125,8 +125,8 @@
 }
 
 /* Font family utilities */
-.font-roboto {
-  font-family: 'Roboto', sans-serif;
+.font-comfortaa {
+  font-family: 'Comfortaa', sans-serif;
 }
 
 /* Custom scrollbar styles matching Figma design */
@@ -200,7 +200,7 @@
 
 /* FEATURES title styling - exact Figma specs */
 .sidebar-features-title {
-  font-family: 'Roboto', sans-serif !important;
+  font-family: 'Comfortaa', sans-serif !important;
   font-weight: 700 !important;
   font-size: 20px !important;
   line-height: 1.4em !important;
@@ -210,7 +210,7 @@
 
 /* Menu item text styling - exact Figma specs */
 .sidebar-menu-text {
-  font-family: 'Roboto', sans-serif !important;
+  font-family: 'Comfortaa', sans-serif !important;
   font-weight: 600 !important;
   font-size: 20px !important;
   line-height: 1.4em !important;

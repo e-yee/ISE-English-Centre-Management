@@ -75,7 +75,7 @@ const Class: React.FC<ClassProps> = ({ classData, className }) => {
       )}>
         {/* Top Row - Class Name (left), Status Button (center), Room & Time (right) */}
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-3xl font-bold text-black">
+          <h3 className="text-3xl font-bold text-black font-comfortaa">
             <span className="mr-1">{number}</span>
             {name}
           </h3>
@@ -91,11 +91,11 @@ const Class: React.FC<ClassProps> = ({ classData, className }) => {
           <div className="text-right space-y-0.5">
             <div className="flex items-center justify-end gap-1">
               <img src={MapPinIcon} alt="Room" className="w-4 h-4" />
-              <span className="text-base font-normal text-black">Room: {classData.room}</span>
+              <span className="text-base font-normal text-black font-comfortaa">Room: {classData.room}</span>
             </div>
             <div className="flex items-center justify-end gap-1">
               <img src={ClockIcon} alt="Time" className="w-4 h-4" />
-              <span className="text-base font-normal text-black">Time: {classData.time}</span>
+              <span className="text-base font-normal text-black font-comfortaa">Time: {classData.time}</span>
             </div>
           </div>
         </div>
@@ -104,11 +104,11 @@ const Class: React.FC<ClassProps> = ({ classData, className }) => {
         <div className="flex gap-4 mb-6">
           <div className="flex items-center gap-2">
             <img src={CalendarIcon} alt="Start Date" className="w-4 h-4" />
-            <span className="text-sm font-normal text-black">Start: {classData.startDate}</span>
+            <span className="text-sm font-normal text-black font-comfortaa">Start: {classData.startDate}</span>
           </div>
           <div className="flex items-center gap-2">
             <img src={CalendarIcon} alt="End Date" className="w-4 h-4" />
-            <span className="text-sm font-normal text-black">End: {classData.endDate}</span>
+            <span className="text-sm font-normal text-black font-comfortaa">End: {classData.endDate}</span>
           </div>
         </div>
 
@@ -116,7 +116,7 @@ const Class: React.FC<ClassProps> = ({ classData, className }) => {
         <div className="space-y-3 relative">
           {/* Progress Label */}
           <div className="flex items-center">
-            <span className="text-sm font-normal text-black/60">Progress</span>
+            <span className="text-sm font-normal text-black/60 font-comfortaa">Progress</span>
           </div>
 
           {/* Progress Bar Container - 60% width of card */}
@@ -134,7 +134,7 @@ const Class: React.FC<ClassProps> = ({ classData, className }) => {
 
             {/* Percentage text positioned above the right end of progress bar */}
             <span
-              className="absolute text-xs font-medium text-black/60 z-10 whitespace-nowrap"
+              className="absolute text-xs font-medium text-black/60 z-10 whitespace-nowrap font-comfortaa"
               style={{
                 left: `${progressValue}%`,
                 top: '20px',

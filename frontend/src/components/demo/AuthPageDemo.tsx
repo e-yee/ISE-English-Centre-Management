@@ -86,7 +86,7 @@ const AuthPageDemo: React.FC = () => {
     switch (currentView) {
       case "login":
         return (
-          <Card className="w-full bg-[#EFECE7] border-black border-2 rounded-[30px] shadow-[10px_4px_4px_0px_rgba(0,0,0,0.25)] font-roboto">
+          <Card className="w-full bg-[#EFECE7] border-black border-2 rounded-[30px] shadow-[10px_4px_4px_0px_rgba(0,0,0,0.25)] font-comfortaa">
             <CardHeader className="text-center pb-6">
               {/* Logo - Made bigger */}
               <div className="flex justify-center mb-4">
@@ -94,7 +94,7 @@ const AuthPageDemo: React.FC = () => {
               </div>
 
               {/* Welcome Text - Minimized */}
-              <CardTitle className="text-[60px] font-roboto font-semibold text-[#78746C] leading-[1.4]">
+              <CardTitle className="text-[60px] font-comfortaa font-semibold text-[#78746C] leading-[1.4]">
                 WELCOME
               </CardTitle>
             </CardHeader>
@@ -103,14 +103,14 @@ const AuthPageDemo: React.FC = () => {
               <form onSubmit={(e) => { e.preventDefault(); handleLogin(loginData.username, loginData.password); }} className="space-y-6">
                 {/* Username Field */}
                 <div className="space-y-2">
-                  <label className="block text-[30px] font-roboto font-semibold text-[#000000] text-left leading-[1.4]">
+                  <label className="block text-[30px] font-comfortaa font-semibold text-[#000000] text-left leading-[1.4]">
                     Username
                   </label>
                   <Input
                     type="text"
                     value={loginData.username}
                     onChange={(e) => setLoginData(prev => ({ ...prev, username: e.target.value }))}
-                    className="w-full bg-transparent border-0 border-b border-black rounded-none px-0 py-1 text-[25px] font-roboto text-[#121212] placeholder-[#78746C] focus:ring-0 focus:border-black focus-visible:ring-0 focus-visible:ring-offset-0"
+                    className="w-full bg-transparent border-0 border-b border-black rounded-none px-0 py-1 text-[25px] font-comfortaa text-[#121212] placeholder-[#78746C] focus:ring-0 focus:border-black focus-visible:ring-0 focus-visible:ring-offset-0"
                     placeholder=""
                     required
                     disabled={isLoading}
@@ -119,14 +119,14 @@ const AuthPageDemo: React.FC = () => {
 
                 {/* Password Field */}
                 <div className="space-y-2 relative">
-                  <label className="block text-[30px] font-roboto font-semibold text-[#000000] text-left leading-[1.4]">
+                  <label className="block text-[30px] font-comfortaa font-semibold text-[#000000] text-left leading-[1.4]">
                     Password
                   </label>
                   <Input
                     type="password"
                     value={loginData.password}
                     onChange={(e) => setLoginData(prev => ({ ...prev, password: e.target.value }))}
-                    className="w-full bg-transparent border-0 border-b border-black rounded-none px-0 py-1 text-[25px] font-roboto text-[#121212] placeholder-[#78746C] focus:ring-0 focus:border-black focus-visible:ring-0 focus-visible:ring-offset-0"
+                    className="w-full bg-transparent border-0 border-b border-black rounded-none px-0 py-1 text-[25px] font-comfortaa text-[#121212] placeholder-[#78746C] focus:ring-0 focus:border-black focus-visible:ring-0 focus-visible:ring-offset-0"
                     placeholder=""
                     required
                     disabled={isLoading}
@@ -137,7 +137,7 @@ const AuthPageDemo: React.FC = () => {
                     <button
                       type="button"
                       onClick={handleForgotPassword}
-                      className="text-[25px] font-roboto font-medium text-[rgba(0,0,0,0.65)] hover:underline leading-[1.4]"
+                      className="text-[25px] font-comfortaa font-medium text-[rgba(0,0,0,0.65)] hover:underline leading-[1.4]"
                       disabled={isLoading}
                     >
                       Forgot Password?
@@ -149,7 +149,7 @@ const AuthPageDemo: React.FC = () => {
                 <div className="pt-16 relative">
                   <Button
                     type="submit"
-                    className="relative w-full h-[88px] bg-[rgba(203,175,135,0.3)] text-[#000000] hover:bg-[rgba(203,175,135,0.4)] border-2 border-black rounded-full font-roboto font-semibold transition-all duration-200 disabled:opacity-50"
+                    className="relative w-full h-[88px] bg-[rgba(203,175,135,0.3)] text-[#000000] hover:bg-[rgba(203,175,135,0.4)] border-2 border-black rounded-full font-comfortaa font-semibold transition-all duration-200 disabled:opacity-50"
                     style={{
                       backdropFilter: 'blur(50px)',
                       background: 'rgba(203, 175, 135, 0.3)'
@@ -167,29 +167,29 @@ const AuthPageDemo: React.FC = () => {
         );
       case "forgot-email":
         return (
-          <Card className="w-full bg-[#EFECE7] border-black border-2 rounded-[30px] shadow-[10px_4px_4px_0px_rgba(0,0,0,0.25)] font-roboto">
+          <Card className="w-full bg-[#EFECE7] border-black border-2 rounded-[30px] shadow-[10px_4px_4px_0px_rgba(0,0,0,0.25)] font-comfortaa">
             <CardHeader className="text-center pb-6">
               <div className="flex justify-center mb-4">
                 <img src={logoSvg} alt="Logo" className="w-48 h-auto" />
               </div>
-              <CardTitle className="text-[50px] font-roboto font-semibold text-[#78746C] leading-[1.4]">
+              <CardTitle className="text-[50px] font-comfortaa font-semibold text-[#78746C] leading-[1.4]">
                 FORGOT PASSWORD
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-8 px-12 pb-12">
               <form onSubmit={(e) => { e.preventDefault(); handleForgotPasswordEmail(emailInput); }} className="space-y-8">
-                <p className="text-[20px] font-roboto text-[#78746C] text-center leading-relaxed">
+                <p className="text-[20px] font-comfortaa text-[#78746C] text-center leading-relaxed">
                   Enter your email address and we'll send you a link to reset your password.
                 </p>
                 <div className="space-y-4">
-                  <label className="block text-[30px] font-roboto font-semibold text-[#121212] text-center">
+                  <label className="block text-[30px] font-comfortaa font-semibold text-[#121212] text-center">
                     Email
                   </label>
                   <Input
                     type="email"
                     value={emailInput}
                     onChange={(e) => setEmailInput(e.target.value)}
-                    className="w-full bg-transparent border-0 border-b-2 border-black rounded-none px-0 py-2 text-[25px] font-roboto text-[#121212] placeholder-[#78746C] focus:ring-0 focus:border-black focus-visible:ring-0 focus-visible:ring-offset-0"
+                    className="w-full bg-transparent border-0 border-b-2 border-black rounded-none px-0 py-2 text-[25px] font-comfortaa text-[#121212] placeholder-[#78746C] focus:ring-0 focus:border-black focus-visible:ring-0 focus-visible:ring-offset-0"
                     placeholder="Enter your email"
                     required
                     disabled={isLoading}
@@ -199,14 +199,14 @@ const AuthPageDemo: React.FC = () => {
                   <Button
                     type="button"
                     onClick={handleBackToLogin}
-                    className="flex-1 bg-transparent text-[#121212] hover:bg-[rgba(0,0,0,0.1)] border-2 border-black rounded-[30px] py-4 text-[25px] font-roboto font-medium transition-all duration-200"
+                    className="flex-1 bg-transparent text-[#121212] hover:bg-[rgba(0,0,0,0.1)] border-2 border-black rounded-[30px] py-4 text-[25px] font-comfortaa font-medium transition-all duration-200"
                     disabled={isLoading}
                   >
                     Back
                   </Button>
                   <Button
                     type="submit"
-                    className="flex-1 bg-[rgba(203,175,135,0.3)] text-[#121212] hover:bg-[rgba(203,175,135,0.5)] border-2 border-black rounded-[30px] py-4 text-[25px] font-roboto font-semibold backdrop-blur-[100px] transition-all duration-200 disabled:opacity-50"
+                    className="flex-1 bg-[rgba(203,175,135,0.3)] text-[#121212] hover:bg-[rgba(203,175,135,0.5)] border-2 border-black rounded-[30px] py-4 text-[25px] font-comfortaa font-semibold backdrop-blur-[100px] transition-all duration-200 disabled:opacity-50"
                     disabled={isLoading || !emailInput.trim()}
                   >
                     {isLoading ? "Sending..." : "Send Reset Link"}
@@ -218,32 +218,32 @@ const AuthPageDemo: React.FC = () => {
         );
       case "forgot-verify":
         return (
-          <Card className="w-full bg-[#EFECE7] border-black border-2 rounded-[30px] shadow-[10px_4px_4px_0px_rgba(0,0,0,0.25)] font-roboto">
+          <Card className="w-full bg-[#EFECE7] border-black border-2 rounded-[30px] shadow-[10px_4px_4px_0px_rgba(0,0,0,0.25)] font-comfortaa">
             <CardHeader className="text-center pb-6">
               <div className="flex justify-center mb-4">
                 <img src={logoSvg} alt="Logo" className="w-48 h-auto" />
               </div>
-              <CardTitle className="text-[50px] font-roboto font-semibold text-[#78746C] leading-[1.4]">
+              <CardTitle className="text-[50px] font-comfortaa font-semibold text-[#78746C] leading-[1.4]">
                 VERIFY CODE
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-8 px-12 pb-12">
               <form onSubmit={(e) => { e.preventDefault(); handleForgotPasswordVerify(verificationCode); }} className="space-y-8">
                 <div className="text-center space-y-2">
-                  <p className="text-[20px] font-roboto text-[#78746C] leading-relaxed">
+                  <p className="text-[20px] font-comfortaa text-[#78746C] leading-relaxed">
                     Enter the verification code sent to
                   </p>
-                  <p className="text-[22px] font-roboto font-semibold text-[#121212]">{forgotPasswordEmail}</p>
+                  <p className="text-[22px] font-comfortaa font-semibold text-[#121212]">{forgotPasswordEmail}</p>
                 </div>
                 <div className="space-y-4">
-                  <label className="block text-[30px] font-roboto font-semibold text-[#121212] text-center">
+                  <label className="block text-[30px] font-comfortaa font-semibold text-[#121212] text-center">
                     Verification Code
                   </label>
                   <Input
                     type="text"
                     value={verificationCode}
                     onChange={(e) => setVerificationCode(e.target.value)}
-                    className="w-full bg-transparent border-0 border-b-2 border-black rounded-none px-0 py-2 text-[25px] font-roboto text-[#121212] placeholder-[#78746C] focus:ring-0 focus:border-black focus-visible:ring-0 focus-visible:ring-offset-0 text-center tracking-widest"
+                    className="w-full bg-transparent border-0 border-b-2 border-black rounded-none px-0 py-2 text-[25px] font-comfortaa text-[#121212] placeholder-[#78746C] focus:ring-0 focus:border-black focus-visible:ring-0 focus-visible:ring-offset-0 text-center tracking-widest"
                     placeholder="Enter verification code"
                     required
                     disabled={isLoading}
@@ -254,14 +254,14 @@ const AuthPageDemo: React.FC = () => {
                   <Button
                     type="button"
                     onClick={handleBackToLogin}
-                    className="flex-1 bg-transparent text-[#121212] hover:bg-[rgba(0,0,0,0.1)] border-2 border-black rounded-[30px] py-4 text-[25px] font-roboto font-medium transition-all duration-200"
+                    className="flex-1 bg-transparent text-[#121212] hover:bg-[rgba(0,0,0,0.1)] border-2 border-black rounded-[30px] py-4 text-[25px] font-comfortaa font-medium transition-all duration-200"
                     disabled={isLoading}
                   >
                     Back
                   </Button>
                   <Button
                     type="submit"
-                    className="flex-1 bg-[rgba(203,175,135,0.3)] text-[#121212] hover:bg-[rgba(203,175,135,0.5)] border-2 border-black rounded-[30px] py-4 text-[25px] font-roboto font-semibold backdrop-blur-[100px] transition-all duration-200 disabled:opacity-50"
+                    className="flex-1 bg-[rgba(203,175,135,0.3)] text-[#121212] hover:bg-[rgba(203,175,135,0.5)] border-2 border-black rounded-[30px] py-4 text-[25px] font-comfortaa font-semibold backdrop-blur-[100px] transition-all duration-200 disabled:opacity-50"
                     disabled={isLoading || !verificationCode.trim()}
                   >
                     {isLoading ? "Verifying..." : "Verify"}
@@ -273,46 +273,46 @@ const AuthPageDemo: React.FC = () => {
         );
       case "forgot-new-password":
         return (
-          <Card className="w-full bg-[#EFECE7] border-black border-2 rounded-[30px] shadow-[10px_4px_4px_0px_rgba(0,0,0,0.25)] font-roboto">
+          <Card className="w-full bg-[#EFECE7] border-black border-2 rounded-[30px] shadow-[10px_4px_4px_0px_rgba(0,0,0,0.25)] font-comfortaa">
             <CardHeader className="text-center pb-6">
               <div className="flex justify-center mb-4">
                 <img src={logoSvg} alt="Logo" className="w-48 h-auto" />
               </div>
-              <CardTitle className="text-[50px] font-roboto font-semibold text-[#78746C] leading-[1.4]">
+              <CardTitle className="text-[50px] font-comfortaa font-semibold text-[#78746C] leading-[1.4]">
                 NEW PASSWORD
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-8 px-12 pb-12">
               <form onSubmit={(e) => { e.preventDefault(); handleForgotPasswordReset(passwordData.newPassword, passwordData.confirmPassword); }} className="space-y-8">
                 <div className="text-center space-y-2">
-                  <p className="text-[20px] font-roboto text-[#78746C] leading-relaxed">
+                  <p className="text-[20px] font-comfortaa text-[#78746C] leading-relaxed">
                     Enter your new password for
                   </p>
-                  <p className="text-[22px] font-roboto font-semibold text-[#121212]">{forgotPasswordEmail}</p>
+                  <p className="text-[22px] font-comfortaa font-semibold text-[#121212]">{forgotPasswordEmail}</p>
                 </div>
                 <div className="space-y-4">
-                  <label className="block text-[30px] font-roboto font-semibold text-[#121212] text-center">
+                  <label className="block text-[30px] font-comfortaa font-semibold text-[#121212] text-center">
                     New Password
                   </label>
                   <Input
                     type="password"
                     value={passwordData.newPassword}
                     onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
-                    className="w-full bg-transparent border-0 border-b-2 border-black rounded-none px-0 py-2 text-[25px] font-roboto text-[#121212] placeholder-[#78746C] focus:ring-0 focus:border-black focus-visible:ring-0 focus-visible:ring-offset-0"
+                    className="w-full bg-transparent border-0 border-b-2 border-black rounded-none px-0 py-2 text-[25px] font-comfortaa text-[#121212] placeholder-[#78746C] focus:ring-0 focus:border-black focus-visible:ring-0 focus-visible:ring-offset-0"
                     placeholder="Enter new password"
                     required
                     disabled={isLoading}
                   />
                 </div>
                 <div className="space-y-4">
-                  <label className="block text-[30px] font-roboto font-semibold text-[#121212] text-center">
+                  <label className="block text-[30px] font-comfortaa font-semibold text-[#121212] text-center">
                     Confirm Password
                   </label>
                   <Input
                     type="password"
                     value={passwordData.confirmPassword}
                     onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                    className="w-full bg-transparent border-0 border-b-2 border-black rounded-none px-0 py-2 text-[25px] font-roboto text-[#121212] placeholder-[#78746C] focus:ring-0 focus:border-black focus-visible:ring-0 focus-visible:ring-offset-0"
+                    className="w-full bg-transparent border-0 border-b-2 border-black rounded-none px-0 py-2 text-[25px] font-comfortaa text-[#121212] placeholder-[#78746C] focus:ring-0 focus:border-black focus-visible:ring-0 focus-visible:ring-offset-0"
                     placeholder="Confirm new password"
                     required
                     disabled={isLoading}
@@ -321,7 +321,7 @@ const AuthPageDemo: React.FC = () => {
                 <div className="pt-6">
                   <Button
                     type="submit"
-                    className="w-full bg-[rgba(203,175,135,0.3)] text-[#121212] hover:bg-[rgba(203,175,135,0.5)] border-2 border-black rounded-[30px] py-6 text-[40px] font-roboto font-semibold backdrop-blur-[100px] transition-all duration-200 disabled:opacity-50"
+                    className="w-full bg-[rgba(203,175,135,0.3)] text-[#121212] hover:bg-[rgba(203,175,135,0.5)] border-2 border-black rounded-[30px] py-6 text-[40px] font-comfortaa font-semibold backdrop-blur-[100px] transition-all duration-200 disabled:opacity-50"
                     disabled={isLoading || !passwordData.newPassword || !passwordData.confirmPassword}
                   >
                     {isLoading ? "Updating..." : "Confirm"}
@@ -338,9 +338,7 @@ const AuthPageDemo: React.FC = () => {
 
   return (
     <div className="h-screen w-screen overflow-hidden bg-[#F5F5F5]">
-      <style>
-        {`@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap');`}
-      </style>
+
 
       <div className="flex h-full">
         {/* Left Half - Auth Form */}

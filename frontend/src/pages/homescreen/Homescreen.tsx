@@ -38,7 +38,7 @@ const HomescreenPageContent: React.FC<HomescreenPageProps> = ({ className }) => 
   };
 
   return (
-    <div className={cn("h-screen w-screen bg-gray-50 overflow-hidden", className)}>
+    <div className={cn("h-screen w-screen bg-gray-50 overflow-hidden font-comfortaa", className)}>
       {/* Header - Always at top, full width */}
       <div className="w-full h-20"> {/* Fixed header height */}
         <Header isRegistered={true} />

@@ -17,7 +17,7 @@ const SidebarTestPageContent: React.FC<SidebarTestPageProps> = ({ className }) =
   const isExpanded = state === "expanded";
 
   return (
-    <div className={cn("min-h-screen bg-gray-50", className)}>
+    <div className={cn("min-h-screen bg-gray-50 font-comfortaa", className)}>
       {/* Header - Always at top */}
       <Header isRegistered={true} />
 

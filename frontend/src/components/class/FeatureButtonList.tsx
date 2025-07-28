@@ -85,7 +85,7 @@ const FeatureButtonList: React.FC<FeatureButtonListProps> = ({ className }) => {
           >
             <span className={cn(
               // Typography reduced to match status button size
-              "text-[16px] font-semibold text-black leading-[1em] font-roboto",
+              "text-[16px] font-semibold text-black leading-[1em] font-comfortaa",
               "whitespace-nowrap"
             )}>
               {button.title}

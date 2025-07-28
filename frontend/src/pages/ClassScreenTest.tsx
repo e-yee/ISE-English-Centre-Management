@@ -6,7 +6,7 @@ const ClassScreenTest: React.FC = () => {
   const [selectedClassId, setSelectedClassId] = useState('CL001');
 
   return (
-    <div>
+    <div className="font-comfortaa">
       {/* Class Selector for Testing */}
       <div className="fixed top-4 right-4 z-50 bg-white p-4 border border-gray-300 rounded shadow">
         <label className="block text-sm font-medium mb-2">Select Class:</label>

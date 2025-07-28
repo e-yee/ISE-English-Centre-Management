@@ -11,6 +11,8 @@ import ClassInformationDemo from "@/components/demo/ClassInformationDemo";
 import RevealOnScroll from "@/components/ui/RevealOnScroll";
 import ClassScreen from "./class/ClassScreen";
 import AddMaterialsDemo from "@/components/demo/AddMaterialsDemo";
+import ProfileSettingPage from "./profile/ProfileSettingPage";
+import AbsentRequestPage from "./absent-request/AbsentRequestPage";
 
 interface ExamplePageProps {
   className?: string;
@@ -25,6 +27,8 @@ const ExamplePageContent: React.FC<ExamplePageProps> = ({ className }) => {
   const [showClassScreenDemo, setShowClassScreenDemo] = useState(false);
   const [showClassInformationDemo, setShowClassInformationDemo] = useState(false);
   const [showAddMaterialsDemo, setShowAddMaterialsDemo] = useState(false);
+  const [showProfileSettingDemo, setShowProfileSettingDemo] = useState(false);
+  const [showAbsentRequestDemo, setShowAbsentRequestDemo] = useState(false);
 
   // If showing homescreen demo, render it instead of the example content
   if (showHomescreenDemo) {
@@ -101,6 +105,42 @@ const ExamplePageContent: React.FC<ExamplePageProps> = ({ className }) => {
     );
   }
 
+  if (showProfileSettingDemo) {
+    return (
+      <div className="relative">
+        {/* Back button overlay */}
+        <div className="absolute bottom-4 left-4 z-50">
+          <Button
+            onClick={() => setShowProfileSettingDemo(false)}
+            variant="outline"
+            className="bg-white/90 backdrop-blur-sm border-2 border-black hover:bg-gray-100 font-semibold"
+          >
+            ← Back to Example
+          </Button>
+        </div>
+        <ProfileSettingPage />
+      </div>
+    );
+  }
+
+  if (showAbsentRequestDemo) {
+    return (
+      <div className="relative">
+        {/* Back button overlay */}
+        <div className="absolute bottom-4 left-4 z-50">
+          <Button
+            onClick={() => setShowAbsentRequestDemo(false)}
+            variant="outline"
+            className="bg-white/90 backdrop-blur-sm border-2 border-black hover:bg-gray-100 font-semibold"
+          >
+            ← Back to Example
+          </Button>
+        </div>
+        <AbsentRequestPage />
+      </div>
+    );
+  }
+
   // If showing auth page, render it instead of the example content
   if (showAuthPage) {
     return (
@@ -121,7 +161,7 @@ const ExamplePageContent: React.FC<ExamplePageProps> = ({ className }) => {
   }
 
   return (
-    <div className={cn("h-screen w-screen bg-gray-50 overflow-hidden", className)}>
+    <div className={cn("h-screen w-screen bg-gray-50 overflow-hidden font-comfortaa", className)}>
       {/* Header - Always at top, full width */}
       <div className="w-full h-20"> {/* Fixed header height */}
         <Header isRegistered={true} />
@@ -257,6 +297,44 @@ const ExamplePageContent: React.FC<ExamplePageProps> = ({ className }) => {
                 className="bg-[#F8D222] hover:bg-[#E2BE1B] text-black px-6 py-3 rounded-[30px] border-2 border-black font-semibold transition-all duration-200"
               >
                 📂 View Materials Demo
+              </Button>
+            </div>
+
+            {/* Profile Setting Demo Button */}
+            <div className="mt-6 p-6 bg-white rounded-lg shadow-lg border-2 border-blue-200">
+              <h2 className="text-xl font-semibold mb-4">👤 Profile Setting Demo - User Profile Management</h2>
+              <p className="text-gray-600 mb-4">
+                View the new profile settings page with editable user information, contact management,
+                and responsive design that matches the Figma specifications.
+              </p>
+              <p className="text-sm text-blue-600 mb-4">
+                <strong>✨ New Features:</strong> Editable fields (nickname, philosophy, achievements),
+                contact section with email display, and responsive layout with sidebar integration.
+              </p>
+              <Button
+                onClick={() => setShowProfileSettingDemo(true)}
+                className="bg-[#4A90E2] hover:bg-[#357ABD] text-white px-6 py-3 rounded-[30px] border-2 border-black font-semibold transition-all duration-200"
+              >
+                👤 View Profile Setting Demo
+              </Button>
+            </div>
+
+            {/* Absent Request Demo Button */}
+            <div className="mt-6 p-6 bg-white rounded-lg shadow-lg border-2 border-red-200">
+              <h2 className="text-xl font-semibold mb-4">📝 Absent Request Demo - Absence Form</h2>
+              <p className="text-gray-600 mb-4">
+                View the new absent request page with a form for submitting absence requests,
+                including date pickers and a textarea for notes.
+              </p>
+              <p className="text-sm text-red-600 mb-4">
+                <strong>✨ New Features:</strong> Date pickers with popover calendars,
+                a reusable textarea component, and a clean form layout.
+              </p>
+              <Button
+                onClick={() => setShowAbsentRequestDemo(true)}
+                className="bg-[#E2445C] hover:bg-[#C73349] text-white px-6 py-3 rounded-[30px] border-2 border-black font-semibold transition-all duration-200"
+              >
+                📝 View Absent Request Demo
               </Button>
             </div>
 

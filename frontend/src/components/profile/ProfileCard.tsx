@@ -1,0 +1,212 @@
+import React, { useState } from "react";
+import { cn } from "@/lib/utils";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import avatarIcon from "@/assets/header/avatar.svg";
+import mailIcon from "@/assets/header/mail.svg";
+import profileBg from "@/assets/frame.svg";
+
+interface ProfileCardProps {
+  className?: string;
+}
+
+interface UserProfile {
+  name: string;
+  email: string;
+  nickname: string;
+  philosophy: string;
+  achievements: string;
+}
+
+const ProfileCard: React.FC<ProfileCardProps> = ({ className }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [profile, setProfile] = useState<UserProfile>({
+    name: "Nguyen Minh Khoi",
+    email: "nmkhoi231@clc.fitus.edu.vn",
+    nickname: "Your nick name",
+    philosophy: "Your philosophy...",
+    achievements: "Your achievements"
+  });
+
+  const [editProfile, setEditProfile] = useState<UserProfile>(profile);
+
+  const handleEdit = () => {
+    setEditProfile(profile);
+    setIsEditing(true);
+  };
+
+  const handleSave = () => {
+    setProfile(editProfile);
+    setIsEditing(false);
+  };
+
+  const handleCancel = () => {
+    setEditProfile(profile);
+    setIsEditing(false);
+  };
+
+  const handleInputChange = (field: keyof UserProfile, value: string) => {
+    setEditProfile(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  return (
+    <Card className={cn("bg-white rounded-[15px] overflow-hidden shadow-lg", className)}>
+      {/* Profile Header with Background Image */}
+      <div className="relative h-20 rounded-t-[15px]">
+        <img src={profileBg} alt="Profile Background" className="w-full h-full object-cover rounded-t-[15px]" />
+      </div>
+
+      <CardContent className="p-9">
+        {/* User Information Section */}
+        <div className="flex items-center gap-7 mb-6">
+          {/* Avatar */}
+          <div className="w-24 h-24 rounded-full bg-[#EADDFF] flex items-center justify-center -mt-12">
+            <img src={avatarIcon} alt="Avatar" className="w-12 h-12" />
+          </div>
+
+          {/* User Details */}
+          <div className="flex-1">
+            <h2 className="text-[30px] font-bold text-black mb-2">
+              {profile.name}
+            </h2>
+            <p className="text-[24px] font-semibold text-gray-600">
+              {profile.email}
+            </p>
+          </div>
+
+          {/* Edit Button */}
+          <Button
+            onClick={isEditing ? handleSave : handleEdit}
+            className={cn(
+              "px-9 py-5 rounded-[15px] font-bold text-[28px] transition-all duration-200",
+              isEditing 
+                ? "bg-green-500 hover:bg-green-600 text-white" 
+                : "bg-[#AACEEC] hover:bg-blue-400 text-black"
+            )}
+          >
+            {isEditing ? "Save" : "Edit"}
+          </Button>
+        </div>
+
+        {/* Editable Fields Section */}
+        <div className="grid grid-cols-2 gap-x-8">
+          {/* Left Column */}
+          <div className="space-y-4">
+            {/* Nickname Field */}
+            <div className="space-y-3">
+              <label className="text-[22px] font-bold text-black">
+                Nick name
+              </label>
+              {isEditing ? (
+                <Input
+                  value={editProfile.nickname}
+                  onChange={(e) => handleInputChange('nickname', e.target.value)}
+                  className="h-[43px] rounded-[10px] border-2 border-gray-300 bg-gray-100/30 px-5 font-bold text-[16px]"
+                  placeholder="Your nick name"
+                />
+              ) : (
+                <div className="h-[43px] rounded-[10px] border-2 border-gray-300 bg-gray-100/30 px-5 flex items-center">
+                  <span className="font-bold text-[16px] text-gray-500">
+                    {profile.nickname}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Philosophy Field */}
+            <div className="space-y-3">
+              <label className="text-[22px] font-bold text-black">
+                Philosophy
+              </label>
+              {isEditing ? (
+                <textarea
+                  value={editProfile.philosophy}
+                  onChange={(e) => handleInputChange('philosophy', e.target.value)}
+                  className="w-full h-[95px] rounded-[10px] border-2 border-gray-300 bg-gray-100/30 px-3 py-2 font-bold text-[16px] resize-none"
+                  placeholder="Your philosophy..."
+                />
+              ) : (
+                <div className="h-[95px] rounded-[10px] border-2 border-gray-300 bg-gray-100/30 px-3 py-2 flex items-start">
+                  <span className="font-bold text-[16px] text-gray-500">
+                    {profile.philosophy}
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+          
+          {/* Right Column */}
+          <div className="flex flex-col">
+            <div className="space-y-3 flex flex-col h-full">
+              <label className="text-[22px] font-bold text-black">
+                Achievements
+              </label>
+              {isEditing ? (
+                <textarea
+                  value={editProfile.achievements}
+                  onChange={(e) => handleInputChange('achievements', e.target.value)}
+                  className="w-full flex-grow rounded-[10px] border-2 border-gray-300 bg-gray-100/30 px-3 py-2 font-bold text-[16px] resize-none"
+                  placeholder="Your achievements"
+                />
+              ) : (
+                <div className="w-full flex-grow rounded-[10px] border-2 border-gray-300 bg-gray-100/30 px-3 py-2 flex items-start">
+                  <span className="font-bold text-[16px] text-gray-500">
+                    {profile.achievements}
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Contacts Section */}
+        <div className="mt-8 space-y-1">
+          <h3 className="text-[26px] font-bold text-black">
+            Contacts
+          </h3>
+          
+          {/* Email Contact */}
+          <div className="flex items-center gap-3">
+            {/* Email Icon */}
+            <div className="w-[50px] h-[50px] rounded-[32px] bg-[#B9D8FF] flex items-center justify-center">
+              <img src={mailIcon} alt="Mail" className="w-6 h-6" />
+            </div>
+            
+            {/* Email Address */}
+            <span className="text-[20px] font-bold text-gray-600">
+              {profile.email}
+            </span>
+          </div>
+          
+          {/* Add Contact Button */}
+          <div className="mt-4">
+            <Button
+              className="px-[54px] py-3 rounded-[7px] bg-[rgba(207,224,255,0.51)] text-[#3384FF] font-normal text-[20px] hover:bg-[rgba(207,224,255,0.7)] transition-all duration-200"
+            >
+              +Add Contact
+            </Button>
+          </div>
+        </div>
+
+        {/* Cancel Button (only shown when editing) */}
+        {isEditing && (
+          <div className="mt-6 flex justify-end">
+            <Button
+              onClick={handleCancel}
+              variant="outline"
+              className="px-6 py-2 rounded-[10px] border-2 border-gray-300 text-gray-600 font-semibold"
+            >
+              Cancel
+            </Button>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+};
+
+export default ProfileCard; 

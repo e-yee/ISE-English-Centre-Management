@@ -32,7 +32,7 @@ export function LoginForm({ onForgotPassword, onSubmit, isLoading = false }: Log
   };
 
   return (
-    <Card className="w-full max-w-lg mx-auto bg-[#EFECE7] border-black border-2 rounded-[30px] shadow-[10px_4px_4px_0px_rgba(0,0,0,0.25)] font-roboto">
+    <Card className="w-full max-w-lg mx-auto bg-[#EFECE7] border-black border-2 rounded-[30px] shadow-[10px_4px_4px_0px_rgba(0,0,0,0.25)] font-comfortaa">
       <CardHeader className="text-center pb-6">
         {/* Logo - Made bigger */}
         <div className="flex justify-center mb-4">
@@ -40,7 +40,7 @@ export function LoginForm({ onForgotPassword, onSubmit, isLoading = false }: Log
         </div>
 
         {/* Welcome Text - Minimized */}
-        <CardTitle className="text-[60px] font-roboto font-semibold text-[#78746C] leading-[1.4]">
+        <CardTitle className="text-[60px] font-comfortaa font-semibold text-[#78746C] leading-[1.4]">
           WELCOME
         </CardTitle>
       </CardHeader>
@@ -51,7 +51,7 @@ export function LoginForm({ onForgotPassword, onSubmit, isLoading = false }: Log
           <div className="space-y-2">
             <label
               htmlFor="username"
-              className="block text-[30px] font-roboto font-semibold text-[#000000] text-left leading-[1.4]"
+              className="block text-[30px] font-comfortaa font-semibold text-[#000000] text-left leading-[1.4]"
             >
               Username
             </label>
@@ -60,7 +60,7 @@ export function LoginForm({ onForgotPassword, onSubmit, isLoading = false }: Log
               type="text"
               value={formData.username}
               onChange={(e) => handleInputChange("username", e.target.value)}
-              className="w-full bg-transparent border-0 border-b border-black rounded-none px-0 py-1 text-[25px] font-roboto text-[#121212] placeholder-[#78746C] focus:ring-0 focus:border-black focus-visible:ring-0 focus-visible:ring-offset-0"
+              className="w-full bg-transparent border-0 border-b border-black rounded-none px-0 py-1 text-[25px] font-comfortaa text-[#121212] placeholder-[#78746C] focus:ring-0 focus:border-black focus-visible:ring-0 focus-visible:ring-offset-0"
               placeholder=""
               required
               disabled={isLoading}
@@ -71,7 +71,7 @@ export function LoginForm({ onForgotPassword, onSubmit, isLoading = false }: Log
           <div className="space-y-2 relative">
             <label
               htmlFor="password"
-              className="block text-[30px] font-roboto font-semibold text-[#000000] text-left leading-[1.4]"
+              className="block text-[30px] font-comfortaa font-semibold text-[#000000] text-left leading-[1.4]"
             >
               Password
             </label>
@@ -80,7 +80,7 @@ export function LoginForm({ onForgotPassword, onSubmit, isLoading = false }: Log
               type="password"
               value={formData.password}
               onChange={(e) => handleInputChange("password", e.target.value)}
-              className="w-full bg-transparent border-0 border-b border-black rounded-none px-0 py-1 text-[25px] font-roboto text-[#121212] placeholder-[#78746C] focus:ring-0 focus:border-black focus-visible:ring-0 focus-visible:ring-offset-0"
+              className="w-full bg-transparent border-0 border-b border-black rounded-none px-0 py-1 text-[25px] font-comfortaa text-[#121212] placeholder-[#78746C] focus:ring-0 focus:border-black focus-visible:ring-0 focus-visible:ring-offset-0"
               placeholder=""
               required
               disabled={isLoading}
@@ -91,7 +91,7 @@ export function LoginForm({ onForgotPassword, onSubmit, isLoading = false }: Log
               <button
                 type="button"
                 onClick={onForgotPassword}
-                className="text-[25px] font-roboto font-medium text-[rgba(0,0,0,0.65)] hover:underline leading-[1.4]"
+                className="text-[25px] font-comfortaa font-medium text-[rgba(0,0,0,0.65)] hover:underline leading-[1.4]"
                 disabled={isLoading}
               >
                 Forgot Password?
@@ -103,7 +103,7 @@ export function LoginForm({ onForgotPassword, onSubmit, isLoading = false }: Log
           <div className="pt-16 relative">
             <Button
               type="submit"
-              className="relative w-full h-[88px] bg-[rgba(203,175,135,0.3)] text-[#000000] hover:bg-[rgba(203,175,135,0.4)] border-2 border-black rounded-full font-roboto font-semibold transition-all duration-200 disabled:opacity-50"
+              className="relative w-full h-[88px] bg-[rgba(203,175,135,0.3)] text-[#000000] hover:bg-[rgba(203,175,135,0.4)] border-2 border-black rounded-full font-comfortaa font-semibold transition-all duration-200 disabled:opacity-50"
               style={{
                 backdropFilter: 'blur(50px)',
                 background: 'rgba(203, 175, 135, 0.3)'

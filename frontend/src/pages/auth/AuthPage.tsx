@@ -157,10 +157,8 @@ const AuthPage: React.FC = () => {
   };
 
   return (
-    <div className="h-screen w-screen overflow-hidden bg-[#F5F5F5]">
-      <style>
-        {`@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap');`}
-      </style>
+    <div className="h-screen w-screen overflow-hidden bg-[#F5F5F5] font-comfortaa">
+
 
       <div className="flex h-full">
         {/* Left Half - Auth Form */}

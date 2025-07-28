@@ -42,19 +42,19 @@ const StudentTab: React.FC<StudentTabProps> = ({ studentData, className }) => {
           {/* Student Name and ID Section - Reduced sizes */}
           <div className="flex items-start mb-2">
             {/* Index Number - Reduced size */}
-            <span className="w-[20px] flex-shrink-0 pr-1 text-right text-[24px] font-semibold text-[rgba(0,0,0,0.75)] leading-[1.2em] font-roboto">
+            <span className="w-[20px] flex-shrink-0 pr-1 text-right text-[24px] font-semibold text-[rgba(0,0,0,0.75)] leading-[1.2em] font-comfortaa">
               {index}.
             </span>
 
             {/* Name and ID Column - Vertically aligned with reduced sizes */}
             <div className="flex flex-col justify-center">
               {/* Student Name - Reduced from 40px to 24px */}
-              <div className="text-[24px] font-semibold text-[rgba(0,0,0,0.75)] leading-[1.2em] font-roboto">
+              <div className="text-[24px] font-semibold text-[rgba(0,0,0,0.75)] leading-[1.2em] font-comfortaa">
                 {name}
               </div>
 
               {/* Student ID - Reduced from 20px to 14px */}
-              <div className="text-[14px] font-medium text-[rgba(0,0,0,0.9)] leading-[1.2em] font-roboto">
+              <div className="text-[14px] font-medium text-[rgba(0,0,0,0.9)] leading-[1.2em] font-comfortaa">
                 ID: {studentId}
               </div>
             </div>
@@ -64,14 +64,14 @@ const StudentTab: React.FC<StudentTabProps> = ({ studentData, className }) => {
           <div className="grid grid-cols-2 grid-rows-3 gap-x-2 gap-y-1">
             {/* Row 1 - Email and DoB */}
             <div className="space-y-0.5">
-              <label className="text-[12px] font-normal text-[rgba(0,0,0,0.5)] font-roboto leading-[1.2em]">
+              <label className="text-[12px] font-normal text-[rgba(0,0,0,0.5)] font-comfortaa leading-[1.2em]">
                 Email:
               </label>
               <div className="relative flex items-center gap-1">
                 <Input
                   value=""
                   readOnly
-                  className="flex-1 h-6 rounded-[3px] border border-[rgba(0,0,0,0.45)] bg-[rgba(217,217,217,0.3)] px-2 text-[12px] font-normal text-[rgba(0,0,0,0.65)] font-roboto text-center"
+                  className="flex-1 h-6 rounded-[3px] border border-[rgba(0,0,0,0.45)] bg-[rgba(217,217,217,0.3)] px-2 text-[12px] font-normal text-[rgba(0,0,0,0.65)] font-comfortaa text-center"
                   placeholder=""
                 />
                 <button
@@ -89,14 +89,14 @@ const StudentTab: React.FC<StudentTabProps> = ({ studentData, className }) => {
             </div>
 
             <div className="space-y-0.5">
-              <label className="text-[12px] font-normal text-[rgba(0,0,0,0.5)] font-roboto leading-[1.2em]">
+              <label className="text-[12px] font-normal text-[rgba(0,0,0,0.5)] font-comfortaa leading-[1.2em]">
                 DoB:
               </label>
               <div className="relative flex items-center gap-1">
                 <Input
                   value=""
                   readOnly
-                  className="flex-1 h-6 rounded-[3px] border border-[rgba(0,0,0,0.45)] bg-[rgba(217,217,217,0.3)] px-2 text-[12px] font-normal text-[rgba(0,0,0,0.65)] font-roboto text-center"
+                  className="flex-1 h-6 rounded-[3px] border border-[rgba(0,0,0,0.45)] bg-[rgba(217,217,217,0.3)] px-2 text-[12px] font-normal text-[rgba(0,0,0,0.65)] font-comfortaa text-center"
                   placeholder=""
                 />
                 <button
@@ -115,14 +115,14 @@ const StudentTab: React.FC<StudentTabProps> = ({ studentData, className }) => {
 
             {/* Row 2 - Phone and Presence */}
             <div className="space-y-0.5">
-              <label className="text-[12px] font-normal text-[rgba(0,0,0,0.5)] font-roboto leading-[1.2em]">
+              <label className="text-[12px] font-normal text-[rgba(0,0,0,0.5)] font-comfortaa leading-[1.2em]">
                 Phone:
               </label>
               <div className="relative flex items-center gap-1">
                 <Input
                   value=""
                   readOnly
-                  className="flex-1 h-6 rounded-[3px] border border-[rgba(0,0,0,0.45)] bg-[rgba(217,217,217,0.3)] px-2 text-[12px] font-normal text-[rgba(0,0,0,0.65)] font-roboto text-center"
+                  className="flex-1 h-6 rounded-[3px] border border-[rgba(0,0,0,0.45)] bg-[rgba(217,217,217,0.3)] px-2 text-[12px] font-normal text-[rgba(0,0,0,0.65)] font-comfortaa text-center"
                   placeholder=""
                 />
                 <button
@@ -140,14 +140,14 @@ const StudentTab: React.FC<StudentTabProps> = ({ studentData, className }) => {
             </div>
 
             <div className="space-y-0.5">
-              <label className="text-[12px] font-normal text-[rgba(0,0,0,0.5)] font-roboto leading-[1.2em]">
+              <label className="text-[12px] font-normal text-[rgba(0,0,0,0.5)] font-comfortaa leading-[1.2em]">
                 Presence:
               </label>
               <div className="relative flex items-center gap-1">
                 <Input
                   value=""
                   readOnly
-                  className="flex-1 h-6 rounded-[3px] border border-[rgba(0,0,0,0.45)] bg-[rgba(217,217,217,0.3)] px-2 text-[12px] font-normal text-[rgba(0,0,0,0.65)] font-roboto text-center"
+                  className="flex-1 h-6 rounded-[3px] border border-[rgba(0,0,0,0.45)] bg-[rgba(217,217,217,0.3)] px-2 text-[12px] font-normal text-[rgba(0,0,0,0.65)] font-comfortaa text-center"
                   placeholder=""
                 />
                 <button
@@ -166,14 +166,14 @@ const StudentTab: React.FC<StudentTabProps> = ({ studentData, className }) => {
 
             {/* Row 3 - Note spans both columns */}
             <div className="col-span-2 space-y-0.5">
-              <label className="text-[12px] font-normal text-[rgba(0,0,0,0.5)] font-roboto leading-[1.2em]">
+              <label className="text-[12px] font-normal text-[rgba(0,0,0,0.5)] font-comfortaa leading-[1.2em]">
                 Note:
               </label>
               <div className="relative flex items-start gap-1">
                 <textarea
                   value=""
                   readOnly
-                  className="flex-1 h-10 rounded-[3px] border border-[rgba(0,0,0,0.45)] bg-[rgba(217,217,217,0.3)] px-2 py-1 text-[12px] font-normal text-[rgba(0,0,0,0.65)] font-roboto resize-none focus:outline-none focus:border-black focus:ring-0"
+                  className="flex-1 h-10 rounded-[3px] border border-[rgba(0,0,0,0.45)] bg-[rgba(217,217,217,0.3)] px-2 py-1 text-[12px] font-normal text-[rgba(0,0,0,0.65)] font-comfortaa resize-none focus:outline-none focus:border-black focus:ring-0"
                   placeholder=""
                 />
                 <button
