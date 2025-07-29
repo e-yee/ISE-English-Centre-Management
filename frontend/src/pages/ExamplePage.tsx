@@ -16,6 +16,7 @@ import AbsentRequestPage from "./absent-request/AbsentRequestPage";
 import AttendancePageDemo from "@/components/demo/AttendancePageDemo";
 import DevelopmentProgressList from "@/components/demo/DevelopmentProgressList";
 import ClassReportPage from "./class-report/ClassReportPage";
+import CheckInPage from "./checkin/CheckInPage";
 import { List, Grid3X3 } from "lucide-react";
 
 interface ExamplePageProps {
@@ -124,6 +125,17 @@ const developmentItems = [
     demoComponent: ClassReportPage
   },
   {
+    id: "checkin-page",
+    name: "Check In",
+    description: "Timekeeping interface with check-in and recent time entries tracking",
+    status: "completed" as const,
+    priority: "medium" as const,
+    category: "Pages",
+    lastUpdated: "2024-01-18",
+    demoAvailable: true,
+    demoComponent: CheckInPage
+  },
+  {
     id: "sidebar",
     name: "Sidebar Navigation",
     description: "Collapsible sidebar with navigation items",
@@ -188,6 +200,7 @@ const ExamplePageContent: React.FC<ExamplePageProps> = ({ className }) => {
   const [showAbsentRequestDemo, setShowAbsentRequestDemo] = useState(false);
   const [showAttendancePageDemo, setShowAttendancePageDemo] = useState(false);
   const [showClassReportDemo, setShowClassReportDemo] = useState(false);
+  const [showCheckInDemo, setShowCheckInDemo] = useState(false);
   const [viewMode, setViewMode] = useState<'cards' | 'list'>('cards');
 
   // Handle demo viewing from list
@@ -201,6 +214,7 @@ const ExamplePageContent: React.FC<ExamplePageProps> = ({ className }) => {
     else if (item.id === 'absent-request') setShowAbsentRequestDemo(true);
     else if (item.id === 'attendance-page') setShowAttendancePageDemo(true);
     else if (item.id === 'class-report') setShowClassReportDemo(true);
+    else if (item.id === 'checkin-page') setShowCheckInDemo(true);
   };
 
   const handleViewDetails = (item: any) => {
@@ -351,6 +365,24 @@ const ExamplePageContent: React.FC<ExamplePageProps> = ({ className }) => {
           </Button>
         </div>
         <ClassReportPage />
+      </div>
+    );
+  }
+
+  if (showCheckInDemo) {
+    return (
+      <div className="relative">
+        {/* Back button overlay */}
+        <div className="absolute bottom-4 left-4 z-50">
+          <Button
+            onClick={() => setShowCheckInDemo(false)}
+            variant="outline"
+            className="bg-white/90 backdrop-blur-sm border-2 border-black hover:bg-gray-100 font-semibold"
+          >
+            ← Back to Example
+          </Button>
+        </div>
+        <CheckInPage />
       </div>
     );
   }
@@ -629,6 +661,25 @@ const ExamplePageContent: React.FC<ExamplePageProps> = ({ className }) => {
                     className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white px-6 py-3 rounded-[30px] border-2 border-black font-semibold transition-all duration-200"
                   >
                     📋 View Class Report Demo
+                  </Button>
+                </div>
+
+                {/* Check In Demo Button */}
+                <div className="p-6 bg-white rounded-lg shadow-lg border-2 border-red-200">
+                  <h2 className="text-xl font-semibold mb-4">⏰ Check In Demo - Timekeeping Interface</h2>
+                  <p className="text-gray-600 mb-4">
+                    View the new check-in page with timekeeping interface featuring check-in functionality
+                    and recent time entries tracking. Matches the Figma design specifications exactly.
+                  </p>
+                  <p className="text-sm text-red-600 mb-4">
+                    <strong>✨ New Features:</strong> CheckInCard with red theme, RecentTimeEntriesCard with purple theme,
+                    exact Figma colors, responsive sidebar integration, and downloaded icons from Figma.
+                  </p>
+                  <Button
+                    onClick={() => setShowCheckInDemo(true)}
+                    className="bg-[#E2445C] hover:bg-[#C73349] text-white px-6 py-3 rounded-[30px] border-2 border-black font-semibold transition-all duration-200"
+                  >
+                    ⏰ View Check In Demo
                   </Button>
                 </div>
 

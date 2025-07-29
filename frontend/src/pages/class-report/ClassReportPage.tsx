@@ -11,11 +11,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { useSidebar } from '@/components/ui/sidebar';
 import AvatarIcon from '@/assets/class/user.svg';
+import { ExportNotification } from '@/components/notifications/ExportNotification';
 
 const ClassReportPage: React.FC = () => {
   const { state } = useSidebar();
   const isExpanded = state === "expanded";
   const [students, setStudents] = useState<StudentReportData[]>(classReportMockData.students);
+  const [showNotification, setShowNotification] = useState(false);
 
   const handleScoreChange = (studentId: string, type: keyof StudentReportData['scores'], value: number) => {
     setStudents(prev => prev.map(student => 
@@ -35,10 +37,21 @@ const ClassReportPage: React.FC = () => {
 
   const handleExport = () => {
     console.log('Export functionality will be implemented later');
+    setShowNotification(true);
+  };
+
+  const handleCloseNotification = () => {
+    setShowNotification(false);
   };
 
   return (
     <div className="h-screen w-screen bg-gray-50 overflow-hidden font-comfortaa">
+      {/* Export Notification */}
+      <ExportNotification 
+        isOpen={showNotification} 
+        onClose={handleCloseNotification} 
+      />
+      
       {/* Header - Always at top, full width */}
       <div className="w-full h-20">
         <Header isRegistered={true} />
