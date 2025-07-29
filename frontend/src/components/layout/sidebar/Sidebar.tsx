@@ -61,7 +61,7 @@ const MainSidebar: React.FC<SidebarProps> = ({ className }) => {
     },
     {
       id: "timekeeping",
-      title: "Timekeeping",
+      title: "Check in",
       icon: "/src/assets/sidebar/timekeeping.svg",
       url: "#",
     },
@@ -69,12 +69,6 @@ const MainSidebar: React.FC<SidebarProps> = ({ className }) => {
       id: "colleagues",
       title: "Colleagues",
       icon: "/src/assets/sidebar/collegues.svg",
-      url: "#",
-    },
-    {
-      id: "daily-report",
-      title: "Daily Report",
-      icon: "/src/assets/sidebar/daily-report.svg",
       url: "#",
     },
     {
