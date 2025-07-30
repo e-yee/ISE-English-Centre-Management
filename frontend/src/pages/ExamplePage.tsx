@@ -16,8 +16,11 @@ import AbsentRequestPage from "./absent-request/AbsentRequestPage";
 import AttendancePageDemo from "@/components/demo/AttendancePageDemo";
 import DevelopmentProgressList from "@/components/demo/DevelopmentProgressList";
 import ClassReportPage from "./class-report/ClassReportPage";
-import CheckInPage from "./checkin/CheckInPage";
+import TimeKeepingPage from "./timekeeping/TimeKeeping";
+import CheckInPage from "./timekeeping/CheckInPage";
+import TimeEntriesPage from "./timekeeping/TimeEntriesPage";
 import { List, Grid3X3 } from "lucide-react";
+import ColleaguesPage from "./colleagues/ColleaguesPage";
 
 interface ExamplePageProps {
   className?: string;
@@ -125,15 +128,37 @@ const developmentItems = [
     demoComponent: ClassReportPage
   },
   {
-    id: "checkin-page",
-    name: "Check In",
+    id: "timekeeping-page",
+    name: "Timekeeping",
     description: "Timekeeping interface with check-in and recent time entries tracking",
     status: "completed" as const,
     priority: "medium" as const,
     category: "Pages",
     lastUpdated: "2024-01-18",
     demoAvailable: true,
+    demoComponent: TimeKeepingPage
+  },
+  {
+    id: "checkin-page",
+    name: "Check In",
+    description: "Check-in page with statistics, upcoming classes, and check-in functionality",
+    status: "completed" as const,
+    priority: "high" as const,
+    category: "Pages",
+    lastUpdated: "2024-01-19",
+    demoAvailable: true,
     demoComponent: CheckInPage
+  },
+  {
+    id: "time-entries-page",
+    name: "Time Entries",
+    description: "Recent time entries page with two-column layout and notification card",
+    status: "completed" as const,
+    priority: "medium" as const,
+    category: "Pages",
+    lastUpdated: "2024-01-20",
+    demoAvailable: true,
+    demoComponent: TimeEntriesPage
   },
   {
     id: "sidebar",
@@ -184,6 +209,17 @@ const developmentItems = [
     category: "Pages",
     lastUpdated: "2024-01-14",
     demoAvailable: false
+  },
+  {
+    id: "colleagues",
+    name: "Colleagues",
+    description: "Staff directory with searchable list and profile panel",
+    status: "completed" as const,
+    priority: "high" as const,
+    category: "Pages",
+    lastUpdated: "2024-01-21",
+    demoAvailable: true,
+    demoComponent: ColleaguesPage
   }
 ];
 
@@ -200,7 +236,10 @@ const ExamplePageContent: React.FC<ExamplePageProps> = ({ className }) => {
   const [showAbsentRequestDemo, setShowAbsentRequestDemo] = useState(false);
   const [showAttendancePageDemo, setShowAttendancePageDemo] = useState(false);
   const [showClassReportDemo, setShowClassReportDemo] = useState(false);
+  const [showTimekeepingDemo, setShowTimekeepingDemo] = useState(false);
   const [showCheckInDemo, setShowCheckInDemo] = useState(false);
+  const [showTimeEntriesDemo, setShowTimeEntriesDemo] = useState(false);
+  const [showColleaguesDemo, setShowColleaguesDemo] = useState(false);
   const [viewMode, setViewMode] = useState<'cards' | 'list'>('cards');
 
   // Handle demo viewing from list
@@ -214,7 +253,10 @@ const ExamplePageContent: React.FC<ExamplePageProps> = ({ className }) => {
     else if (item.id === 'absent-request') setShowAbsentRequestDemo(true);
     else if (item.id === 'attendance-page') setShowAttendancePageDemo(true);
     else if (item.id === 'class-report') setShowClassReportDemo(true);
+    else if (item.id === 'timekeeping-page') setShowTimekeepingDemo(true);
     else if (item.id === 'checkin-page') setShowCheckInDemo(true);
+    else if (item.id === 'time-entries-page') setShowTimeEntriesDemo(true);
+    else if (item.id === 'colleagues') setShowColleaguesDemo(true);
   };
 
   const handleViewDetails = (item: any) => {
@@ -369,6 +411,24 @@ const ExamplePageContent: React.FC<ExamplePageProps> = ({ className }) => {
     );
   }
 
+  if (showTimekeepingDemo) {
+    return (
+      <div className="relative">
+        {/* Back button overlay */}
+        <div className="absolute bottom-4 left-4 z-50">
+          <Button
+            onClick={() => setShowTimekeepingDemo(false)}
+            variant="outline"
+            className="bg-white/90 backdrop-blur-sm border-2 border-black hover:bg-gray-100 font-semibold"
+          >
+            ← Back to Example
+          </Button>
+        </div>
+        <TimeKeepingPage />
+      </div>
+    );
+  }
+
   if (showCheckInDemo) {
     return (
       <div className="relative">
@@ -383,6 +443,42 @@ const ExamplePageContent: React.FC<ExamplePageProps> = ({ className }) => {
           </Button>
         </div>
         <CheckInPage />
+      </div>
+    );
+  }
+
+  if (showTimeEntriesDemo) {
+    return (
+      <div className="relative">
+        {/* Back button overlay */}
+        <div className="absolute bottom-4 left-4 z-50">
+          <Button
+            onClick={() => setShowTimeEntriesDemo(false)}
+            variant="outline"
+            className="bg-white/90 backdrop-blur-sm border-2 border-black hover:bg-gray-100 font-semibold"
+          >
+            ← Back to Example
+          </Button>
+        </div>
+        <TimeEntriesPage />
+      </div>
+    );
+  }
+
+  if (showColleaguesDemo) {
+    return (
+      <div className="relative">
+        {/* Back button overlay */}
+        <div className="absolute bottom-4 left-4 z-50">
+          <Button
+            onClick={() => setShowColleaguesDemo(false)}
+            variant="outline"
+            className="bg-white/90 backdrop-blur-sm border-2 border-black hover:bg-gray-100 font-semibold"
+          >
+            ← Back to Example
+          </Button>
+        </div>
+        <ColleaguesPage />
       </div>
     );
   }
@@ -664,11 +760,11 @@ const ExamplePageContent: React.FC<ExamplePageProps> = ({ className }) => {
                   </Button>
                 </div>
 
-                {/* Check In Demo Button */}
+                {/* Timekeeping Demo Button */}
                 <div className="p-6 bg-white rounded-lg shadow-lg border-2 border-red-200">
-                  <h2 className="text-xl font-semibold mb-4">⏰ Check In Demo - Timekeeping Interface</h2>
+                  <h2 className="text-xl font-semibold mb-4">⏰ Timekeeping Demo - Timekeeping Interface</h2>
                   <p className="text-gray-600 mb-4">
-                    View the new check-in page with timekeeping interface featuring check-in functionality
+                    View the new timekeeping page with timekeeping interface featuring check-in functionality
                     and recent time entries tracking. Matches the Figma design specifications exactly.
                   </p>
                   <p className="text-sm text-red-600 mb-4">
@@ -676,10 +772,63 @@ const ExamplePageContent: React.FC<ExamplePageProps> = ({ className }) => {
                     exact Figma colors, responsive sidebar integration, and downloaded icons from Figma.
                   </p>
                   <Button
-                    onClick={() => setShowCheckInDemo(true)}
+                    onClick={() => setShowTimekeepingDemo(true)}
                     className="bg-[#E2445C] hover:bg-[#C73349] text-white px-6 py-3 rounded-[30px] border-2 border-black font-semibold transition-all duration-200"
                   >
-                    ⏰ View Check In Demo
+                    ⏰ View Timekeeping Demo
+                  </Button>
+                </div>
+
+                {/* Check In Demo Button */}
+                <div className="p-6 bg-white rounded-lg shadow-lg border-2 border-blue-200">
+                  <h2 className="text-xl font-semibold mb-4">✅ Check In Demo - Check-in Interface</h2>
+                  <p className="text-gray-600 mb-4">
+                    View the new check-in page with statistics, upcoming classes, and check-in functionality.
+                    Features stat cards, large check-in button, today's check-in section, and upcoming classes panel.
+                  </p>
+                  <p className="text-sm text-blue-600 mb-4">
+                    <strong>✨ New Features:</strong> StatCard components, CheckInButton with gradient styling,
+                    TodayCheckIn with classroom image, UpcomingClassesPanel with scrollable class cards,
+                    and PageTitle with gradient text styling.
+                  </p>
+                  <Button
+                    onClick={() => setShowCheckInDemo(true)}
+                    className="bg-[#4A90E2] hover:bg-[#357ABD] text-white px-6 py-3 rounded-[30px] border-2 border-black font-semibold transition-all duration-200"
+                  >
+                    ✅ View Check In Demo
+                  </Button>
+                </div>
+
+                {/* Time Entries Demo Button */}
+                <div className="p-6 bg-white rounded-lg shadow-lg border-2 border-green-200">
+                  <h2 className="text-xl font-semibold mb-4">📅 Time Entries Demo - Recent Time Entries</h2>
+                  <p className="text-gray-600 mb-4">
+                    View the new time entries page with two-column layout featuring recent time entries list
+                    and notification card for late attendance warnings. Matches Figma design specifications exactly.
+                  </p>
+                  <p className="text-sm text-green-600 mb-4">
+                    <strong>✨ New Features:</strong> Two-column grid layout (2/3 and 1/3 split), TimeEntryCard components
+                    with status badges, NotificationCard with alert icon, scrollable time entries list, and exact Figma styling.
+                  </p>
+                  <Button
+                    onClick={() => setShowTimeEntriesDemo(true)}
+                    className="bg-[#22E2F8] hover:bg-[#1BC7DC] text-black px-6 py-3 rounded-[30px] border-2 border-black font-semibold transition-all duration-200"
+                  >
+                    📅 View Time Entries Demo
+                  </Button>
+                </div>
+
+                {/* Colleagues Demo Button */}
+                <div className="p-6 bg-white rounded-lg shadow-lg border-2 border-orange-200">
+                  <h2 className="text-xl font-semibold mb-4">👥 Colleagues Demo - Staff Directory</h2>
+                  <p className="text-gray-600 mb-4">
+                    View the new colleagues page with searchable staff list and profile panel. Matches Figma and wireframe.
+                  </p>
+                  <Button
+                    onClick={() => setShowColleaguesDemo(true)}
+                    className="bg-[#FFD600] hover:bg-[#FFC400] text-black px-6 py-3 rounded-[30px] border-2 border-black font-semibold transition-all duration-200"
+                  >
+                    👥 View Colleagues Demo
                   </Button>
                 </div>
 
