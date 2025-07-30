@@ -3,7 +3,7 @@ from flask_jwt_extended import get_jwt_identity
 from app.auth import role_required
 from marshmallow import ValidationError
 from ...http_status import HTTPStatus
-from sqlalchemy.exc import SQLAlchemyError, IntegrityError
+from sqlalchemy.exc import IntegrityError
 from ...schemas.evaluation_schema import evaluation_schema
 from ...models import Evaluation, Account
 from extensions import db
@@ -52,8 +52,8 @@ def add_evaluation():
     
     except ValidationError as ve:
         return ({"message": "Invalid input"}, ve.messages), HTTPStatus.BAD_REQUEST
-    except SQLAlchemyError as se:
-        return ({"message": "Database error", "error": str(se)}), HTTPStatus.INTERNAL_SERVER_ERROR
+    except IntegrityError as ie:
+        return ({"message": "Database error", "error": str(ie.orig)}), HTTPStatus.INTERNAL_SERVER_ERROR
     except Exception as e:
         return ({"message": "Unexpected error occurred", "error": str(e)}), HTTPStatus.INTERNAL_SERVER_ERROR
 
@@ -113,12 +113,9 @@ def update_evaluation(evaluation_id):
     except ValidationError as ve:
         db.session.rollback()
         return jsonify({"message": "Invalid input", "error": ve.messages}), HTTPStatus.BAD_REQUEST
-    except SQLAlchemyError as se:
-        db.session.rollback()
-        return jsonify({"message": "Database error", "error": str(se)}), HTTPStatus.INTERNAL_SERVER_ERROR
     except IntegrityError as ie:
         db.session.rollback()
-        return jsonify({"message": "Database constraint violation", "error": str(ie.orig)}), HTTPStatus.BAD_REQUEST
+        return jsonify({"message": "Database error", "error": str(ie.orig)}), HTTPStatus.INTERNAL_SERVER_ERROR
     except Exception as e:
         db.session.rollback()
         return jsonify({"message": "Unexpected error occurred", "error": str(e)}), HTTPStatus.INTERNAL_SERVER_ERROR

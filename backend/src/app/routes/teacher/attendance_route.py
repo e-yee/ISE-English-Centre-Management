@@ -3,7 +3,7 @@ from flask_jwt_extended import get_jwt_identity
 from app.auth import role_required
 from marshmallow import ValidationError
 from ...http_status import HTTPStatus
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import IntegrityError
 from ...schemas.attendance_schema import attendance_schema
 from ...models import StudentAttendance, Account
 from extensions import db
@@ -46,9 +46,9 @@ def mark_attendance(date):
     except ValidationError as ve:
         return ({"message": "Invalid input"}, ve.messages), HTTPStatus.BAD_REQUEST
 
-    except SQLAlchemyError as se:
-        return ({"message": "Database error", "error": str(se)}), HTTPStatus.INTERNAL_SERVER_ERROR
-    
+    except IntegrityError as ie:
+        return ({"message": "Database error", "error": str(ie.orig)}), HTTPStatus.INTERNAL_SERVER_ERROR
+
     except Exception as e:
         return ({"message": "Unexpected error occurred", "error": str(e)}), HTTPStatus.INTERNAL_SERVER_ERROR
 
@@ -76,9 +76,9 @@ def view_attendance():
 
     except ValidationError as ve:
         return jsonify({"message": "Invalid input", "error": ve.messages}), HTTPStatus.BAD_REQUEST
-    
-    except SQLAlchemyError as se:
-        return jsonify({"message": "Database error", "error": str(se)}), HTTPStatus.INTERNAL_SERVER_ERROR
+
+    except IntegrityError as ie:
+        return jsonify({"message": "Database error", "error": str(ie.orig)}), HTTPStatus.INTERNAL_SERVER_ERROR
 
     except Exception as e:
         return jsonify({"message": "Unexpected error occurred", "error": str(e)}), HTTPStatus.INTERNAL_SERVER_ERROR 

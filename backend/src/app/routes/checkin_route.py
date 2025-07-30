@@ -6,7 +6,7 @@ from extensions import db
 import datetime
 import re
 from marshmallow import ValidationError
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import IntegrityError
 
 checkin_bp = Blueprint("checkin_bp", __name__, url_prefix="/checkin")
 
@@ -94,8 +94,8 @@ def checkin():
     except ValidationError as ve:
         return jsonify({"message": "Invalid input", "error": ve.messages}), HTTPStatus.BAD_REQUEST
 
-    except SQLAlchemyError as se:
-        return jsonify({"message": "Database error", "error": str(se)}), HTTPStatus.INTERNAL_SERVER_ERROR
+    except IntegrityError as ie:
+        return jsonify({"message": "Database error", "error": str(ie.orig)}), HTTPStatus.INTERNAL_SERVER_ERROR
 
     except Exception as e:
         return jsonify({"message": "Unexpected error occured", "error": str(e)}), HTTPStatus.INTERNAL_SERVER_ERROR
