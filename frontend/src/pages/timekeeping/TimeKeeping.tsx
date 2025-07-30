@@ -63,7 +63,7 @@ const RecentTimeEntriesCard: React.FC = () => {
 };
 
 // Internal component that uses the sidebar context
-const CheckInPageContent: React.FC<CheckInPageProps> = ({ className }) => {
+const TimeKeepingContent: React.FC<CheckInPageProps> = ({ className }) => {
   const { state } = useSidebar();
   const isExpanded = state === "expanded";
 
@@ -108,12 +108,12 @@ const CheckInPageContent: React.FC<CheckInPageProps> = ({ className }) => {
 };
 
 // Main wrapper component that provides sidebar context
-const CheckInPage: React.FC<CheckInPageProps> = ({ className }) => {
+const TimeKeepingPage: React.FC<CheckInPageProps> = ({ className }) => {
   return (
     <SidebarProvider defaultOpen={true}>
-      <CheckInPageContent className={className} />
+      <TimeKeepingContent className={className} />
     </SidebarProvider>
   );
 };
 
-export default CheckInPage; 
+export default TimeKeepingPage; 
