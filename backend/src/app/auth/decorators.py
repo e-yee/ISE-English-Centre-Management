@@ -11,7 +11,6 @@ def role_required(*allowed_roles):
         def decorators(*args, **kwargs):
             verify_jwt_in_request()
             identity = get_jwt_identity()
-            
             user = db.session.get(Account, identity)
             if not user or not user.employee_id:
                 return jsonify({

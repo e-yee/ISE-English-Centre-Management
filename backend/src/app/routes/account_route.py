@@ -13,7 +13,6 @@ def add_account():
     try:
         if not request.is_json:
             return jsonify({
-                
                 'message': 'Missing or invalid JSON'
             }), HTTPStatus.BAD_REQUEST
 
