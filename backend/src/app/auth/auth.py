@@ -12,6 +12,9 @@ auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 @auth_bp.post('/login')
 def login():
     try:
+        if not request.is_json:
+            return jsonify({'message': 'Missing or invalid JSON'}), HTTPStatus.BAD_REQUEST
+        
         json_data = request.get_json()
         login = login_schema.load(json_data)
 
@@ -46,10 +49,14 @@ def login():
 @auth_bp.post('/refresh')
 @jwt_required(refresh=True)
 def refresh_token():
-    identity = get_jwt_identity()
-    access_token = create_access_token(identity=identity)
+    try:
+        identity = get_jwt_identity()
+        access_token = create_access_token(identity=identity)
 
-    return jsonify({'access_token': access_token}), HTTPStatus.OK
+        return jsonify({'access_token': access_token}), HTTPStatus.OK
+    
+    except Exception as e:
+        return jsonify({'messge': 'Unexpected error occured', 'error': str(e)}), HTTPStatus.BAD_REQUEST    
 
 @auth_bp.delete('/logout')
 @jwt_required()

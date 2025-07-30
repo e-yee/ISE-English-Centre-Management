@@ -6,22 +6,21 @@ from extensions import db
 from ...auth import role_required
 from ...models import Contract, Account
 from ...http_status import HTTPStatus
-from ...schemas.contract_schema import contract_schema, contracts_schema 
+from ...schemas.learning_advisor.contract_schema import contract_schema, contracts_schema 
 
 contract_bp = Blueprint('contract_bp', __name__, url_prefix='/contract')
 
 @contract_bp.post('/add')
 @role_required('Learning Advisor')
 def add_contract():
-    if not request.is_json:
-        return jsonify({'message': 'Missing or invalid JSON'}), HTTPStatus.BAD_REQUEST
-    
     try:
         identity = get_jwt_identity()
         user = db.session.get(Account, identity)
-        
         if not user or not user.employee_id:
             return jsonify({'message': 'Unauthorized or employee profile missing'}), HTTPStatus.FORBIDDEN
+        
+        if not request.is_json:
+            return jsonify({'message': 'Missing or invalid JSON'}), HTTPStatus.BAD_REQUEST
         
         json_data = request.get_json()
         validated = contract_schema.load(json_data)
@@ -30,7 +29,6 @@ def add_contract():
             course_id=validated['course_id'],
             course_date=validated['course_date']
         ).first()
-        
         if existed_contract:
             return jsonify({'message': 'Contract existed'}), HTTPStatus.CONFLICT
         
@@ -47,7 +45,7 @@ def add_contract():
         
         db.session.add(contract)
         db.session.commit()
-        return jsonify(contract_schema.dump(contract)), HTTPStatus.CREATED
+        return contract_schema.jsonify(contract), HTTPStatus.CREATED
     
     except ValidationError as ve:
         return jsonify({'message': 'Invalid input', 'error': ve.messages}), HTTPStatus.BAD_REQUEST
@@ -66,12 +64,11 @@ def get_all():
     try:
         identity = get_jwt_identity()
         user = db.session.get(Account, identity)
-        
         if not user or not user.employee_id:
             return jsonify({'message': 'Unauthorized or employee profile missing'}), HTTPStatus.FORBIDDEN
         
         contracts = db.session.query(Contract).filter_by(employee_id=user.employee_id).all()
-        return jsonify(contracts_schema.dump(contracts)), HTTPStatus.OK
+        return contracts_schema.jsonify(contracts), HTTPStatus.OK
 
     except Exception as e:
         db.session.rollback()
@@ -83,7 +80,6 @@ def get_contract():
     try:
         identity = get_jwt_identity()
         user = db.session.get(Account, identity)
-        
         if not user or not user.employee_id:
             return jsonify({'message': 'Unauthorized or employee profile missing'}), HTTPStatus.FORBIDDEN
     
@@ -95,7 +91,6 @@ def get_contract():
             id = id,
             employee_id = user.employee_id
         ).first()
-        
         if not contract:
             return jsonify({'message': 'Contract not found'}), HTTPStatus.NOT_FOUND
         
@@ -108,13 +103,9 @@ def get_contract():
 @contract_bp.put('/update')
 @role_required('Learning Advisor')
 def update_contract():
-    if not request.is_json:
-         return jsonify({'message': 'Missing or invalid JSON'}), HTTPStatus.BAD_REQUEST
-     
     try:
         identity = get_jwt_identity()
         user = db.session.get(Account, identity)
-        
         if not user or not user.employee_id:
             return jsonify({'message': 'Unauthorized or employee profile missing'}), HTTPStatus.FORBIDDEN
 
@@ -126,13 +117,14 @@ def update_contract():
             id = id,
             employee_id = user.employee_id
         ).first()
-        
         if not contract:
             return jsonify({'message': 'Contract not found'}), HTTPStatus.NOT_FOUND
         
+        if not request.is_json:
+            return jsonify({'message': 'Missing or invalid JSON'}), HTTPStatus.BAD_REQUEST
+        
         json_data = request.get_json()
         update_data = contract_schema.load(json_data, partial=True)
-        
         if any(field in update_data for field in ['student_id', 'course_id', 'course_date']):
             student_id = update_data.get('student_id', contract.student_id)
             course_id = update_data.get('course_id', contract.course_id)
@@ -143,7 +135,6 @@ def update_contract():
                 course_id=course_id,
                 course_date=course_date
             ).first()
-            
             if existed_contract:
                 return jsonify({'message': 'Contract existed'}), HTTPStatus.CONFLICT
         
@@ -153,6 +144,9 @@ def update_contract():
         db.session.commit()
         return jsonify({'message': 'Contract updated successfully'}), HTTPStatus.OK
 
+    except ValidationError as ve:
+        return jsonify({'message': 'Invalid input', 'error': ve.messages}), HTTPStatus.BAD_REQUEST
+    
     except IntegrityError as ie:
         db.session.rollback()
         return jsonify({'message': 'Violate database constraint', 'error': str(ie.orig)}), HTTPStatus.BAD_REQUEST
@@ -167,9 +161,8 @@ def delete_contract():
     try:
         identity = get_jwt_identity()
         user = db.session.get(Account, identity)
-        
         if not user or not user.employee_id:
-                return jsonify({'message': 'Unauthorized or employee profile missing'}), HTTPStatus.FORBIDDEN
+            return jsonify({'message': 'Unauthorized or employee profile missing'}), HTTPStatus.FORBIDDEN
     
         id = request.args.get('id')
         if not id:
@@ -179,7 +172,6 @@ def delete_contract():
             id=id,
             employee_id=user.employee_id
         ).first()
-        
         if not contract:
             return jsonify({'message': 'Contract not found'}), HTTPStatus.NOT_FOUND
         

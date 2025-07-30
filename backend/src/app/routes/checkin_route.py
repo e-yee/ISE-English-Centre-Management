@@ -12,6 +12,9 @@ checkin_bp = Blueprint('checkin_bp', __name__, url_prefix='/checkin')
 
 @checkin_bp.post('/in')
 def checkin():
+    if not request.is_json:
+        return jsonify({'message': 'Missing or invalid JSON'}), HTTPStatus.BAD_REQUEST
+     
     try:
         data = request.get_json()
         validated = checkin_schema.load(data)
