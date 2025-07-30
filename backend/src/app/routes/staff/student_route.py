@@ -19,10 +19,14 @@ def add_student():
         user = db.session.get(Account, identity)
         
         if not user or not user.employee_id:
-            return jsonify({'message': 'Unauthorized or employee profile missing'}), HTTPStatus.FORBIDDEN
+            return jsonify({
+                'message': 'Unauthorized or employee profile missing'
+            }), HTTPStatus.FORBIDDEN
         
         if not request.is_json:
-            return jsonify({'message': 'Missing or invalid JSON'}), HTTPStatus.BAD_REQUEST
+            return jsonify({
+                'message': 'Missing or invalid JSON'
+            }), HTTPStatus.BAD_REQUEST
         
         json_data = request.get_json()
         validated = student_schema.load(json_data)
@@ -39,15 +43,24 @@ def add_student():
         return jsonify(student_schema.dump(student)), HTTPStatus.CREATED
    
     except ValidationError as ve:
-        return jsonify({'message': 'Invalid input', 'error': ve.messages}), HTTPStatus.BAD_REQUEST
+        return jsonify({
+            'message': 'Invalid input',
+            'error': ve.messages
+        }), HTTPStatus.BAD_REQUEST
     
     except IntegrityError as ie:
         db.session.rollback()
-        return jsonify({'message': 'Violate database constraint', 'error': str(ie.orig)}), HTTPStatus.BAD_REQUEST
+        return jsonify({
+            'message': 'Violate database constraint',
+            'error': str(ie.orig)
+        }), HTTPStatus.BAD_REQUEST
     
     except Exception as e:
         db.session.rollback()
-        return jsonify({'message': 'Unexpected error occured', 'error': str(e)}), HTTPStatus.INTERNAL_SERVER_ERROR
+        return jsonify({
+            'message': 'Unexpected error occured',
+            'error': str(e)
+        }), HTTPStatus.INTERNAL_SERVER_ERROR
 
 @student_bp.get('/')
 @role_required('Learning Advisor')
@@ -57,14 +70,19 @@ def get_all():
         user = db.session.get(Account, identity)
         
         if not user or not user.employee_id:
-            return jsonify({'message', 'Unauthorised or missing employee profile'}), HTTPStatus.FORBIDDEN
+            return jsonify({
+                'message', 'Unauthorised or missing employee profile'
+            }), HTTPStatus.FORBIDDEN
         
         students = db.session.query(Student).all()
         return students_schema.jsonify(students)
     
     except Exception as e:
         db.session.rollback()
-        return jsonify({'message': 'Unexpected error occured', 'error': str(e)}), HTTPStatus.INTERNAL_SERVER_ERROR
+        return jsonify({
+            'message': 'Unexpected error occured',
+            'error': str(e)
+        }), HTTPStatus.INTERNAL_SERVER_ERROR
 
 @student_bp.get('/search')
 @role_required('Learning Advisor')
@@ -73,21 +91,29 @@ def get_student():
         identity = get_jwt_identity()
         user = db.session.get(Account, identity)
         if not user or not user.employee_id:
-            return jsonify({'message': 'Unauthorised or missing employee profile'}), HTTPStatus.FORBIDDEN
+            return jsonify({
+                'message': 'Unauthorised or missing employee profile'
+            }), HTTPStatus.FORBIDDEN
         
         id = request.args.get('id')
         if not id:
-            return jsonify({'message': 'Missing student ID in query params'}), HTTPStatus.BAD_REQUEST
+            return jsonify({
+                'message': 'Missing student ID in query params'
+            }), HTTPStatus.BAD_REQUEST
         
         student = db.session.get(Student, id)
         if not student:
-            return jsonify({'message': 'Student not found'}), HTTPStatus.NOT_FOUND
+            return jsonify({
+                'message': 'Student not found'
+            }), HTTPStatus.NOT_FOUND
 
         return student_schema.jsonify(student), HTTPStatus.OK
 
     except Exception as e:
         db.session.rollback()
-        return jsonify({'message': 'Unexpected error occured'}), HTTPStatus.INTERNAL_SERVER_ERROR
+        return jsonify({
+            'message': 'Unexpected error occured'
+        }), HTTPStatus.INTERNAL_SERVER_ERROR
 
 @student_bp.update('/update')
 @role_required('Learning Advisor')
@@ -96,18 +122,26 @@ def update_student():
         identity = get_jwt_identity()
         user = db.session.get(Account, identity)
         if not user or not user.employee_id:
-            return jsonify({'message': 'Unauthorised or missing employee profile'}), HTTPStatus.FORBIDDEN
+            return jsonify({
+                'message': 'Unauthorised or missing employee profile'
+            }), HTTPStatus.FORBIDDEN
         
         id = request.args.get('id')
         if not id:
-            return jsonify({'message': 'Missing student ID in query params'}), HTTPStatus.BAD_REQUEST
+            return jsonify({
+                'message': 'Missing student ID in query params'
+            }), HTTPStatus.BAD_REQUEST
         
         student = db.session.get(Student, id)
         if not student:
-            return jsonify({'message': 'Student not found'}), HTTPStatus.NOT_FOUND
+            return jsonify({
+                'message': 'Student not found'
+            }), HTTPStatus.NOT_FOUND
         
         if not request.is_json:
-            return jsonify({'message: Missing or invalid JSON'}), HTTPStatus.BAD_REQUEST
+            return jsonify({
+                'message: Missing or invalid JSON'
+            }), HTTPStatus.BAD_REQUEST
         
         json_data = request.get_json()
         update_data = student_schema.load(json_data, partial=True)
@@ -115,18 +149,29 @@ def update_student():
             setattr(student, key, value)
         
         db.session.commit()
-        return jsonify({'message': 'Student updated successfully'}), HTTPStatus.OK
+        return jsonify({
+            'message': 'Student updated successfully'
+        }), HTTPStatus.OK
     
     except ValidationError as ve:
-        return jsonify({'message': 'Invalid input', 'error': ve.messages}), HTTPStatus.BAD_REQUEST
+        return jsonify({
+            'message': 'Invalid input',
+            'error': ve.messages
+        }), HTTPStatus.BAD_REQUEST
     
     except IntegrityError as ie:
         db.session.rollback()
-        return jsonify({'message': 'Violate database constraint', 'error': str(ie.orig)}), HTTPStatus.BAD_REQUEST
+        return jsonify({
+            'message': 'Violate database constraint',
+            'error': str(ie.orig)
+        }), HTTPStatus.BAD_REQUEST
     
     except Exception as e:
         db.session.rollback()
-        return jsonify({'message': 'Unexpected error occured', 'error': str(e)}), HTTPStatus.INTERNAL_SERVER_ERROR
+        return jsonify({
+            'message': 'Unexpected error occured',
+            'error': str(e)
+        }), HTTPStatus.INTERNAL_SERVER_ERROR
 
 @student_bp.delete('/delete')
 @role_required('Learning Advisor')
@@ -135,25 +180,39 @@ def delete_student():
         identity = get_jwt_identity()
         user = db.session.get(Account, identity)
         if not user or not user.employee_id:
-            return jsonify({'message': 'Unauthorised or missing employee profile'}), HTTPStatus.BAD_REQUEST
+            return jsonify({
+                'message': 'Unauthorised or missing employee profile'
+            }), HTTPStatus.BAD_REQUEST
         
         id = request.args.get('id')
         if not id:
-            return jsonify({'message': 'Missing student ID in query params'}), HTTPStatus.BAD_REQUEST
+            return jsonify({
+                'message': 'Missing student ID in query params'
+            }), HTTPStatus.BAD_REQUEST
         
         student = db.session.get(Student, id)
         if not student:
-            return jsonify({'message': 'Student not found'}), HTTPStatus.NOT_FOUND
+            return jsonify({
+                'message': 'Student not found'
+            }), HTTPStatus.NOT_FOUND
         
         db.session.delete(student)
         db.session.commit()
-        return jsonify({'message': 'Student deleted successfully'}), HTTPStatus.OK
+        return jsonify({
+            'message': 'Student deleted successfully'
+        }), HTTPStatus.OK
     
     except IntegrityError as ie:
         db.session.rollback()
-        return jsonify({'message': 'Violate database constraint', 'error': str(ie.orig)}), HTTPStatus.BAD_REQUEST
+        return jsonify({
+            'message': 'Violate database constraint',
+            'error': str(ie.orig)
+        }), HTTPStatus.BAD_REQUEST
 
     except Exception as e:
         db.session.rollback()
-        return jsonify({'message': 'Unexpected error occured', 'error': str(e)}), HTTPStatus.INTERNAL_SERVER_ERROR
+        return jsonify({
+            'message': 'Unexpected error occured',
+            'error': str(e)
+        }), HTTPStatus.INTERNAL_SERVER_ERROR
     

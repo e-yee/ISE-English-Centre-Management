@@ -17,10 +17,14 @@ def add_contract():
         identity = get_jwt_identity()
         user = db.session.get(Account, identity)
         if not user or not user.employee_id:
-            return jsonify({'message': 'Unauthorized or employee profile missing'}), HTTPStatus.FORBIDDEN
+            return jsonify({
+                'message': 'Unauthorized or employee profile missing'
+            }), HTTPStatus.FORBIDDEN
         
         if not request.is_json:
-            return jsonify({'message': 'Missing or invalid JSON'}), HTTPStatus.BAD_REQUEST
+            return jsonify({
+                'message': 'Missing or invalid JSON'
+            }), HTTPStatus.BAD_REQUEST
         
         json_data = request.get_json()
         validated = contract_schema.load(json_data)
@@ -30,7 +34,9 @@ def add_contract():
             course_date=validated['course_date']
         ).first()
         if existed_contract:
-            return jsonify({'message': 'Contract existed'}), HTTPStatus.CONFLICT
+            return jsonify({
+                'message': 'Contract existed'
+            }), HTTPStatus.CONFLICT
         
         contract = Contract(
             id=validated['id'],
@@ -48,15 +54,24 @@ def add_contract():
         return contract_schema.jsonify(contract), HTTPStatus.CREATED
     
     except ValidationError as ve:
-        return jsonify({'message': 'Invalid input', 'error': ve.messages}), HTTPStatus.BAD_REQUEST
+        return jsonify({
+            'message': 'Invalid input', 
+            'error': ve.messages
+        }), HTTPStatus.BAD_REQUEST
     
     except IntegrityError as ie:
         db.session.rollback()
-        return jsonify({'message': 'Violate database constraint', 'error': str(ie.orig)}), HTTPStatus.BAD_REQUEST
+        return jsonify({
+            'message': 'Violate database constraint', 
+            'error': str(ie.orig)
+        }), HTTPStatus.BAD_REQUEST
     
     except Exception as e:
         db.session.rollback()
-        return jsonify({'message': 'Unexpected error occured', 'error': str(e)}), HTTPStatus.INTERNAL_SERVER_ERROR
+        return jsonify({
+            'message': 'Unexpected error occured', 
+            'error': str(e)
+        }),HTTPStatus.INTERNAL_SERVER_ERROR
         
 @contract_bp.get('/')
 @role_required('Learning Advisor')
@@ -65,14 +80,19 @@ def get_all():
         identity = get_jwt_identity()
         user = db.session.get(Account, identity)
         if not user or not user.employee_id:
-            return jsonify({'message': 'Unauthorized or employee profile missing'}), HTTPStatus.FORBIDDEN
+            return jsonify({
+                'message': 'Unauthorized or employee profile missing'
+            }), HTTPStatus.FORBIDDEN
         
         contracts = db.session.query(Contract).filter_by(employee_id=user.employee_id).all()
         return contracts_schema.jsonify(contracts), HTTPStatus.OK
 
     except Exception as e:
         db.session.rollback()
-        return jsonify({'message': 'Unexpected error occured', 'error': str(e)}), HTTPStatus.INTERNAL_SERVER_ERROR
+        return jsonify({
+            'message': 'Unexpected error occured',
+            'error': str(e)
+        }), HTTPStatus.INTERNAL_SERVER_ERROR
     
 @contract_bp.get('/search')
 @role_required('Learning Advisor')
@@ -81,24 +101,33 @@ def get_contract():
         identity = get_jwt_identity()
         user = db.session.get(Account, identity)
         if not user or not user.employee_id:
-            return jsonify({'message': 'Unauthorized or employee profile missing'}), HTTPStatus.FORBIDDEN
+            return jsonify({
+                'message': 'Unauthorized or employee profile missing'
+            }), HTTPStatus.FORBIDDEN
     
         id = request.args.get('id')
         if not id:
-            return jsonify({'message': 'Missing contract ID in query params'}), HTTPStatus.BAD_REQUEST
+            return jsonify({
+                'message': 'Missing contract ID in query params'
+            }), HTTPStatus.BAD_REQUEST
         
         contract = db.session.query(Contract).filter_by(
             id = id,
             employee_id = user.employee_id
         ).first()
         if not contract:
-            return jsonify({'message': 'Contract not found'}), HTTPStatus.NOT_FOUND
+            return jsonify({
+                'message': 'Contract not found'
+            }), HTTPStatus.NOT_FOUND
         
         return contract_schema.jsonify(contract), HTTPStatus.OK
 
     except Exception as e:
         db.session.rollback()
-        return jsonify({'message': 'Unexpected error occured','error': str(e)}), HTTPStatus.INTERNAL_SERVER_ERROR
+        return jsonify({
+            'message': 'Unexpected error occured',
+            'error': str(e)
+        }), HTTPStatus.INTERNAL_SERVER_ERROR
     
 @contract_bp.put('/update')
 @role_required('Learning Advisor')
@@ -107,21 +136,29 @@ def update_contract():
         identity = get_jwt_identity()
         user = db.session.get(Account, identity)
         if not user or not user.employee_id:
-            return jsonify({'message': 'Unauthorized or employee profile missing'}), HTTPStatus.FORBIDDEN
+            return jsonify({
+                'message': 'Unauthorized or employee profile missing'
+            }), HTTPStatus.FORBIDDEN
 
         id = request.args.get('id')
         if not id:
-            return jsonify({'message': 'Missing contract ID in query params'}), HTTPStatus.BAD_REQUEST
+            return jsonify({
+                'message': 'Missing contract ID in query params'
+            }), HTTPStatus.BAD_REQUEST
         
         contract = db.session.query(Contract).filter_by(
             id = id,
             employee_id = user.employee_id
         ).first()
         if not contract:
-            return jsonify({'message': 'Contract not found'}), HTTPStatus.NOT_FOUND
+            return jsonify({
+                'message': 'Contract not found'
+            }), HTTPStatus.NOT_FOUND
         
         if not request.is_json:
-            return jsonify({'message': 'Missing or invalid JSON'}), HTTPStatus.BAD_REQUEST
+            return jsonify({
+                'message': 'Missing or invalid JSON'
+            }), HTTPStatus.BAD_REQUEST
         
         json_data = request.get_json()
         update_data = contract_schema.load(json_data, partial=True)
@@ -136,24 +173,37 @@ def update_contract():
                 course_date=course_date
             ).first()
             if existed_contract:
-                return jsonify({'message': 'Contract existed'}), HTTPStatus.CONFLICT
+                return jsonify({
+                    'message': 'Contract existed'
+                }), HTTPStatus.CONFLICT
         
         for key, value in update_data.items():
             setattr(contract, key, value)
         
         db.session.commit()
-        return jsonify({'message': 'Contract updated successfully'}), HTTPStatus.OK
+        return jsonify({
+            'message': 'Contract updated successfully'
+        }), HTTPStatus.OK
 
     except ValidationError as ve:
-        return jsonify({'message': 'Invalid input', 'error': ve.messages}), HTTPStatus.BAD_REQUEST
+        return jsonify({
+            'message': 'Invalid input', 
+            'error': ve.messages
+        }), HTTPStatus.BAD_REQUEST
     
     except IntegrityError as ie:
         db.session.rollback()
-        return jsonify({'message': 'Violate database constraint', 'error': str(ie.orig)}), HTTPStatus.BAD_REQUEST
+        return jsonify({
+            'message': 'Violate database constraint', 
+            'error': str(ie.orig)
+        }), HTTPStatus.BAD_REQUEST
     
     except Exception as e:
         db.session.rollback()
-        return jsonify({'message': 'Unexpected error occured', 'error': str(e)}), HTTPStatus.INTERNAL_SERVER_ERROR
+        return jsonify({
+            'message': 'Unexpected error occured', 
+            'error': str(e)
+        }), HTTPStatus.INTERNAL_SERVER_ERROR
 
 @contract_bp.delete('/delete')
 @role_required('Learning Advisor')
@@ -162,23 +212,34 @@ def delete_contract():
         identity = get_jwt_identity()
         user = db.session.get(Account, identity)
         if not user or not user.employee_id:
-            return jsonify({'message': 'Unauthorized or employee profile missing'}), HTTPStatus.FORBIDDEN
+            return jsonify({
+                'message': 'Unauthorized or employee profile missing'
+            }), HTTPStatus.FORBIDDEN
     
         id = request.args.get('id')
         if not id:
-            return jsonify({'message': 'Missing contract ID in query params'}), HTTPStatus.BAD_REQUEST
+            return jsonify({
+                'message': 'Missing contract ID in query params'
+            }), HTTPStatus.BAD_REQUEST
         
         contract = db.session.query(Contract).filter_by(
             id=id,
             employee_id=user.employee_id
         ).first()
         if not contract:
-            return jsonify({'message': 'Contract not found'}), HTTPStatus.NOT_FOUND
+            return jsonify({
+                'message': 'Contract not found'
+            }), HTTPStatus.NOT_FOUND
         
         db.session.delete(contract)
         db.session.commit()
-        return jsonify({'message': 'Contract deleted successfully'}), HTTPStatus.OK
+        return jsonify({
+            'message': 'Contract deleted successfully'
+        }), HTTPStatus.OK
     
     except Exception as e:
         db.session.rollback()
-        return jsonify({'message': 'Unexpected error occured', 'error': str(e)}), HTTPStatus.INTERNAL_SERVER_ERROR
+        return jsonify({
+            'message': 'Unexpected error occured', 
+            'error': str(e)
+        }), HTTPStatus.INTERNAL_SERVER_ERROR
