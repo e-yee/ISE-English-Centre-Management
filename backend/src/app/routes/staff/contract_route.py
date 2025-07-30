@@ -91,7 +91,7 @@ def add_contract():
         return jsonify({
             "message": "Unexpected error occured", 
             "error": str(e)
-        }),HTTPStatus.INTERNAL_SERVER_ERROR
+        }), HTTPStatus.INTERNAL_SERVER_ERROR
         
 @contract_bp.get("/")
 @role_required("Learning Advisor")
