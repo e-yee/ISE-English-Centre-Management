@@ -8,11 +8,13 @@ from ..schemas.employee_schema import employee_schema, employees_schema
 employee_bp = Blueprint('employee_bp', __name__,  url_prefix='/employee')
 
 @employee_bp.post('/add')
-def add_employee():
-    if not request.is_json:
-         return jsonify({'message': 'Missing or invalid JSON'}), HTTPStatus.BAD_REQUEST
-     
+def add_employee(): 
     try:
+        if not request.is_json:
+            return jsonify({
+                'message': 'Missing or invalid JSON'
+            }), HTTPStatus.BAD_REQUEST
+        
         json_data = request.get_json()
         validated = employee_schema.load(json_data)
         
@@ -26,13 +28,15 @@ def add_employee():
         )
         db.session.add(employee)
         db.session.commit()
-        
         return employee_schema.jsonify(employee), HTTPStatus.CREATED
     
     except ValidationError as ve:
-        return jsonify({'message': 'Invalid input', 'error': ve.messages}), HTTPStatus.BAD_REQUEST
+        return jsonify({
+            'message': 'Invalid input', 
+            'error': ve.messages
+        }), HTTPStatus.BAD_REQUEST
 
 @employee_bp.get('/')
 def get_all():
     employees = db.session.query(Employee).all()
-    return jsonify(employees_schema.dump(employees)), HTTPStatus.OK
+    return employees_schema.jsonify(employees), HTTPStatus.OK

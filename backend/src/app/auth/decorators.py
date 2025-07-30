@@ -14,11 +14,15 @@ def role_required(*allowed_roles):
             
             user = db.session.get(Account, identity)
             if not user or not user.employee_id:
-                return jsonify({'message': 'No employee profile linked to this user'}), HTTPStatus.FORBIDDEN
+                return jsonify({
+                    'message': 'No employee profile linked to this user'
+                }), HTTPStatus.FORBIDDEN
 
             employee = db.session.get(Employee, user.employee_id)
             if employee.role not in allowed_roles:
-                return jsonify({'message': f'Access denied for {employee.role}'}), HTTPStatus.FORBIDDEN
+                return jsonify({
+                    'message': f'Access denied for {employee.role}'
+                }), HTTPStatus.FORBIDDEN
             
             return fn(*args, **kwargs)
         return decorators

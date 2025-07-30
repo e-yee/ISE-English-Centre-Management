@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity, get_jwt
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt
 from extensions import db, pwd_context, jwt
 from ..models import Account, TokenBlocklist
 from ..schemas.login_schema import login_schema
@@ -12,6 +12,11 @@ auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 @auth_bp.post('/login')
 def login():
     try:
+        if not request.is_json:
+            return jsonify({
+                'message': 'Missing or invalid JSON'
+            }), HTTPStatus.BAD_REQUEST
+        
         json_data = request.get_json()
         login = login_schema.load(json_data)
 
@@ -23,44 +28,59 @@ def login():
 
             if user and pwd_context.verify(password, user.password_hash):
                 access_token = create_access_token(identity=user.id)
-                refresh_token = create_refresh_token(identity=user.id)
-                
+
                 return jsonify({
                     'access_token': access_token,
-                    'refresh_token': refresh_token
                 }), HTTPStatus.OK
             
-            return jsonify({'message': 'Invalid credentials'}), HTTPStatus.UNAUTHORIZED
+            return jsonify({
+                'message': 'Invalid credentials'
+            }), HTTPStatus.UNAUTHORIZED
         
-        return jsonify({'message': 'Username and password are required'}), HTTPStatus.BAD_REQUEST
+        return jsonify({
+            'message': 'Username and password are required'
+        }), HTTPStatus.BAD_REQUEST
         
     except ValidationError as ve:
-        return jsonify({'message': 'Invalid input', 'errors': ve.messages}), HTTPStatus.BAD_REQUEST
+        return jsonify({
+            'message': 'Invalid input', 
+            'errors': ve.messages
+        }), HTTPStatus.BAD_REQUEST
 
     except SQLAlchemyError as se:
-        return jsonify({'message': 'Database error', 'error': str(se)}), HTTPStatus.INTERNAL_SERVER_ERROR
+        return jsonify({
+            'message': 'Database error', 
+            'error': str(se)
+        }), HTTPStatus.INTERNAL_SERVER_ERROR
 
     except Exception as e:
-        return jsonify({'message': 'Unexpected error occured', 'error': str(e)}), HTTPStatus.INTERNAL_SERVER_ERROR
+        return jsonify({
+            'message': 'Unexpected error occured', 
+            'error': str(e)
+        }), HTTPStatus.INTERNAL_SERVER_ERROR   
 
-@auth_bp.post('/refresh')
-@jwt_required(refresh=True)
-def refresh_token():
-    identity = get_jwt_identity()
-    access_token = create_access_token(identity=identity)
-
-    return jsonify({'access_token': access_token}), HTTPStatus.OK
+@jwt.invalid_token_loader
+def invalid_token_callback(reason):
+    return jsonify({
+        'message': 'Token is invalid or expired', 
+        'error': reason
+    }), HTTPStatus.UNAUTHORIZED
 
 @auth_bp.delete('/logout')
 @jwt_required()
 def logout():
-    jti = get_jwt()['jti']
+    token = get_jwt()
+    jti = token['jti']
     db.session.add(TokenBlocklist(jti=jti))
     db.session.commit()
-    return jsonify({'message': 'Successfully logged out!'}), HTTPStatus.OK
-
+    
+    return jsonify({
+        'message': 'Successfully logged out!'
+    }), HTTPStatus.OK
 
 @jwt.token_in_blocklist_loader
 def check_token_in_blocklist(jwt_header, jwt_payload):
     jti = jwt_payload['jti']
-    return db.session.query(TokenBlocklist).filter_by(jti=jti).scalar() is not None
+    token = db.session.query(TokenBlocklist).filter_by(jti=jti).scalar()
+    
+    return token is not None

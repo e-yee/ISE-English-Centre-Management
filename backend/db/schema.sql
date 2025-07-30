@@ -183,7 +183,7 @@ CREATE TABLE
 CREATE TABLE
     token_blocklist (
         id INT AUTO_INCREMENT,
-        jti VARCHAR(36) NOT NULL, UNIQUE(jti),
+        jti VARCHAR(36) NOT NULL,
         created_date DATE NOT NULL DEFAULT(CURRENT_DATE),
 
         PRIMARY KEY(id)
