@@ -42,9 +42,7 @@ const AuthPage: React.FC = () => {
 
   const currentForm = getCurrentForm();
 
-  //=============================Uncomment this for route protection==================
-
-  // // Route protection - ensure users follow the correct flow
+  // Route protection - ensure users follow the correct flow
   // useEffect(() => {
   //   const path = location.pathname;
 
@@ -53,8 +51,6 @@ const AuthPage: React.FC = () => {
   //     navigate("/auth/forget-password/email");
   //   }
   // }, [location.pathname, storedEmail, navigate]);
-
-  //=============================Uncomment this for route protection==================
 
   // Navigation handlers
   const handleBackToLogin = () => {
@@ -158,8 +154,6 @@ const AuthPage: React.FC = () => {
 
   return (
     <div className="h-screen w-screen overflow-hidden bg-[#F5F5F5] font-comfortaa">
-
-
       <div className="flex h-full">
         {/* Left Half - Auth Form */}
         <div className="w-1/2 flex items-center justify-center p-8 bg-[#F5F5F5] relative">

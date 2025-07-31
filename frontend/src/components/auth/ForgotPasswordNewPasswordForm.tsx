@@ -58,7 +58,7 @@ export function ForgotPasswordNewPasswordForm({
   };
 
   return (
-    <Card className="w-full max-w-lg mx-auto bg-[#EFECE7] border-black border-2 rounded-[30px] shadow-[10px_4px_4px_0px_rgba(0,0,0,0.25)] font-comfortaa">
+    <Card className="w-full max-w-lg mx-auto bg-[#EFECE7] border-black border-2 rounded-[30px] shadow-[10px_4px_4px_0px_rgba(0,0,0,0.25)] font-comfortaa select-none">
       <CardHeader className="text-center pb-6">
         {/* Logo */}
         <div className="flex justify-center mb-4">

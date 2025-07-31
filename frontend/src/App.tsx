@@ -1,54 +1,23 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import AuthRoutes from './routes/AuthRoutes';
-import ProtectedRoute from './components/auth/ProtectedRoute';
+import { RouterProvider } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
+import { router } from './routes/router';
 import ExamplePage from './pages/ExamplePage';
-import ClassScreen from './pages/class/ClassScreen';
-import HomescreenPage from './pages/homescreen/Homescreen';
-// import HomescreenDemo from './components/demo/HomescreenDemo'; // Uncomment if needed for testing
 
 {/*For development */}
 import { StagewiseToolbar } from '@stagewise/toolbar-react';
 import ReactPlugin from '@stagewise-plugins/react';
 
 // 🔧 EASY TOGGLE: Set to true for production routes, false for demo mode
-const USE_PRODUCTION_ROUTES = false;
+const USE_PRODUCTION_ROUTES = true;
 
 function App() {
-  // 🚀 PRODUCTION MODE: Full routing setup
+  // 🚀 PRODUCTION MODE: Full routing setup with AuthProvider
   if (USE_PRODUCTION_ROUTES) {
     return (
       <>
-        <StagewiseToolbar config={{ plugins: [ReactPlugin] }} />
-        <BrowserRouter>
-          <Routes>
-            {/* Auth routes */}
-            <Route path="/auth/*" element={<AuthRoutes />} />
-
-            {/* Protected routes - add your production routes here */}
-            <Route
-              path="/home"
-              element={
-                <ProtectedRoute>
-                  <HomescreenPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/class/:id"
-              element={
-                <ProtectedRoute>
-                  <ClassScreen />
-                </ProtectedRoute>
-              }
-            />
-
-            {/* Default route redirects to auth */}
-            <Route path="/" element={<Navigate to="/auth/login" replace />} />
-
-            {/* Catch all routes - redirect to auth for now */}
-            <Route path="*" element={<Navigate to="/auth/login" replace />} />
-          </Routes>
-        </BrowserRouter>
+        <AuthProvider>
+          <RouterProvider router={router} />
+        </AuthProvider>
       </>
     );
   }
@@ -76,18 +45,29 @@ export default App;
    - Can uncomment individual pages for focused testing
 
 2. PRODUCTION MODE (USE_PRODUCTION_ROUTES = true):
-   - Full BrowserRouter with all routes
-   - Production-ready routing setup
-   - Add your routes in the Routes section above
-   - Includes auth routes and protected routes
+   - Full RouterProvider with AuthProvider
+   - Production-ready routing setup with authentication
+   - Uses the new organized routing structure:
+     - contexts/AuthContext.tsx - Global auth state management
+     - routes/router.tsx - Main routing logic with role-based protection
+     - routes/ProtectedRoute.tsx - Role-based route protection
+   - Includes automatic token refresh and auth guards
 
 3. EASY SWITCHING:
    - Just change the boolean flag at the top
    - No need to comment/uncomment large blocks of code
    - Clean and maintainable
 
-4. ADDING NEW ROUTES:
-   - Add them in the production mode Routes section
-   - Demo components remain unaffected
-   - Test in demo mode, deploy in production mode
+4. NEW AUTHENTICATION STRUCTURE:
+   - AuthProvider wraps the entire app for global state
+   - useAuth hook for accessing auth state and actions
+   - Role-based routing with ProtectedRoute component
+   - Organized routing with clear separation of concerns
+
+5. ROLE-BASED ROUTING:
+   - Teacher routes: /attendance, /class/:id, /class-report/:id
+   - Staff routes: /timekeeping/checkin, /timekeeping/entries, /absent-request
+   - Admin routes: /colleagues, /materials/add
+   - Shared routes: /home, /profile (accessible by all roles)
+   - Automatic role-based redirects after login
 */

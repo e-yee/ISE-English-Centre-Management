@@ -39,7 +39,7 @@ export function ForgotPasswordVerifyForm({
         </div>
 
         {/* Title */}
-        <CardTitle className="text-[50px] font-comfortaa font-semibold text-[#78746C] leading-[1.4]">
+        <CardTitle className="text-[50px] font-comfortaa font-semibold text-[#78746C] leading-[1.4] select-none">
           VERIFY CODE
         </CardTitle>
       </CardHeader>

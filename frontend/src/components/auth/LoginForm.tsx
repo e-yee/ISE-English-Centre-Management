@@ -40,13 +40,13 @@ export function LoginForm({ onForgotPassword, onSubmit, isLoading = false }: Log
         </div>
 
         {/* Welcome Text - Minimized */}
-        <CardTitle className="text-[60px] font-comfortaa font-semibold text-[#78746C] leading-[1.4]">
+        <CardTitle className="text-[60px] font-comfortaa font-semibold text-[#78746C] leading-[1.4] select-none pointer-events-none">
           WELCOME
         </CardTitle>
       </CardHeader>
 
       <CardContent className="space-y-6 px-12 pb-12">
-        <form onSubmit={handleLogin} className="space-y-6">
+        <form onSubmit={handleLogin} className="space-y-6 select-none">
           {/* Username Field */}
           <div className="space-y-2">
             <label
