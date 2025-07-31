@@ -221,3 +221,22 @@ def delete_employee():
         }), HTTPStatus.INTERNAL_SERVER_ERROR
                 
 # Teacher features
+@employee_bp.get("/")
+@role_required("Teacher")
+def get_available_teacher():
+    try:
+        identity = get_jwt_identity()
+        user = db.session.get(Account, identity)
+        if not user or not user.employee_id:
+            return jsonify({
+                "message": "Unauthorised or missing employee profile"
+            }), HTTPStatus.FORBIDDEN
+            
+        available_teachers = db.session.query(Employee).filter_by(teacher_status="Available")
+        return jsonify(employees_schema.dump(available_teachers)), HTTPStatus.OK
+    
+    except Exception as e:
+        return jsonify({
+            "message": "Unexpected error occurred",
+            "error": str(e)
+        }), HTTPStatus.INTERNAL_SERVER_ERROR 
