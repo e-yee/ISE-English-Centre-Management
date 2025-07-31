@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import get_jwt_identity
 from marshmallow import ValidationError
-from sqlalchemy.exc import IntegrityError 
+from sqlalchemy.exc import IntegrityError, OperationalError
 from extensions import db
 from ...auth import role_required
 from ...models import Contract, Account, Student, Course
@@ -86,10 +86,17 @@ def add_contract():
             "error": str(ie.orig)
         }), HTTPStatus.BAD_REQUEST
     
+    except OperationalError as oe:
+        db.session.rollback()
+        return jsonify({
+            "message": "Violate database constraint",
+            "error": str(oe.orig)
+        }), HTTPStatus.BAD_REQUEST
+        
     except Exception as e:
         db.session.rollback()
         return jsonify({
-            "message": "Unexpected error occured", 
+            "message": "Unexpected error occurred", 
             "error": str(e)
         }), HTTPStatus.INTERNAL_SERVER_ERROR
         
@@ -107,7 +114,7 @@ def get_all():
     except Exception as e:
         db.session.rollback()
         return jsonify({
-            "message": "Unexpected error occured",
+            "message": "Unexpected error occurred",
             "error": str(e)
         }), HTTPStatus.INTERNAL_SERVER_ERROR
     
@@ -139,7 +146,7 @@ def get_contract():
     except Exception as e:
         db.session.rollback()
         return jsonify({
-            "message": "Unexpected error occured",
+            "message": "Unexpected error occurred",
             "error": str(e)
         }), HTTPStatus.INTERNAL_SERVER_ERROR
     
@@ -223,10 +230,17 @@ def update_contract():
             "error": str(ie.orig)
         }), HTTPStatus.BAD_REQUEST
     
+    except OperationalError as oe:
+        db.session.rollback()
+        return jsonify({
+            "message": "Violate database constraint",
+            "error": str(oe.orig)
+        }), HTTPStatus.BAD_REQUEST
+        
     except Exception as e:
         db.session.rollback()
         return jsonify({
-            "message": "Unexpected error occured", 
+            "message": "Unexpected error occurred", 
             "error": str(e)
         }), HTTPStatus.INTERNAL_SERVER_ERROR
 
@@ -259,9 +273,23 @@ def delete_contract():
             "message": "Contract deleted successfully"
         }), HTTPStatus.OK
     
+    except IntegrityError as ie:
+        db.session.rollback()
+        return jsonify({
+            "message": "Violate database constraint",
+            "error": str(ie.orig)
+        }), HTTPStatus.BAD_REQUEST
+    
+    except OperationalError as oe:
+        db.session.rollback()
+        return jsonify({
+            "message": "Violate database constraint",
+            "error": str(oe.orig)
+        }), HTTPStatus.BAD_REQUEST
+        
     except Exception as e:
         db.session.rollback()
         return jsonify({
-            "message": "Unexpected error occured", 
+            "message": "Unexpected error occurred", 
             "error": str(e)
         }), HTTPStatus.INTERNAL_SERVER_ERROR

@@ -1,18 +1,83 @@
 from flask import Blueprint, request, jsonify
+from flask_jwt_extended import get_jwt_identity
 from marshmallow import ValidationError
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, OperationalError
 from extensions import db
 from ..auth import role_required
 from ..http_status import HTTPStatus
-from ..models import Employee
+from ..models import Employee, Account
 from ..schemas.employee_schema import employee_schema, employees_schema
 
 employee_bp = Blueprint("employee_bp", __name__,  url_prefix="/employee")
 
 # General features
+@employee_bp.put("/update")
+@role_required("Teacher", "Learning Advisor", "Manager")
+def update_employee():
+    try:
+        identity = get_jwt_identity()
+        user = db.session.get(Account, identity)
+        if not user or not user.employee_id:
+            return jsonify({
+                "message": "Unauthorised or missing employee profile"
+            }), HTTPStatus.FORBIDDEN
+        
+        employee = db.session.get(Employee, user.employee_id)
+        if not employee:
+            return jsonify({
+                "message": "Employee not found"
+            }), HTTPStatus.NOT_FOUND
+        
+        if not request.is_json:
+            return jsonify({
+                "message": "Missing or invalid JSON"
+            }), HTTPStatus.BAD_REQUEST
+        
+        json_data = request.get_json()
+        update_data = employee_schema.load(json_data, partial=True)
+        
+        if update_data.get("role"):
+            return jsonify({
+                "message": "Permission denied"
+            }), HTTPStatus.FORBIDDEN
+        
+        for key, value in update_data.items():
+            setattr(employee, key, value)
+        
+        db.session.commit()
+        return jsonify({
+            "message": "Employee updated successfully"
+        }), HTTPStatus.OK
+    
+    except ValidationError as ve:
+        return jsonify({
+            "message": "Invalid input",
+            "error": ve.messages
+        }), HTTPStatus.BAD_REQUEST
+        
+    except IntegrityError as ie:
+        db.session.rollback()
+        return jsonify({
+            "message": "Violate database constraint",
+            "error": str(ie.orig)
+        }), HTTPStatus.BAD_REQUEST
+    
+    except OperationalError as oe:
+        db.session.rollback()
+        return jsonify({
+            "message": "Violate database constraint",
+            "error": str(oe.orig)
+        }), HTTPStatus.BAD_REQUEST
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            "message": "Unexpected error occurred",
+            "error": str(e)
+        }), HTTPStatus.INTERNAL_SERVER_ERROR
 
 # Manager features
-@employee_bp.post('/add')
+@employee_bp.post("/add")
 @role_required("Manager")
 def add_employee():
     try:
@@ -26,7 +91,7 @@ def add_employee():
         
         if validated["role"] == "Manager":
             return jsonify({
-                "message": "Permission denied for adding manager"
+                "message": "Permission denied for adding Manager"
             }), HTTPStatus.FORBIDDEN
         
         employee = Employee(
@@ -55,11 +120,104 @@ def add_employee():
             "error": str(ie.orig)
         }), HTTPStatus.BAD_REQUEST
     
+    except OperationalError as oe:
+        db.session.rollback()
+        return jsonify({
+            "message": "Violate database constraint",
+            "error": str(oe.orig)
+        }), HTTPStatus.BAD_REQUEST
+        
     except Exception as e:
         db.session.rollback()
         return jsonify({
-            "message": "Unexpected error occured",
+            "message": "Unexpected error occurred",
             "error": str(e)
         }), HTTPStatus.INTERNAL_SERVER_ERROR
+
+@employee_bp.get("/")
+@role_required("Manager")
+def get_all_manager():
+    try:
+        employees = db.session.query(Employee).all()
+        return jsonify(employees_schema.dump(employees)), HTTPStatus.OK
+
+    except Exception as e:
+        return jsonify({
+            "message": "Unexpected erro occurred",
+            "error": str(e)
+        }), HTTPStatus.INTERNAL_SERVER_ERROR
+
+@employee_bp.get("/search")
+@role_required("Manager")
+def get_employee_manager():
+    try:
+        id = request.args.get("id")
+        if not id:
+            return jsonify({
+                "message": "Missing employee ID in query params"
+            }), HTTPStatus.BAD_REQUEST
         
+        employee = db.session.get(Employee, id)
+        if not employee:
+            return jsonify({
+                "message": "Employee not found"
+            }), HTTPStatus.NOT_FOUND
+        
+        return jsonify(employee_schema.dump(employee)), HTTPStatus.OK
+    
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            "message": "Unexpected error occurred",
+            "error": str(e)
+        }), HTTPStatus.INTERNAL_SERVER_ERROR
+
+@employee_bp.delete("/delete")
+@role_required("Manager")
+def delete_employee():
+    try:
+        id = request.args.get("id")
+        if not id:
+            return jsonify({
+                "message": "Missing employee ID in query params"
+            }), HTTPStatus.BAD_REQUEST
+        
+        employee = db.session.get(Employee, id)
+        if not employee:
+            return jsonify({
+                "message": "Employee not found"
+            }), HTTPStatus.NOT_FOUND
+        
+        if employee.role == "Manager":
+            return jsonify({
+                "message": "Permission denied for deleting Manager"
+            }), HTTPStatus.FORBIDDEN
+        
+        db.session.delete(employee)
+        db.session.commit()
+        return jsonify({
+            "message": "Employee deleted successfully"
+        }), HTTPStatus.OK
+    
+    except IntegrityError as ie:
+        db.session.rollback()
+        return jsonify({
+            "message": "Violate database constraint",
+            "error": str(ie.orig)
+        }), HTTPStatus.BAD_REQUEST
+    
+    except OperationalError as oe:
+        db.session.rollback()
+        return jsonify({
+            "message": "Violate database constraint",
+            "error": str(oe.orig)
+        }), HTTPStatus.BAD_REQUEST
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            "message": "Unexpected error occurred",
+            "error": str(e)
+        }), HTTPStatus.INTERNAL_SERVER_ERROR
+                
 # Teacher features

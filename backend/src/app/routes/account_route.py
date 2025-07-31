@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from marshmallow import ValidationError
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, OperationalError
 from extensions import db, pwd_context
 from ..models import Account
 from ..schemas.account_schema import account_schema, accounts_schema
@@ -27,23 +27,46 @@ def add_account():
         )
         db.session.add(account)
         db.session.commit()
-        return account_schema.jsonify(account), HTTPStatus.CREATED
+        return jsonify(account_schema.dump(account)), HTTPStatus.CREATED
     
     except ValidationError as ve:
         return jsonify({
-            "message": "Invalid input", "errors": ve.messages
+            "message": "Invalid input", 
+            "errors": ve.messages
         }), HTTPStatus.BAD_REQUEST
     
     except IntegrityError as ie:
         db.session.rollback()
         return jsonify({
-            "message": "Violate database constraint"
+            "message": "Violate database constraint",
+            "error": str(ie.orig)
         }), HTTPStatus.BAD_REQUEST
+    
+    except OperationalError as oe:
+        db.session.rollback()
+        return jsonify({
+            "message": "Violate database constraint",
+            "error": str(oe.orig)
+        }), HTTPStatus.BAD_REQUEST
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            "message": "Unexpected error occurred",
+            "error": str(e)
+        }), HTTPStatus.INTERNAL_SERVER_ERROR
     
 @account_bp.get("/")
 def get_all():
-    accounts = db.session.query(Account).all()
-    return accounts_schema.jsonify(accounts), HTTPStatus.OK
+    try:
+        accounts = db.session.query(Account).all()
+        return jsonify(accounts_schema.dump(accounts)), HTTPStatus.OK
+
+    except Exception as e:
+        return jsonify({
+            "message": "Unexpected error occurred",
+            "error": str(e)
+        }), HTTPStatus.INTERNAL_SERVER_ERROR
 
 @account_bp.get("/search")
 def get_account():
@@ -66,6 +89,6 @@ def get_account():
     
     except Exception as e:
         return jsonify({
-            "message": "Unexpected error occured", 
+            "message": "Unexpected error occurred", 
             "error": str(e)
         }), HTTPStatus.INTERNAL_SERVER_ERROR
