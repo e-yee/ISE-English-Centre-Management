@@ -1,5 +1,7 @@
 import { RouterProvider } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { MockAuthProvider } from './contexts/MockAuthContext';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { router } from './routes/router';
 import ExamplePage from './pages/ExamplePage';
 
@@ -10,26 +12,39 @@ import ReactPlugin from '@stagewise-plugins/react';
 // 🔧 EASY TOGGLE: Set to true for production routes, false for demo mode
 const USE_PRODUCTION_ROUTES = true;
 
+// Create a client
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      retry: 3,
+    },
+  },
+});
+
 function App() {
-  // 🚀 PRODUCTION MODE: Full routing setup with AuthProvider
+  // 🚀 PRODUCTION MODE: Full routing setup with MockAuthProvider (bypasses real auth)
   if (USE_PRODUCTION_ROUTES) {
     return (
-      <>
-        <AuthProvider>
+      <QueryClientProvider client={queryClient}>
+        <StagewiseToolbar config={{ plugins: [ReactPlugin] }} />
+        <MockAuthProvider>
           <RouterProvider router={router} />
-        </AuthProvider>
-      </>
+        </MockAuthProvider>
+      </QueryClientProvider>
     );
   }
 
   // 🎨 DEMO MODE: Individual page testing without routes
   return (
-    <>
+    <QueryClientProvider client={queryClient}>
       <StagewiseToolbar config={{ plugins: [ReactPlugin] }} />
-      <div>
-        <ExamplePage />
-      </div>
-    </>
+      <AuthProvider>
+        <div>
+          <ExamplePage />
+        </div>
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }
 

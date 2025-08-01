@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
-import Header from '@/components/layout/Header';
-import Sidebar from '@/components/layout/Sidebar';
 import FeatureButtonList from '@/components/class/FeatureButtonList';
 import { classReportMockData } from '@/mockData/classReportMock';
 import type { StudentReportData } from '@/mockData/classReportMock';
@@ -9,13 +7,14 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { useSidebar } from '@/components/ui/sidebar';
 import AvatarIcon from '@/assets/class/user.svg';
 import { ExportNotification } from '@/components/notifications/ExportNotification';
 
-const ClassReportPage: React.FC = () => {
-  const { state } = useSidebar();
-  const isExpanded = state === "expanded";
+interface ClassReportPageProps {
+  className?: string;
+}
+
+const ClassReportPage: React.FC<ClassReportPageProps> = ({ className }) => {
   const [students, setStudents] = useState<StudentReportData[]>(classReportMockData.students);
   const [showNotification, setShowNotification] = useState(false);
 
@@ -45,121 +44,102 @@ const ClassReportPage: React.FC = () => {
   };
 
   return (
-    <div className="h-screen w-screen bg-gray-50 overflow-hidden font-comfortaa">
+    <div className={cn("h-full overflow-hidden flex flex-col", className)}>
       {/* Export Notification */}
       <ExportNotification 
         isOpen={showNotification} 
         onClose={handleCloseNotification} 
       />
       
-      {/* Header - Always at top, full width */}
-      <div className="w-full h-20">
-        <Header isRegistered={true} />
+      {/* Feature Button List - Beneath header like in Homescreen.tsx */}
+      <div className={cn(
+        "pt-4 pb-3 flex-shrink-0 transition-all duration-300 ease-in-out",
+        "px-4"
+      )}>
+        <FeatureButtonList />
       </div>
 
-      {/* Main content area with sidebar */}
-      <div className="relative h-[calc(100vh-5rem)]">
-        {/* Sidebar - positioned to touch bottom of header */}
-        <div className="absolute left-0 top-0 h-full">
-          <Sidebar />
-        </div>
+      {/* Main Content Container */}
+      <div className="flex-1 overflow-y-auto p-6">
+        <div className="max-w-7xl mx-auto">
+          {/* One Big Container - Report Header + Student Cards */}
+          <Card className="bg-white border border-black/20 shadow-[5px_4px_4px_0px_rgba(0,0,0,0.25)] rounded-[15px]">
+            <CardContent className="p-6">
+              {/* Report Header Section */}
+              <div className="flex items-center justify-between mb-6">
+                {/* Left Section - Report Badge and Class Name */}
+                <div className="flex items-center gap-4">
+                  {/* Report Badge - Changed to black */}
+                  <div className="text-black px-4 py-2 rounded-[15px] font-semibold text-[30px] font-comfortaa border-2 border-black">
+                    Report
+                  </div>
 
-        {/* Content area - full remaining height */}
-        <div className={cn(
-          "h-full transition-all duration-300 ease-in-out overflow-hidden flex flex-col",
-          isExpanded ? "ml-[335px]" : "ml-[120px]"
-        )}>
-          {/* Feature Button List - Beneath header like in Homescreen.tsx */}
-          <div className={cn(
-            "pt-4 pb-3 flex-shrink-0 transition-all duration-300 ease-in-out",
-            "px-4"
-          )}>
-            <FeatureButtonList />
-          </div>
+                  {/* Class Name - Reduced size */}
+                  <div 
+                    className="text-[40px] font-normal leading-[1.4em] font-comfortaa"
+                    style={{
+                      background: 'linear-gradient(135deg, #AB2BAF 0%, #471249 100%), linear-gradient(90deg, #E634E1 0%, #E634E1 100%)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      backgroundClip: 'text'
+                    }}
+                  >
+                    {classReportMockData.className}
+                  </div>
+                </div>
 
-          {/* Main Content Container */}
-          <div className="flex-1 overflow-y-auto p-6">
-            <div className="max-w-7xl mx-auto">
-              {/* One Big Container - Report Header + Student Cards */}
-              <Card className="bg-white border border-black/20 shadow-[5px_4px_4px_0px_rgba(0,0,0,0.25)] rounded-[15px]">
-                <CardContent className="p-6">
-                  {/* Report Header Section */}
-                  <div className="flex items-center justify-between mb-6">
-                    {/* Left Section - Report Badge and Class Name */}
-                    <div className="flex items-center gap-4">
-                      {/* Report Badge - Changed to black */}
-                      <div className="text-black px-4 py-2 rounded-[15px] font-semibold text-[30px] font-comfortaa border-2 border-black">
-                        Report
-                      </div>
+                {/* Right Section - Export Button and Student Count */}
+                <div className="flex items-center gap-6">
+                  {/* Export Button */}
+                  <Button
+                    className="bg-[#7C8FD5] hover:bg-[#6A7BC3] text-white px-3 py-2 rounded-[10px] font-semibold text-[18px] font-comfortaa transition-colors duration-200"
+                    onClick={handleExport}
+                  >
+                    Export
+                  </Button>
 
-                      {/* Class Name - Reduced size */}
-                      <div 
-                        className="text-[40px] font-normal leading-[1.4em] font-comfortaa"
+                  {/* Student Count - Reduced size */}
+                  <div className="relative">
+                    <div
+                      className="bg-white rounded-[10px] flex items-center justify-center gap-2 px-3 py-0 border-[2px] border-solid"
+                      style={{
+                        borderColor: '#4A42AE'
+                      }}
+                    >
+                      <img
+                        src={AvatarIcon}
+                        alt="User"
+                        className="w-5 h-5 object-contain"
                         style={{
-                          background: 'linear-gradient(135deg, #AB2BAF 0%, #471249 100%), linear-gradient(90deg, #E634E1 0%, #E634E1 100%)',
-                          WebkitBackgroundClip: 'text',
-                          WebkitTextFillColor: 'transparent',
-                          backgroundClip: 'text'
+                          filter: 'opacity(0.6)'
+                        }}
+                      />
+                      <span
+                        className="text-[24px] font-normal leading-[1.4em] font-comfortaa"
+                        style={{
+                          color: 'rgba(0, 0, 0, 0.6)'
                         }}
                       >
-                        {classReportMockData.className}
-                      </div>
-                    </div>
-
-                    {/* Right Section - Export Button and Student Count */}
-                    <div className="flex items-center gap-6">
-                      {/* Export Button */}
-                      <Button
-                        className="bg-[#7C8FD5] hover:bg-[#6A7BC3] text-white px-3 py-2 rounded-[10px] font-semibold text-[18px] font-comfortaa transition-colors duration-200"
-                        onClick={handleExport}
-                      >
-                        Export
-                      </Button>
-
-                      {/* Student Count - Reduced size */}
-                      <div className="relative">
-                        <div
-                          className="bg-white rounded-[10px] flex items-center justify-center gap-2 px-3 py-0 border-[2px] border-solid"
-                          style={{
-                            borderColor: '#4A42AE'
-                          }}
-                        >
-                          <img
-                            src={AvatarIcon}
-                            alt="User"
-                            className="w-5 h-5 object-contain"
-                            style={{
-                              filter: 'opacity(0.6)'
-                            }}
-                          />
-                          <span
-                            className="text-[24px] font-normal leading-[1.4em] font-comfortaa"
-                            style={{
-                              color: 'rgba(0, 0, 0, 0.6)'
-                            }}
-                          >
-                            {classReportMockData.studentCount}
-                          </span>
-                        </div>
-                      </div>
+                        {classReportMockData.studentCount}
+                      </span>
                     </div>
                   </div>
+                </div>
+              </div>
 
-                  {/* Student Report Cards - List Layout */}
-                  <div className="space-y-4">
-                    {students.map((student) => (
-                      <StudentReportCard
-                        key={student.id}
-                        student={student}
-                        onScoreChange={(type, value) => handleScoreChange(student.id, type, value)}
-                        onAssessmentChange={(value) => handleAssessmentChange(student.id, value)}
-                      />
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
+              {/* Student Report Cards - List Layout */}
+              <div className="space-y-4">
+                {students.map((student) => (
+                  <StudentReportCard
+                    key={student.id}
+                    student={student}
+                    onScoreChange={(type, value) => handleScoreChange(student.id, type, value)}
+                    onAssessmentChange={(value) => handleAssessmentChange(student.id, value)}
+                  />
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

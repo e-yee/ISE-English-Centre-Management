@@ -1,12 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import authService from '../services/auth/authService';
+import authService from '../../services/auth/authService';
 import { 
   isAuthenticated, 
   getUser, 
   clearAuthData,
   getAccessToken 
-} from '../lib/utils';
+} from '../../lib/utils';
 
 // Authentication state interface
 interface AuthState {

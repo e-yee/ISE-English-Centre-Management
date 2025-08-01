@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer, useEffect, type ReactNode } from 'react';
-import authService from '../services/authService';
+import authService from '../services/auth/authService';
 import { 
   isAuthenticated, 
   getUser, 
@@ -12,7 +12,7 @@ interface User {
   id: string;
   username: string;
   email: string;
-  role: 'manager' | 'teacher' | 'learning-adviser'; // Define your three roles
+  role: 'manager' | 'teacher' | 'learning adviser'; // Define your three roles
   [key: string]: any;
 }
 
