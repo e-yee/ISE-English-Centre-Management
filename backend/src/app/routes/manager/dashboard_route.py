@@ -11,9 +11,9 @@ import datetime
 
 dashboard_bp = Blueprint("dashboard_bp", __name__, url_prefix="/dashboard")
 
-@dashboard_bp.route("/statistics", methods=["GET"])
+@dashboard_bp.get("/statistics")
 @role_required("Manager")
-def statistics():
+def overall_statistics():
     try:
         if not request.is_json:
             return jsonify({"message": "Missing or invalid JSON"}), HTTPStatus.BAD_REQUEST
@@ -48,3 +48,4 @@ def statistics():
             "message": "Unexpected error occurred",
             "error": str(e)
         }), HTTPStatus.INTERNAL_SERVER_ERROR
+    
