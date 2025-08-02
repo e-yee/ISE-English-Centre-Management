@@ -14,6 +14,7 @@ const ColleaguesPage: React.FC<ColleaguesPageProps> = ({ className }) => {
 
   // Use the employees hook instead of mock data
   const { data: employees, isLoading, error, refetch } = useEmployees();
+  console.log("employees", employees);
 
   // Transform Employee data to match Colleague interface
   const colleagues: Colleague[] = (employees || []).map(employee => ({

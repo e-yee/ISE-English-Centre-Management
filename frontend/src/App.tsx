@@ -23,14 +23,24 @@ const queryClient = new QueryClient({
 });
 
 function App() {
+    //for testing only  
+    // localStorage.setItem('access_token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc1NDEyMzQzNiwianRpIjoiY2U1Njk3MWEtODI2NC00ZjQwLWEyODAtN2IwMTNlYzQ3ZjA5IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IkFDQzAxIiwibmJmIjoxNzU0MTIzNDM2LCJjc3JmIjoiMTU5NGU2MDQtNDk4OC00NDNjLTliMmUtMGUwZGNjNDBhOGVlIiwiZXhwIjoxNzU0MjA5ODM2fQ.Q54lQSTV8_CBqu9FUcnMf_w1Hm8D_qMXCKtJlcsmaCk');
+    // // Set mock user in localStorage for testing
+    // localStorage.setItem('user', JSON.stringify({
+    //   id: '1',
+    //   role: 'Teacher',
+    //   email: 'teacher@test.com',
+    //   name: 'Test Teacher',
+    // }));
+
   // 🚀 PRODUCTION MODE: Full routing setup with MockAuthProvider (bypasses real auth)
   if (USE_PRODUCTION_ROUTES) {
     return (
       <QueryClientProvider client={queryClient}>
         <StagewiseToolbar config={{ plugins: [ReactPlugin] }} />
-        <MockAuthProvider>
+        <AuthProvider>
           <RouterProvider router={router} />
-        </MockAuthProvider>
+        </AuthProvider>
       </QueryClientProvider>
     );
   }

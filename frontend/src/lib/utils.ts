@@ -142,3 +142,61 @@ export function setUser(user: any): void {
     console.error('Error setting user data:', error);
   }
 }
+
+/**
+ * Decode JWT token and extract payload
+ */
+export function decodeJWT(token: string): any {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload;
+  } catch (error) {
+    console.error('Error decoding JWT:', error);
+    return null;
+  }
+}
+
+/**
+ * Get user ID from JWT token
+ */
+export function getUserIdFromToken(): string | null {
+  const token = getAccessToken();
+  if (!token) return null;
+  
+  const payload = decodeJWT(token);
+  return payload?.sub || null;
+}
+
+/**
+ * Store user role in localStorage
+ */
+export function setUserRole(role: string): void {
+  try {
+    localStorage.setItem('user_role', role);
+  } catch (error) {
+    console.error('Error setting user role:', error);
+  }
+}
+
+/**
+ * Get user role from localStorage
+ */
+export function getUserRole(): string | null {
+  try {
+    return localStorage.getItem('user_role');
+  } catch (error) {
+    console.error('Error getting user role:', error);
+    return null;
+  }
+}
+
+/**
+ * Clear user role from localStorage
+ */
+export function clearUserRole(): void {
+  try {
+    localStorage.removeItem('user_role');
+  } catch (error) {
+    console.error('Error clearing user role:', error);
+  }
+}

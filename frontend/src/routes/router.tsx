@@ -41,7 +41,7 @@ export const router = createBrowserRouter([
     children: [
       // --- Teacher Routes ---
       {
-        element: <ProtectedRoute allowedRoles={['teacher']} />,
+        element: <ProtectedRoute allowedRoles={['Teacher']} />,
         children: [
           { path: 'home', element: <Homescreen /> },
           { path: 'example', element: <ExamplePage /> }, // Test route for AppLayout
@@ -60,7 +60,7 @@ export const router = createBrowserRouter([
       },
       // --- Manager Routes ---
       {
-        element: <ProtectedRoute allowedRoles={['manager']} />,
+        element: <ProtectedRoute allowedRoles={['Manager']} />,
         children: [
           // { path: 'manager/reports', element: <ManagerReports /> },
           // Add other manager-specific routes here
@@ -68,14 +68,14 @@ export const router = createBrowserRouter([
       },
       // --- Learning Adviser Routes ---
       {
-        element: <ProtectedRoute allowedRoles={['learning adviser']} />,
+        element: <ProtectedRoute allowedRoles={['Learning Advisor']} />,
         children: [
           // { path: 'adviser/schedule', element: <AdviserSchedule /> },
         ],
       },
       // --- Shared Routes (accessible by multiple roles) ---
       {
-        element: <ProtectedRoute allowedRoles={['teacher', 'manager', 'learning adviser']} />,
+        element: <ProtectedRoute allowedRoles={['Teacher', 'Manager', 'Learning Advisor']} />,
         children: [
           { path: '/', element: <Navigate to="/auth/login" replace /> }, // Default redirect
           // { path: 'profile', element: <ProfilePage /> },
