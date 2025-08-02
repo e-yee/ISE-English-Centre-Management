@@ -9,7 +9,8 @@ export function useRoleBasedData<T>(
 ) {
   //const { user } = useAuth();
   const mockUser = {
-    role: 'teacher',
+    role: 'Teacher',
+    
   };
 
   return useQuery({

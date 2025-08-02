@@ -2,9 +2,14 @@ import { useRoleBasedData, useDataFetching } from '../base/useDataFetching';
 import employeeService from '@/services/entities/employeeService';
 
 export function useEmployees() {
+
+
   return useRoleBasedData(
     ['employees'],
-    () => employeeService.getEmployeesByRole()
+    () => {
+      console.log('fetching employees');
+      return employeeService.getEmployeesByRole();
+    }
   );
 }
 

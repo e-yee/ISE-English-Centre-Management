@@ -1,53 +1,63 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useSidebar } from '@/components/ui/sidebar';
 
 interface FeatureButtonListProps {
   className?: string;
+  classId?: string; // Optional classId for class-specific routes
 }
 
 interface FeatureButton {
   id: string;
   title: string;
+  route?: string;
   onClick?: () => void;
 }
 
-const FeatureButtonList: React.FC<FeatureButtonListProps> = ({ className }) => {
+const FeatureButtonList: React.FC<FeatureButtonListProps> = ({ className, classId }) => {
   const { state } = useSidebar();
   const isExpanded = state === "expanded";
   const [activeButton, setActiveButton] = useState<string | null>(null);
+  const navigate = useNavigate();
 
-  // Feature buttons as specified in the implementation plan
+  // Feature buttons with routing
   const featureButtons: FeatureButton[] = [
     {
       id: "information",
       title: "Information",
-      onClick: () => console.log("Information clicked")
+      route: classId ? `/class-info/${classId}` : "/class-info/1", // Default classId if not provided
+      onClick: () => navigate(classId ? `/class-info/${classId}` : "/class-info/1")
     },
     {
       id: "scoring",
       title: "Scoring", 
-      onClick: () => console.log("Scoring clicked")
+      route: "/report", // Using report as closest match for scoring
+      onClick: () => navigate("/report")
     },
     {
       id: "daily-attendance",
       title: "Daily Attendance",
-      onClick: () => console.log("Daily Attendance clicked")
+      route: "/attendance",
+      onClick: () => navigate("/attendance")
     },
     {
       id: "materials",
       title: "Materials",
-      onClick: () => console.log("Materials clicked")
+      route: "/materials",
+      onClick: () => navigate("/materials")
     },
     {
       id: "report",
       title: "Report",
-      onClick: () => console.log("Report clicked")
+      route: "/report",
+      onClick: () => navigate("/report")
     },
     {
       id: "export-report",
       title: "Export Report",
-      onClick: () => console.log("Export Report clicked")
+      route: "/report", // Using report route, could be enhanced with export functionality
+      onClick: () => navigate("/report")
     }
   ];
 

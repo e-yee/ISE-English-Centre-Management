@@ -89,11 +89,29 @@ const MainSidebar: React.FC<SidebarProps> = ({ className }) => {
       } else {
         console.log("Navigation to /home (demo mode - navigation disabled)");
       }
+    } else if (itemId === "absence-request") {
+      if (navigate) {
+        navigate("/absent-request");
+      } else {
+        console.log("Navigation to /absent-request (demo mode - navigation disabled)");
+      }
+    } else if (itemId === "timekeeping") {
+      if (navigate) {
+        navigate("/timekeeping");
+      } else {
+        console.log("Navigation to /checkin (demo mode - navigation disabled)");
+      }
     } else if (itemId === "colleagues") {
       if (navigate) {
         navigate("/colleagues");
       } else {
         console.log("Navigation to /colleagues (demo mode - navigation disabled)");
+      }
+    } else if (itemId === "materials") {
+      if (navigate) {
+        navigate("/materials");
+      } else {
+        console.log("Navigation to /materials (demo mode - navigation disabled)");
       }
     } else {
       // For other items, just log for now (can be extended later)

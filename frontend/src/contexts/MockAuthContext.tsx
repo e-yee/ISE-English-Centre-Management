@@ -5,7 +5,7 @@ interface User {
   id: string;
   username: string;
   email: string;
-  role: 'manager' | 'teacher' | 'learning adviser';
+  role: 'Manager' | 'Teacher' | 'Learning Adviser';
   [key: string]: any;
 }
 
@@ -41,7 +41,7 @@ const mockUser: User = {
   id: 'mock-user-1',
   username: 'testteacher',
   email: 'teacher@ise.edu.vn',
-  role: 'teacher', // This role has access to /example route
+  role: 'Teacher', // This role has access to /example route
   name: 'Test Teacher',
   avatar: '/default-avatar.png',
 };

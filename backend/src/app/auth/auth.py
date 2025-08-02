@@ -27,10 +27,11 @@ def login():
             user = db.session.query(Account).filter_by(username=username).first()
 
             if user and pwd_context.verify(password, user.password_hash):
-                access_token = create_access_token(identity=user.id)
+                employee_role = user.employee.role
+                access_token = create_access_token(identity=user.id, additional_claims={'role': employee_role})
 
                 return jsonify({
-                    'access_token': access_token,
+                    'access_token': access_token
                 }), HTTPStatus.OK
             
             return jsonify({

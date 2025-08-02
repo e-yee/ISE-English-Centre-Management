@@ -27,15 +27,36 @@ class EmployeeService extends ApiService {
     return this.get<Employee[]>('/employee/');
   }
   
+//   async getEmployeesByRole(): Promise<Employee[]> {
+//     const user = JSON.parse(localStorage.getItem('user') || '{}');
+    
+//     switch (user.role) {
+//       case 'Teacher':
+//         return this.getAvailableTeachers();
+//       case 'manager':
+//         return this.getAllEmployees();
+//       default:
+//         return [];
+//     }
+//   }
+// }
+
   async getEmployeesByRole(): Promise<Employee[]> {
+    console.log('�� getEmployeesByRole called');
+    
     const user = JSON.parse(localStorage.getItem('user') || '{}');
+    console.log('🔍 localStorage user:', user);
+    console.log('�� user.role:', user.role);
     
     switch (user.role) {
-      case 'teacher':
+      case 'Teacher':
+        console.log('🔍 Calling getAvailableTeachers');
         return this.getAvailableTeachers();
-      case 'manager':
+      case 'Manager':
+        console.log('🔍 Calling getAllEmployees');
         return this.getAllEmployees();
       default:
+        console.log('�� Falling to default, role not matched');
         return [];
     }
   }

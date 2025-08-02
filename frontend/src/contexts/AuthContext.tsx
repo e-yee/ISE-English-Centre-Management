@@ -4,7 +4,8 @@ import {
   isAuthenticated, 
   getUser, 
   clearAuthData,
-  getAccessToken 
+  getAccessToken,
+  getUserRole
 } from '../lib/utils';
 
 // Types
@@ -12,7 +13,7 @@ interface User {
   id: string;
   username: string;
   email: string;
-  role: 'manager' | 'teacher' | 'learning adviser'; // Define your three roles
+  role: 'Teacher' | 'Learning Advisor' | 'Manager'; // 
   [key: string]: any;
 }
 
@@ -88,12 +89,12 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
 // Role-based navigation helper
 const getDefaultRouteForRole = (role: string): string => {
   switch (role) {
-    case 'manager':
-      return '/colleagues'; // Manager dashboard
-    case 'teacher':
-      return '/attendance'; // Teacher's main page
-    case 'learning-adviser':
-      return '/timekeeping/checkin'; // Learning adviser's main page
+    case 'Manager':
+      return '/home'; // Manager dashboard
+    case 'Teacher':
+      return '/home'; // Teacher's main page
+    case 'Learning Advisor':
+      return '/home'; // Learning adviser's main page
     default:
       return '/home';
   }
@@ -120,8 +121,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const initializeAuth = () => {
       const authenticated = isAuthenticated();
       const user = getUser();
+      const role = getUserRole();
       
-      dispatch({ type: 'SET_USER', payload: authenticated ? user : null });
+      // Combine user data with role from localStorage
+      const userWithRole = user ? {
+        ...user,
+        role: role || user.role || 'Teacher' // Fallback to stored role or default
+      } : null;
+      
+      dispatch({ type: 'SET_USER', payload: authenticated ? userWithRole : null });
       dispatch({ type: 'SET_AUTHENTICATED', payload: authenticated });
       dispatch({ type: 'SET_LOADING', payload: false });
     };
@@ -140,12 +148,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       console.log('Login successful for user:', credentials.username);
 
-      dispatch({ type: 'SET_USER', payload: response.user || null });
+      // Get role from localStorage after login
+      const role = getUserRole();
+      const userWithRole = response.user ? {
+        ...response.user,
+        role: role || response.user.role || 'Teacher'
+      } : null;
+
+      dispatch({ type: 'SET_USER', payload: userWithRole });
       dispatch({ type: 'SET_AUTHENTICATED', payload: true });
       dispatch({ type: 'SET_LOADING', payload: false });
 
       // Navigate to role-appropriate page after successful login
-      const defaultRoute = getDefaultRouteForRole(response.user?.role || '');
+      const defaultRoute = getDefaultRouteForRole(role || 'Teacher');
       window.location.href = defaultRoute;
 
       return response;

@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import AuthPageDemo from "@/components/demo/AuthPageDemo";
-import ClassInformationDemo from "@/components/demo/ClassInformationDemo";
+import AuthPage from "./auth/AuthPage";
+import ClassInformationPage from "./class/ClassInformationPage";
 import RevealOnScroll from "@/components/ui/RevealOnScroll";
 import ClassScreen from "./class/ClassScreen";
-import AddMaterialsDemo from "@/components/demo/AddMaterialsDemo";
+import AddMaterialsPage from "./materials/AddMaterialsPage";
 import ProfileSettingPage from "./profile/ProfileSettingPage";
 import AbsentRequestPage from "./absent-request/AbsentRequestPage";
-import AttendancePageDemo from "@/components/demo/AttendancePageDemo";
+import AttendancePage from "./attendance/AttendancePage";
 import DevelopmentProgressList from "@/components/demo/DevelopmentProgressList";
 import ClassReportPage from "./class-report/ClassReportPage";
 import TimeKeepingPage from "./timekeeping/TimeKeeping";
@@ -44,7 +44,7 @@ const developmentItems = [
     category: "Pages",
     lastUpdated: "2024-01-14",
     demoAvailable: true,
-    demoComponent: AuthPageDemo
+    demoComponent: AuthPage
   },
   {
     id: "class-screen",
@@ -66,7 +66,7 @@ const developmentItems = [
     category: "Components",
     lastUpdated: "2024-01-12",
     demoAvailable: true,
-    demoComponent: ClassInformationDemo
+    demoComponent: ClassInformationPage
   },
   {
     id: "materials-page",
@@ -77,7 +77,7 @@ const developmentItems = [
     category: "Pages",
     lastUpdated: "2024-01-11",
     demoAvailable: true,
-    demoComponent: AddMaterialsDemo
+    demoComponent: AddMaterialsPage
   },
   {
     id: "profile-settings",
@@ -110,7 +110,7 @@ const developmentItems = [
     category: "Pages",
     lastUpdated: "2024-01-16",
     demoAvailable: true,
-    demoComponent: AttendancePageDemo
+    demoComponent: AttendancePage
   },
   {
     id: "class-report",
@@ -310,7 +310,7 @@ const ExamplePageContent: React.FC<ExamplePageProps> = ({ className }) => {
             ← Back to Example
           </Button>
         </div>
-        <ClassInformationDemo />
+        <ClassInformationPage />
       </div>
     );
   }
@@ -328,7 +328,7 @@ const ExamplePageContent: React.FC<ExamplePageProps> = ({ className }) => {
             ← Back to Example
           </Button>
         </div>
-        <AddMaterialsDemo />
+        <AddMaterialsPage />
       </div>
     );
   }
@@ -382,7 +382,7 @@ const ExamplePageContent: React.FC<ExamplePageProps> = ({ className }) => {
             ← Back to Example
           </Button>
         </div>
-        <AttendancePageDemo />
+        <AttendancePage />
       </div>
     );
   }
@@ -491,7 +491,7 @@ const ExamplePageContent: React.FC<ExamplePageProps> = ({ className }) => {
             ← Back to Example
           </Button>
         </div>
-        <AuthPageDemo />
+        <AuthPage />
       </div>
     );
   }

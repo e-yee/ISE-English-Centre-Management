@@ -4,7 +4,12 @@ import {
   setRefreshToken,
   getRefreshToken,
   clearAuthData,
-  setUser
+  setUser,
+  getUserIdFromToken,
+  setUserRole,
+  clearUserRole,
+  decodeJWT,
+  getAccessToken
 } from '../../lib/utils';
 
 // Type definitions for API responses
@@ -28,6 +33,22 @@ interface ApiResponse {
 // Authentication Service
 export const authService = {
   /**
+   * Extract user role from JWT token
+   */
+  extractRoleFromToken(): string | null {
+    try {
+      const token = getAccessToken();
+      if (!token) return null;
+      
+      const payload = decodeJWT(token);
+      return payload?.role || null;
+    } catch (error) {
+      console.error('Failed to extract role from token:', error);
+      return null;
+    }
+  },
+
+  /**
    * Login user with username and password
    */
   async login(credentials: { username: string; password: string }): Promise<LoginResponse> {
@@ -37,7 +58,7 @@ export const authService = {
         data: credentials,
       });
 
-      // Store tokens and user data
+      // Store tokens
       if (response.access_token) {
         setAccessToken(response.access_token);
       }
@@ -46,6 +67,15 @@ export const authService = {
       }
       if (response.user) {
         setUser(response.user);
+      }
+
+      // Extract and store user role from token
+      const role = this.extractRoleFromToken();
+      if (role) {
+        setUserRole(role);
+      } else {
+        console.warn('No role found in token, using default');
+        setUserRole('Teacher'); // Fallback to default role
       }
 
       return response;
@@ -106,6 +136,7 @@ export const authService = {
     } finally {
       // Always clear local auth data
       clearAuthData();
+      clearUserRole(); // Clear role too
     }
   },
 
