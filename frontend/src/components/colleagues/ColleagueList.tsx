@@ -93,7 +93,6 @@ const ColleagueList: React.FC<ColleagueListProps> = ({ colleagues, selectedColle
                 <div className="flex items-center justify-center h-full text-gray-500">
                   <div className="text-center">
                     <p className="text-lg font-medium">No colleagues found</p>
-                    <p className="text-sm">Try adjusting your search terms</p>
                   </div>
                 </div>
               )}

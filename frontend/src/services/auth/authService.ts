@@ -1,11 +1,11 @@
-import { apiRequest } from '../lib/apiClient';
+import { apiRequest } from '../../lib/apiClient';
 import {
   setAccessToken,
   setRefreshToken,
   getRefreshToken,
   clearAuthData,
   setUser
-} from '../lib/utils';
+} from '../../lib/utils';
 
 // Type definitions for API responses
 interface LoginResponse {

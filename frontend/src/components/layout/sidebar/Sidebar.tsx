@@ -89,6 +89,12 @@ const MainSidebar: React.FC<SidebarProps> = ({ className }) => {
       } else {
         console.log("Navigation to /home (demo mode - navigation disabled)");
       }
+    } else if (itemId === "colleagues") {
+      if (navigate) {
+        navigate("/colleagues");
+      } else {
+        console.log("Navigation to /colleagues (demo mode - navigation disabled)");
+      }
     } else {
       // For other items, just log for now (can be extended later)
       console.log(`Navigating to ${itemId}`);

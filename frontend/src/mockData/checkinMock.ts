@@ -1,4 +1,3 @@
-import { Calendar, Clock } from "lucide-react";
 
 // Mock data for upcoming classes
 export const upcomingClassesMock = [

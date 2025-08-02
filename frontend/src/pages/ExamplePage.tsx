@@ -1,12 +1,7 @@
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
-import Header from "@/components/layout/Header";
-import Sidebar from "@/components/layout/Sidebar";
-import { SidebarProvider, useSidebar } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import AuthPageDemo from "@/components/demo/AuthPageDemo";
-import HomescreenDemo from "@/components/demo/HomescreenDemo";
-import ClassScreenDemo from "@/components/demo/ClassScreenDemo";
 import ClassInformationDemo from "@/components/demo/ClassInformationDemo";
 import RevealOnScroll from "@/components/ui/RevealOnScroll";
 import ClassScreen from "./class/ClassScreen";
@@ -21,6 +16,7 @@ import CheckInPage from "./timekeeping/CheckInPage";
 import TimeEntriesPage from "./timekeeping/TimeEntriesPage";
 import { List, Grid3X3 } from "lucide-react";
 import ColleaguesPage from "./colleagues/ColleaguesPage";
+import HomescreenPage from "./homescreen/Homescreen";
 
 interface ExamplePageProps {
   className?: string;
@@ -37,7 +33,7 @@ const developmentItems = [
     category: "Pages",
     lastUpdated: "2024-01-15",
     demoAvailable: true,
-    demoComponent: HomescreenDemo
+    demoComponent: HomescreenPage
   },
   {
     id: "auth-page",
@@ -59,7 +55,7 @@ const developmentItems = [
     category: "Pages",
     lastUpdated: "2024-01-13",
     demoAvailable: true,
-    demoComponent: ClassScreenDemo
+    demoComponent: ClassScreen
   },
   {
     id: "class-information",
@@ -225,8 +221,6 @@ const developmentItems = [
 
 // Internal component that uses the sidebar context
 const ExamplePageContent: React.FC<ExamplePageProps> = ({ className }) => {
-  const { state } = useSidebar();
-  const isExpanded = state === "expanded";
   const [showAuthPage, setShowAuthPage] = useState(false);
   const [showHomescreenDemo, setShowHomescreenDemo] = useState(false);
   const [showClassScreenDemo, setShowClassScreenDemo] = useState(false);
@@ -278,7 +272,7 @@ const ExamplePageContent: React.FC<ExamplePageProps> = ({ className }) => {
             ← Back to Example
           </Button>
         </div>
-        <HomescreenDemo />
+        <HomescreenPage />
       </div>
     );
   }
@@ -297,7 +291,7 @@ const ExamplePageContent: React.FC<ExamplePageProps> = ({ className }) => {
             ← Back to Example
           </Button>
         </div>
-        <ClassScreenDemo />
+        <ClassScreen />
       </div>
     );
   }
@@ -503,26 +497,9 @@ const ExamplePageContent: React.FC<ExamplePageProps> = ({ className }) => {
   }
 
   return (
-    <div className={cn("h-screen w-screen bg-gray-50 overflow-hidden font-comfortaa", className)}>
-      {/* Header - Always at top, full width */}
-      <div className="w-full h-20"> {/* Fixed header height */}
-        <Header isRegistered={true} />
-      </div>
-
-      {/* Main content area with sidebar */}
-      <div className="relative h-[calc(100vh-5rem)]">
-        {/* Sidebar - positioned to touch bottom of header */}
-        <div className="absolute left-0 top-0 h-full">
-          <Sidebar />
-        </div>
-
-        {/* Content area - full remaining height */}
-        <div className={cn(
-          "h-full pt-8 pl-8 transition-all duration-300 ease-in-out overflow-hidden",
-          isExpanded ? "ml-[335px]" : "ml-[120px]" // Space for sidebar + toggle button
-        )}>
-          {/* Scrollable content container */}
-          <div className="h-full overflow-y-auto custom-scrollbar">
+    <div className={cn("h-full pt-8 pl-8 overflow-hidden", className)}>
+      {/* Scrollable content container */}
+      <div className="h-full overflow-y-auto custom-scrollbar">
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h1 className="text-3xl font-bold text-gray-800">🧪 Component & Page Test Center</h1>
@@ -559,7 +536,7 @@ const ExamplePageContent: React.FC<ExamplePageProps> = ({ className }) => {
               <h3 className="text-lg font-semibold text-blue-800 mb-2">📊 Current Layout Status</h3>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <p><strong>Sidebar:</strong> {state} ({isExpanded ? "295px" : "80px"} width)</p>
+                  <p><strong>Sidebar:</strong> Managed by AppLayout</p>
                   <p><strong>Header:</strong> Fixed 80px height</p>
                   <p><strong>Layout:</strong> Responsive viewport-contained</p>
                 </div>
@@ -865,18 +842,12 @@ const ExamplePageContent: React.FC<ExamplePageProps> = ({ className }) => {
             </div>
           </div>
         </div>
-      </div>
-    </div>
   );
 };
 
-// Main wrapper component that provides sidebar context
+// Main component - no longer needs SidebarProvider since AppLayout handles it
 const ExamplePage: React.FC<ExamplePageProps> = ({ className }) => {
-  return (
-    <SidebarProvider defaultOpen={true}>
-      <ExamplePageContent className={className} />
-    </SidebarProvider>
-  );
+  return <ExamplePageContent className={className} />;
 };
 
 export default ExamplePage;

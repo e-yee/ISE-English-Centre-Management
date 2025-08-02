@@ -37,13 +37,13 @@ export function ForgotPasswordEmailForm({
         </div>
 
         {/* Title */}
-        <CardTitle className="text-[50px] font-comfortaa font-semibold text-[#78746C] leading-[1.4]">
+        <CardTitle className="text-[50px] font-comfortaa font-semibold text-[#78746C] leading-[1.4] select-none">
           FORGOT PASSWORD
         </CardTitle>
       </CardHeader>
 
       <CardContent className="space-y-8 px-12 pb-12">
-        <form onSubmit={handleSubmit} className="space-y-8">
+        <form onSubmit={handleSubmit} className="space-y-8 select-none">
           <p className="text-[20px] font-comfortaa text-[#78746C] text-center leading-relaxed">
             Enter your email address and we'll send you a link to reset your password.
           </p>
