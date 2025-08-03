@@ -21,6 +21,15 @@ interface ProtectedRouteProps {
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles }) => {
   const { user, isAuthenticated, isLoading } = useAuth();
 
+  console.log('ProtectedRoute check:', {
+    pathname: window.location.pathname,
+    user,
+    isAuthenticated,
+    isLoading,
+    allowedRoles,
+    userRole: user?.role
+  });
+
   // Show loading state while checking authentication
   if (isLoading) {
     return (

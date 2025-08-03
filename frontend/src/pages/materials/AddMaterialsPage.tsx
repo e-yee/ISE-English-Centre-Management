@@ -57,9 +57,6 @@ const AddMaterialsPage: React.FC<AddMaterialsPageProps> = ({ className, classId 
 
   return (
     <div className={cn("h-full overflow-hidden flex flex-col", className)}>
-      <div className={cn("pt-4 pb-3 flex-shrink-0 transition-all duration-300 ease-in-out", "px-4")}>
-        <FeatureButtonList />
-      </div>
       
       <div className={cn("pb-3 flex-shrink-0 transition-all duration-300 ease-in-out", "px-4")}>
         <ClassInfo

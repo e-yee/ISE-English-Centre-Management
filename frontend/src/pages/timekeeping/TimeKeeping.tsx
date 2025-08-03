@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import checkinIcon from "@/assets/checkin/checkin-icon.png";
 import listIcon from "@/assets/checkin/list-icon.svg";
@@ -9,8 +10,17 @@ interface TimeKeepingPageProps {
 
 // Check In Card Component
 const CheckInCard: React.FC = () => {
+  const navigate = useNavigate();
+
+  const handleCheckInClick = () => {
+    navigate('/checkin');
+  };
+
   return (
-    <div className="flex bg-white rounded-[15px] shadow-lg border border-gray-200 overflow-hidden">
+    <div 
+      className="flex bg-white rounded-[15px] shadow-lg border border-gray-200 overflow-hidden cursor-pointer hover:shadow-xl transition-shadow duration-200"
+      onClick={handleCheckInClick}
+    >
       {/* Left side with icon */}
       <div className="w-[119px] h-[118px] bg-[rgba(239,21,21,0.2)] flex items-center justify-center rounded-l-[15px]">
         <img 
@@ -35,8 +45,17 @@ const CheckInCard: React.FC = () => {
 
 // Recent Time Entries Card Component
 const RecentTimeEntriesCard: React.FC = () => {
+  const navigate = useNavigate();
+
+  const handleTimeEntriesClick = () => {
+    navigate('/time-entries');
+  };
+
   return (
-    <div className="flex bg-white rounded-[15px] shadow-lg border border-gray-200 overflow-hidden">
+    <div 
+      className="flex bg-white rounded-[15px] shadow-lg border border-gray-200 overflow-hidden cursor-pointer hover:shadow-xl transition-shadow duration-200"
+      onClick={handleTimeEntriesClick}
+    >
       {/* Left side with icon */}
       <div className="w-[119px] h-[118px] bg-[rgba(171,125,251,0.85)] flex items-center justify-center rounded-l-[15px]">
         <img 

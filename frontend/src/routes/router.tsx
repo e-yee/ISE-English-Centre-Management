@@ -22,15 +22,6 @@ import ClassReportPage from '../pages/class-report/ClassReportPage';
 
 export const router = createBrowserRouter([
   {
-    path: '/',
-    element: <Navigate to= '/auth/login' replace />,
-  },
-
-  {
-    path: '/login',
-    element: <AuthPage />,
-  },
-  {
     path: '/unauthorized',
     element: <UnauthorizedPage />,
   },
@@ -39,26 +30,14 @@ export const router = createBrowserRouter([
     path: '/',
     element: <AppLayout />, // AppLayout provides Header, Sidebar, and Outlet for child routes
     children: [
-      // --- Shared Routes (accessible by multiple roles) ---
-      {
-        element: (
-          <ProtectedRoute
-            allowedRoles={['Teacher', 'Manager', 'Learning Advisor']}
-          />
-        ),
-        children: [
-          { path: 'home', element: <Homescreen /> },
-          { path: 'colleagues', element: <ColleaguesPage /> },
 
-          // Add other shared routes here if needed
-          // { path: 'profile', element: <ProfilePage /> },
-        ],
-      },
-      // --- Teacher-Specific Routes ---
+         // --- Teacher Routes (accessible by Teacher, Learning Advisor, Manager) ---
       {
-        element: <ProtectedRoute allowedRoles={['Teacher']} />,
+        element: <ProtectedRoute allowedRoles={['Teacher', 'Manager', 'Learning Advisor']} />,
         children: [
-          { path: 'example', element: <ExamplePage /> }, // Test route for AppLayout
+          {path: 'home', element: <Homescreen />},
+          {path: 'colleagues', element: <ColleaguesPage />},
+          { path: 'example', element: <ExamplePage /> },
           { path: 'absent-request', element: <AbsentRequestPage /> },
           { path: 'checkin', element: <CheckInPage /> },
           { path: 'timekeeping', element: <TimeKeepingPage /> },
@@ -71,20 +50,24 @@ export const router = createBrowserRouter([
           { path: 'report', element: <ClassReportPage /> },
         ],
       },
-      // --- Manager-Specific Routes ---
+      
+      // --- Learning Advisor Routes (accessible by Learning Advisor and Manager) ---
       {
-        element: <ProtectedRoute allowedRoles={['Manager']} />,
+        element: <ProtectedRoute allowedRoles={['Manager', 'Learning Advisor']} />,
         children: [
-          // Add manager-specific routes here
-        ],
-      },
-      // --- Learning Adviser-Specific Routes ---
-      {
-        element: <ProtectedRoute allowedRoles={['Learning Advisor']} />,
-        children: [
+          // Add Learning Advisor specific routes here
           // { path: 'adviser/schedule', element: <AdviserSchedule /> },
         ],
       },
+      
+      // --- Manager Routes (accessible only by Manager) ---
+      {
+        element: <ProtectedRoute allowedRoles={['Manager']} />,
+        children: [
+          // Add Manager specific routes here
+        ],
+      },
+      
       // Fallback redirect for authenticated users at the root
       {
         element: (

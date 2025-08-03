@@ -1,261 +1,131 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import authService from '../services/auth/authService';
-import { 
-  isAuthenticated, 
-  getUser, 
-  clearAuthData,
-  getAccessToken 
-} from '../lib/utils';
-
-// Authentication state interface
-interface AuthState {
-  user: any | null;
-  isLoading: boolean;
-  error: string | null;
-  isAuthenticated: boolean;
-}
-
-// Forgot password flow state
-interface ForgotPasswordState {
-  email: string;
-  verificationCode: string;
-  step: 1 | 2 | 3;
-}
+import { useAuth } from '../contexts/AuthContext';
 
 export const useAuthFlow = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
-  // Authentication state
-  const [authState, setAuthState] = useState<AuthState>({
-    user: null,
-    isLoading: false,
-    error: null,
-    isAuthenticated: false,
-  });
+  // Use AuthContext instead of maintaining separate state
+  const { 
+    user,
+    isLoading, 
+    error,
+    isAuthenticated,
+    login: contextLogin,
+    logout: contextLogout,
+    sendForgotPasswordEmail: contextSendForgotPasswordEmail,
+    forgotPasswordVerify: contextForgotPasswordVerify,
+    forgotPasswordReset: contextForgotPasswordReset,
+    clearError: contextClearError,
+    forgotPasswordEmail,
+    forgotPasswordStep
+  } = useAuth();
 
-  // Forgot password flow state
-  const [forgotPasswordState, setForgotPasswordState] = useState<ForgotPasswordState>({
-    email: '',
-    verificationCode: '',
-    step: 1,
-  });
+  // Forgot password flow state is now managed by AuthContext
 
-  // Initialize auth state on mount
-  useEffect(() => {
-    const initializeAuth = () => {
-      const authenticated = isAuthenticated();
-      const user = getUser();
-      
-      setAuthState({
-        user: authenticated ? user : null,
-        isLoading: false,
-        error: null,
-        isAuthenticated: authenticated,
-      });
-    };
-
-    initializeAuth();
-  }, []);
-
-  // Set loading state
-  const setLoading = useCallback((loading: boolean) => {
-    setAuthState(prev => ({ ...prev, isLoading: loading }));
-  }, []);
-
-  // Set error state
-  const setError = useCallback((error: string | null) => {
-    setAuthState(prev => ({ ...prev, error }));
-  }, []);
-
-  // Login function
+  // Login function - wrapper around AuthContext login with navigation
   const login = useCallback(async (credentials: { username: string; password: string }) => {
-    setLoading(true);
-    setError(null);
-
     try {
-      console.log('Attempting login for user:', credentials.username);
-      const response = await authService.login(credentials);
-
-      console.log('Login successful for user:', credentials.username);
-
-      setAuthState({
-        user: response.user || null,
-        isLoading: false,
-        error: null,
-        isAuthenticated: true,
-      });
-
-      // Navigate to intended destination or home page after successful login
+      console.log('useAuthFlow: Delegating login to AuthContext for user:', credentials.username);
+      // Use the login from AuthContext
+      await contextLogin(credentials);
+      
+      // After successful login, navigate to intended destination or home
+      console.log('useAuthFlow: Login successful, navigating to home');
       const from = location.state?.from || '/home';
       navigate(from, { replace: true });
-
-      return response;
+      
+      return true;
     } catch (error: any) {
-      console.error('Login failed for user:', credentials.username, 'Error:', error.message);
-
-      // Set user-friendly error message
-      const errorMessage = error.message || 'Login failed. Please try again.';
-      setError(errorMessage);
-      setLoading(false);
-
-      // Log additional error details for debugging
-      if (error.name === 'AuthenticationError') {
-        console.warn('Authentication error:', errorMessage);
-      } else {
-        console.error('Unexpected login error:', error);
-      }
-
+      console.error('useAuthFlow: Login failed:', error);
       throw error;
     }
-  }, [navigate, setLoading, setError]);
+  }, [navigate, contextLogin, location.state]);
 
-  // Logout function
+  // Logout function - wrapper around AuthContext logout with navigation
   const logout = useCallback(async () => {
-    setLoading(true);
-    
     try {
-      await authService.logout();
-    } catch (error) {
-      console.error('Logout error:', error);
-    } finally {
-      setAuthState({
-        user: null,
-        isLoading: false,
-        error: null,
-        isAuthenticated: false,
-      });
+      // Use the logout from AuthContext
+      await contextLogout();
       
       // Navigate to login page
       navigate('/auth/login');
+    } catch (error) {
+      console.error('useAuthFlow: Logout error:', error);
     }
-  }, [navigate, setLoading]);
+  }, [navigate, contextLogout]);
 
-  // Forgot password - send email
-  const forgotPasswordEmail = useCallback(async (email: string) => {
-    setLoading(true);
-    setError(null);
-
+  // Forgot password - send email - wrapper around AuthContext method with navigation
+  const sendForgotPasswordEmailWithNav = useCallback(async (email: string) => {
     try {
-      await authService.forgotPasswordEmail(email);
-      
-      setForgotPasswordState(prev => ({
-        ...prev,
-        email,
-        step: 2,
-      }));
-
-      setLoading(false);
+      // Use the sendForgotPasswordEmail from AuthContext
+      await contextSendForgotPasswordEmail(email);
       
       // Navigate to verification step
       navigate('/auth/forget-password/verify');
     } catch (error: any) {
-      setError(error.message || 'Failed to send verification email');
-      setLoading(false);
+      console.error('useAuthFlow: Send forgot password email failed:', error);
       throw error;
     }
-  }, [navigate, setLoading, setError]);
+  }, [navigate, contextSendForgotPasswordEmail]);
 
-  // Forgot password - verify code
+  // Forgot password - verify code - wrapper around AuthContext method with navigation
   const forgotPasswordVerify = useCallback(async (verificationCode: string) => {
-    setLoading(true);
-    setError(null);
-
     try {
-      await authService.forgotPasswordVerify(forgotPasswordState.email, verificationCode);
-      
-      setForgotPasswordState(prev => ({
-        ...prev,
-        verificationCode,
-        step: 3,
-      }));
-
-      setLoading(false);
+      // Use the forgotPasswordVerify from AuthContext
+      await contextForgotPasswordVerify(verificationCode);
       
       // Navigate to new password step
       navigate('/auth/forget-password/new-password');
     } catch (error: any) {
-      setError(error.message || 'Invalid verification code');
-      setLoading(false);
+      console.error('useAuthFlow: Verify code failed:', error);
       throw error;
     }
-  }, [forgotPasswordState.email, navigate, setLoading, setError]);
+  }, [navigate, contextForgotPasswordVerify]);
 
-  // Forgot password - reset password
+  // Forgot password - reset password - wrapper around AuthContext method with navigation
   const forgotPasswordReset = useCallback(async (newPassword: string) => {
-    setLoading(true);
-    setError(null);
-
     try {
-      await authService.forgotPasswordReset(
-        forgotPasswordState.email,
-        forgotPasswordState.verificationCode,
-        newPassword
-      );
-
-      // Reset forgot password state
-      setForgotPasswordState({
-        email: '',
-        verificationCode: '',
-        step: 1,
-      });
-
-      setLoading(false);
+      // Use the forgotPasswordReset from AuthContext
+      await contextForgotPasswordReset(newPassword);
       
       // Navigate to login with success message
       navigate('/auth/login');
-      
-      // You might want to show a success message here
-      alert('Password reset successful! Please login with your new password.');
     } catch (error: any) {
-      setError(error.message || 'Failed to reset password');
-      setLoading(false);
+      console.error('useAuthFlow: Reset password failed:', error);
       throw error;
     }
-  }, [forgotPasswordState, navigate, setLoading, setError]);
+  }, [navigate, contextForgotPasswordReset]);
 
-  // Check if user is authenticated (for route guards)
+  // Check if user is authenticated (for route guards) - directly use isAuthenticated from context
   const checkAuth = useCallback(() => {
-    return isAuthenticated();
-  }, []);
-
-  // Refresh token if needed
-  const refreshToken = useCallback(async () => {
-    try {
-      await authService.refreshToken();
-      return true;
-    } catch (error) {
-      console.error('Token refresh failed:', error);
-      logout();
-      return false;
-    }
-  }, [logout]);
+    return isAuthenticated;
+  }, [isAuthenticated]);
 
   return {
-    // Auth state
-    user: authState.user,
-    isLoading: authState.isLoading,
-    error: authState.error,
-    isAuthenticated: authState.isAuthenticated,
+    // Auth state - directly from AuthContext
+    user,
+    isLoading,
+    error,
+    isAuthenticated,
 
-    // Forgot password state
-    forgotPasswordEmail: forgotPasswordState.email,
-    forgotPasswordStep: forgotPasswordState.step,
+    // Forgot password state - directly from AuthContext
+    forgotPasswordEmail,
+    forgotPasswordStep,
 
-    // Auth actions
+    // Auth actions - wrapped for navigation
     login,
     logout,
 
-    // Forgot password actions
-    sendForgotPasswordEmail: forgotPasswordEmail,
+    // Forgot password actions - wrapped for navigation
+    sendForgotPasswordEmail: sendForgotPasswordEmailWithNav,
     forgotPasswordVerify,
     forgotPasswordReset,
 
     // Utility functions
     checkAuth,
-    refreshToken,
-    clearError: () => setError(null),
+    clearError: contextClearError,
   };
 };
 

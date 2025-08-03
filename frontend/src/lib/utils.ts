@@ -42,54 +42,40 @@ export function removeAccessToken(): void {
 }
 
 /**
- * Get refresh token from localStorage
- */
-export function getRefreshToken(): string | null {
-  try {
-    return localStorage.getItem('refresh_token');
-  } catch (error) {
-    console.error('Error getting refresh token:', error);
-    return null;
-  }
-}
-
-/**
- * Set refresh token in localStorage
- */
-export function setRefreshToken(token: string): void {
-  try {
-    localStorage.setItem('refresh_token', token);
-  } catch (error) {
-    console.error('Error setting refresh token:', error);
-  }
-}
-
-/**
- * Remove refresh token from localStorage
- */
-export function removeRefreshToken(): void {
-  try {
-    localStorage.removeItem('refresh_token');
-  } catch (error) {
-    console.error('Error removing refresh token:', error);
-  }
-}
-
-/**
  * Check if a JWT token is valid (not expired)
  * @param token - JWT token to validate
  * @returns boolean indicating if token is valid
  */
 export function isTokenValid(token: string | null): boolean {
-  if (!token) return false;
+  if (!token) {
+    console.log('isTokenValid: No token provided');
+    return false;
+  }
 
   try {
+    // Check if token has the correct format (3 parts separated by dots)
+    const parts = token.split('.');
+    if (parts.length !== 3) {
+      console.log('isTokenValid: Invalid token format');
+      return false;
+    }
+
     // Parse JWT token (simple base64 decode of payload)
-    const payload = JSON.parse(atob(token.split('.')[1]));
+    const payload = JSON.parse(atob(parts[1]));
     const currentTime = Math.floor(Date.now() / 1000);
 
     // Check if token has expired
-    return payload.exp && payload.exp > currentTime;
+    const isValid = payload.exp && payload.exp > currentTime;
+    
+    console.log('isTokenValid:', {
+      tokenExists: !!token,
+      hasExp: !!payload.exp,
+      exp: payload.exp,
+      currentTime,
+      isValid
+    });
+
+    return isValid;
   } catch (error) {
     console.error('Error validating token:', error);
     return false;
@@ -101,7 +87,15 @@ export function isTokenValid(token: string | null): boolean {
  */
 export function isAuthenticated(): boolean {
   const token = getAccessToken();
-  return isTokenValid(token);
+  const isValid = isTokenValid(token);
+  
+  console.log('isAuthenticated check:', {
+    hasToken: !!token,
+    isValid,
+    tokenLength: token?.length
+  });
+  
+  return isValid;
 }
 
 /**
@@ -110,8 +104,7 @@ export function isAuthenticated(): boolean {
 export function clearAuthData(): void {
   try {
     removeAccessToken();
-    removeRefreshToken();
-    clearUserRole(); // Clear user role
+    clearUserRole();
     // Remove any other auth-related data
     localStorage.removeItem('user');
     localStorage.removeItem('auth_state');
@@ -138,6 +131,7 @@ export function getUser(): any | null {
  */
 export function setUser(user: any): void {
   try {
+    console.log('Saving user data to localStorage:', user);
     localStorage.setItem('user', JSON.stringify(user));
   } catch (error) {
     console.error('Error setting user data:', error);
@@ -166,6 +160,17 @@ export function getUserIdFromToken(): string | null {
   
   const payload = decodeJWT(token);
   return payload?.sub || null;
+}
+
+/**
+ * Get employee ID from JWT token
+ */
+export function getEmployeeIdFromToken(): string | null {
+  const token = getAccessToken();
+  if (!token) return null;
+  
+  const payload = decodeJWT(token);
+  return payload?.employee_id || null;
 }
 
 /**

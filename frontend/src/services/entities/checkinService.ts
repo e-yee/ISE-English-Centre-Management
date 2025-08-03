@@ -4,7 +4,7 @@ export interface CheckInRequest {
   employee_id: string;
   id: string;
   checkin_time: string;
-  checkout_time: string | null;
+  checkout_time: string;
   status: string;
 }
 
@@ -21,7 +21,7 @@ class CheckinService extends ApiService {
       employee_id: employeeId,
       id,
       checkin_time: now,
-      checkout_time: null,
+      checkout_time: now, // Send same time since it's required but will be overridden
       status: 'Pending'
     };
     

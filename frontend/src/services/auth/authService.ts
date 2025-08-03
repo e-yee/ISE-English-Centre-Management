@@ -1,8 +1,6 @@
 import { apiRequest } from '../../lib/apiClient';
 import {
   setAccessToken,
-  setRefreshToken,
-  getRefreshToken,
   clearAuthData,
   setUser,
   getUserIdFromToken,
@@ -15,13 +13,7 @@ import {
 // Type definitions for API responses
 interface LoginResponse {
   access_token?: string;
-  refresh_token?: string;
   user?: any;
-  message?: string;
-}
-
-interface RefreshTokenResponse {
-  access_token?: string;
   message?: string;
 }
 
@@ -63,9 +55,6 @@ export const authService = {
       // Store tokens
       if (response.access_token) {
         setAccessToken(response.access_token);
-      }
-      if (response.refresh_token) {
-        setRefreshToken(response.refresh_token);
       }
       if (response.user) {
         setUser(response.user);
@@ -139,36 +128,6 @@ export const authService = {
       // Always clear local auth data
       clearAuthData();
       clearUserRole(); // Clear role too
-    }
-  },
-
-  /**
-   * Refresh access token using refresh token
-   */
-  async refreshToken(): Promise<RefreshTokenResponse> {
-    try {
-      const refreshToken = getRefreshToken();
-      if (!refreshToken) {
-        throw new Error('No refresh token available');
-      }
-
-      const response: RefreshTokenResponse = await apiRequest('/refresh', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${refreshToken}`,
-        },
-      });
-
-      if (response.access_token) {
-        setAccessToken(response.access_token);
-      }
-
-      return response;
-    } catch (error) {
-      console.error('Token refresh failed:', error);
-      // Clear auth data if refresh fails
-      clearAuthData();
-      throw error;
     }
   },
 

@@ -1,10 +1,12 @@
 import React, { createContext, useContext, useReducer, useEffect, type ReactNode } from 'react';
 import authService from '../services/auth/authService';
+import { setUser } from '../lib/utils';
 import { 
   isAuthenticated, 
   getUser, 
   getUserRole,
-  getUserIdFromToken
+  getUserIdFromToken,
+  getEmployeeIdFromToken
 } from '../lib/utils';
 
 // Types
@@ -41,7 +43,6 @@ interface AuthContextType extends AuthState {
   
   // Utility functions
   checkAuth: () => boolean;
-  refreshToken: () => Promise<boolean>;
   clearError: () => void;
   
   // Forgot password state
@@ -117,42 +118,48 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Initialize auth state on mount
   useEffect(() => {
-    const initializeAuth = () => {
+    const initializeAuth = async () => {
       const authenticated = isAuthenticated();
       const user = getUser();
       const role = getUserRole();
+      const employeeId = getEmployeeIdFromToken();
+      const userId = getUserIdFromToken();
       
       console.log('AuthContext initialization:', {
         authenticated,
         user,
         role,
-        userId: getUserIdFromToken()
+        userId,
+        employeeId
       });
       
-      // If authenticated but no user data, create user object with role
-      if (authenticated && !user && role) {
+      // If authenticated but no user data, create user object from JWT token
+      if (authenticated && !user) {
         const userWithRole = {
-          id: getUserIdFromToken() || 'unknown',
+          id: employeeId || userId || 'unknown',
           username: 'user',
           email: 'user@example.com',
           role: role as 'Teacher' | 'Learning Advisor' | 'Manager'
         };
-        console.log('Creating user object with role:', userWithRole);
+        console.log('Creating user object from JWT token:', userWithRole);
         dispatch({ type: 'SET_USER', payload: userWithRole });
+        dispatch({ type: 'SET_AUTHENTICATED', payload: true });
       } else if (user) {
         // Combine user data with role from localStorage
         const userWithRole = {
           ...user,
+          id: employeeId || user.id, // Use employee ID if available
           role: role || user.role || 'Teacher' // Fallback to stored role or default
         };
         console.log('Combining user data with role:', userWithRole);
         dispatch({ type: 'SET_USER', payload: userWithRole });
+        dispatch({ type: 'SET_AUTHENTICATED', payload: true });
       } else {
         console.log('No user data available, setting user to null');
         dispatch({ type: 'SET_USER', payload: null });
+        dispatch({ type: 'SET_AUTHENTICATED', payload: false });
       }
       
-      dispatch({ type: 'SET_AUTHENTICATED', payload: authenticated });
       dispatch({ type: 'SET_LOADING', payload: false });
     };
 
@@ -170,13 +177,31 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       console.log('Login successful for user:', credentials.username);
 
-      // Get role from localStorage after login
+      // Get role and employee ID from JWT token
       const role = getUserRole();
-      const userWithRole = response.user ? {
-        ...response.user,
-        role: role || response.user.role || 'Teacher'
-      } : null;
+      const employeeId = getEmployeeIdFromToken();
+      const userId = getUserIdFromToken();
+      
+      console.log('Login data from JWT:', {
+        role,
+        employeeId,
+        userId
+      });
 
+      // Create user object with employee ID
+      const userWithRole = {
+        id: employeeId || userId || 'unknown',
+        username: credentials.username,
+        email: `${credentials.username}@example.com`,
+        role: role as 'Teacher' | 'Learning Advisor' | 'Manager'
+      };
+
+      console.log('Created user object:', userWithRole);
+
+      // IMPORTANT: Save user data to localStorage before redirecting
+      setUser(userWithRole);
+      
+      // Update React state
       dispatch({ type: 'SET_USER', payload: userWithRole });
       dispatch({ type: 'SET_AUTHENTICATED', payload: true });
       dispatch({ type: 'SET_LOADING', payload: false });
@@ -298,19 +323,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Check if user is authenticated (for route guards)
   const checkAuth = () => {
-    return isAuthenticated();
-  };
-
-  // Refresh token if needed
-  const refreshToken = async () => {
-    try {
-      await authService.refreshToken();
-      return true;
-    } catch (error) {
-      console.error('Token refresh failed:', error);
-      logout();
-      return false;
-    }
+    const authenticated = isAuthenticated();
+    console.log('AuthContext checkAuth:', {
+      authenticated,
+      user: authState.user,
+      isLoading: authState.isLoading
+    });
+    return authenticated;
   };
 
   // Clear error
@@ -340,7 +359,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     // Utility functions
     checkAuth,
-    refreshToken,
     clearError,
   };
 

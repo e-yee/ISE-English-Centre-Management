@@ -37,7 +37,7 @@ function App() {
   if (USE_PRODUCTION_ROUTES) {
     return (
       <QueryClientProvider client={queryClient}>
-        <StagewiseToolbar config={{ plugins: [ReactPlugin] }} />
+        {/* <StagewiseToolbar config={{ plugins: [ReactPlugin] }} /> */}
         <AuthProvider>
           <RouterProvider router={router} />
         </AuthProvider>

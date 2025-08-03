@@ -19,8 +19,18 @@ const AuthPage: React.FC = () => {
     forgotPasswordReset,
     forgotPasswordEmail: storedEmail,
     isLoading,
-    error
+    error,
+    isAuthenticated, // Add this to get authentication status
+    user
   } = useAuthFlow();
+  
+  // Redirect authenticated users to home page
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      console.log('AuthPage: User already authenticated, redirecting to home');
+      navigate('/home');
+    }
+  }, [isAuthenticated, user, navigate]);
 
   // Determine current form based on route
   const getCurrentForm = () => {
