@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 //import { useAuth } from '../contexts/MockAuthContext';
 
@@ -20,9 +20,10 @@ interface ProtectedRouteProps {
  */
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles }) => {
   const { user, isAuthenticated, isLoading } = useAuth();
+  const location = useLocation();
 
   console.log('ProtectedRoute check:', {
-    pathname: window.location.pathname,
+    pathname: location.pathname,
     user,
     isAuthenticated,
     isLoading,
@@ -53,7 +54,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles }) => {
     console.log('ProtectedRoute: User not authorized for this route', {
       userRole: user?.role,
       allowedRoles,
-      currentPath: window.location.pathname
+      currentPath: location.pathname
     });
     return <Navigate to="/unauthorized" replace />;
   }

@@ -31,6 +31,11 @@ interface ForgotPasswordState {
   step: 1 | 2 | 3;
 }
 
+interface NavigationCallbacks {
+  navigate: (path: string) => void;
+  replace?: (path: string) => void;
+}
+
 interface AuthContextType extends AuthState {
   // Auth actions
   login: (credentials: { username: string; password: string }) => Promise<any>;
@@ -48,6 +53,9 @@ interface AuthContextType extends AuthState {
   // Forgot password state
   forgotPasswordEmail: string;
   forgotPasswordStep: 1 | 2 | 3;
+  
+  // Navigation callbacks
+  setNavigationCallbacks: (callbacks: NavigationCallbacks) => void;
 }
 
 // Action types
@@ -115,6 +123,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     verificationCode: '',
     step: 1,
   });
+  
+  // Navigation callbacks state
+  const [navigationCallbacks, setNavigationCallbacks] = React.useState<NavigationCallbacks | null>(null);
 
   // Initialize auth state on mount
   useEffect(() => {
@@ -166,6 +177,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     initializeAuth();
   }, []);
 
+  // Navigation helper function
+  const navigateTo = (path: string) => {
+    if (navigationCallbacks?.navigate) {
+      console.log('Using React Router navigation to:', path);
+      navigationCallbacks.navigate(path);
+    } else {
+      console.log('Using window.location.href fallback to:', path);
+      window.location.href = path;
+    }
+  };
+
   // Login function
   const login = async (credentials: { username: string; password: string }) => {
     dispatch({ type: 'SET_LOADING', payload: true });
@@ -208,7 +230,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       // Navigate to role-appropriate page after successful login
       const defaultRoute = getDefaultRouteForRole(role || 'Teacher');
-      window.location.href = defaultRoute;
+      navigateTo(defaultRoute);
 
       return response;
     } catch (error: any) {
@@ -238,7 +260,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.error('Logout error:', error);
     } finally {
       dispatch({ type: 'RESET_AUTH_STATE' });
-      window.location.href = '/auth/login';
+      navigateTo('/auth/login');
     }
   };
 
@@ -258,7 +280,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       dispatch({ type: 'SET_LOADING', payload: false });
       
-      window.location.href = '/auth/forget-password/verify';
+      navigateTo('/auth/forget-password/verify');
     } catch (error: any) {
       dispatch({ type: 'SET_ERROR', payload: error.message || 'Failed to send verification email' });
       dispatch({ type: 'SET_LOADING', payload: false });
@@ -282,7 +304,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       dispatch({ type: 'SET_LOADING', payload: false });
       
-      window.location.href = '/auth/forget-password/new-password';
+      navigateTo('/auth/forget-password/new-password');
     } catch (error: any) {
       dispatch({ type: 'SET_ERROR', payload: error.message || 'Invalid verification code' });
       dispatch({ type: 'SET_LOADING', payload: false });
@@ -311,7 +333,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       dispatch({ type: 'SET_LOADING', payload: false });
       
-      window.location.href = '/auth/login';
+      navigateTo('/auth/login');
       
       alert('Password reset successful! Please login with your new password.');
     } catch (error: any) {
@@ -360,6 +382,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Utility functions
     checkAuth,
     clearError,
+    
+    // Navigation callbacks
+    setNavigationCallbacks,
   };
 
   return (
