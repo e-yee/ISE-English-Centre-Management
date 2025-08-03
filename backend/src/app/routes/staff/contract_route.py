@@ -10,6 +10,59 @@ from ...schemas.learning_advisor.contract_schema import contract_schema, contrac
 
 contract_bp = Blueprint("contract_bp", __name__, url_prefix="/contract")
 
+def get_contract_id():
+    id = request.args.get("id")
+    if not id:
+        return None, jsonify({
+            "message": "Missing contract ID in query params"
+        }), HTTPStatus.BAD_REQUEST
+    
+    return id, None, None
+
+def validate_student(student_id):
+    student = db.session.get(Student, student_id)
+    if not student:
+        return None, jsonify({
+            "message": "Student not found"
+        }), HTTPStatus.NOT_FOUND
+    
+    return student, None, None
+
+def validate_course(course_id, course_date):
+    course = db.session.get(Course, (course_id, course_date))
+    if not course:
+        return None, jsonify({
+            "message": "Course not found"
+        }), HTTPStatus.NOT_FOUND
+        
+    return course, None, None
+
+def validate_contract(contract_id):
+    employee_id = get_jwt().get("employee_id")
+    contract = db.session.query(Contract).filter_by(
+        id=contract_id,
+        employee_id=employee_id
+    ).first()
+    if not contract:
+        return None, jsonify({
+            "message": "Contract not found"
+        }), HTTPStatus.NOT_FOUND
+    
+    return contract, None, None
+
+def check_existed_contract(student_id, course_id, course_date):
+    existed_contract = db.session.query(Contract).filter_by(
+        student_id=student_id,
+        course_id=course_id,
+        course_date=course_date
+    ).first()
+    if existed_contract:
+        return False, jsonify({
+            "message": "Contract existed"
+        }), HTTPStatus.CONFLICT
+    
+    return True, None, None
+
 @contract_bp.post("/add")
 @role_required("Learning Advisor")
 def add_contract():
@@ -22,27 +75,17 @@ def add_contract():
         json_data = request.get_json()
         validated = contract_schema.load(json_data)
         
-        student = db.session.get(Student, validated["student_id"])
-        if not student:
-            return jsonify({
-                "message": "Student not found"
-            }), HTTPStatus.NOT_FOUND
+        result, response, status = validate_student(validated["student_id"])
+        if not result:
+            return response, status
+
+        result, response, status = validate_course(validated["course_id"], validated["course_date"])
+        if not result:
+            return response, status
         
-        course = db.session.get(Course, (validated["course_id"], validated["course_date"]))
-        if not course:
-            return jsonify({
-                "message": "Course not found"
-            }), HTTPStatus.NOT_FOUND
-        
-        existed_contract = db.session.query(Contract).filter_by(
-            student_id=validated["student_id"],
-            course_id=validated["course_id"],
-            course_date=validated["course_date"]
-        ).first()
-        if existed_contract:
-            return jsonify({
-                "message": "Contract existed"
-            }), HTTPStatus.CONFLICT
+        result, response, status = check_existed_contract(validated["student_id"], validated["course_id"], validated["course_date"])
+        if not result:
+            return response, status
         
         employee_id = get_jwt().get("employee_id")
         contract = Contract(
@@ -106,21 +149,13 @@ def get_all():
 @role_required("Learning Advisor")
 def get_contract():
     try:
-        id = request.args.get("id")
+        id, response, status = get_contract_id()
         if not id:
-            return jsonify({
-                "message": "Missing contract ID in query params"
-            }), HTTPStatus.BAD_REQUEST
+            return response, status
         
-        employee_id = get_jwt().get("employee_id")
-        contract = db.session.query(Contract).filter_by(
-            id=id,
-            employee_id=employee_id
-        ).first()
+        contract, response, status = validate_contract(id)
         if not contract:
-            return jsonify({
-                "message": "Contract not found"
-            }), HTTPStatus.NOT_FOUND
+            return response, status
         
         return jsonify(contract_schema.dump(contract)), HTTPStatus.OK
 
@@ -135,21 +170,13 @@ def get_contract():
 @role_required("Learning Advisor")
 def update_contract():
     try:
-        id = request.args.get("id")
+        id, response, status = get_contract_id()
         if not id:
-            return jsonify({
-                "message": "Missing contract ID in query params"
-            }), HTTPStatus.BAD_REQUEST
+            return response, status
         
-        employee_id = get_jwt().get("employee_id")
-        contract = db.session.query(Contract).filter_by(
-            id=id,
-            employee_id=employee_id
-        ).first()
+        contract, response, status = validate_contract(id)
         if not contract:
-            return jsonify({
-                "message": "Contract not found"
-            }), HTTPStatus.NOT_FOUND
+            return response, status
         
         if not request.is_json:
             return jsonify({
@@ -164,28 +191,18 @@ def update_contract():
         course_date = update_data.get("course_date", contract.course_date)
         
         if student_id != contract.student_id:
-            student = db.session.get(Student, student_id)
-            if not student:
-                return jsonify({
-                    "message": "Student not found"
-                }), HTTPStatus.NOT_FOUND
+            result, response, status = validate_student(student_id)
+            if not result:
+                return response, status
                     
         if course_id != contract.course_id or course_date != contract.course_date:
-            course = db.session.get(Course, (course_id, course_date))
-            if not course:
-                return jsonify({
-                    "message": "Course not found"
-                }), HTTPStatus.NOT_FOUND
+            result, response, status = validate_course(course_id, course_date)
+            if not result:
+                return response, status
 
-        existed_contract = db.session.query(Contract).filter_by(
-            student_id=student_id,
-            course_id=course_id,
-            course_date=course_date
-        ).first()
-        if existed_contract:
-            return jsonify({
-                "message": "Contract existed"
-            }), HTTPStatus.CONFLICT
+        result, response, status = check_existed_contract(student_id, course_id, course_date)
+        if not result:
+            return response, status
         
         for key, value in update_data.items():
             setattr(contract, key, value)
@@ -226,21 +243,13 @@ def update_contract():
 @role_required("Learning Advisor")
 def delete_contract():
     try:
-        id = request.args.get("id")
+        id, response, status = get_contract_id()
         if not id:
-            return jsonify({
-                "message": "Missing contract ID in query params"
-            }), HTTPStatus.BAD_REQUEST
+            return response, status
         
-        employee_id = get_jwt().get("employee_id")
-        contract = db.session.query(Contract).filter_by(
-            id=id,
-            employee_id=employee_id
-        ).first()
+        contract, response, status = validate_contract(id)
         if not contract:
-            return jsonify({
-                "message": "Contract not found"
-            }), HTTPStatus.NOT_FOUND
+            return response, status
         
         db.session.delete(contract)
         db.session.commit()
