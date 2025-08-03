@@ -1,33 +1,19 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import get_jwt_identity
+from flask_jwt_extended import get_jwt_identity, get_jwt
 from marshmallow import ValidationError
 from sqlalchemy.exc import IntegrityError, OperationalError
 from extensions import db
 from ...auth import role_required
-from ...models import Contract, Account, Student, Course
+from ...models import Contract, Student, Course
 from ...http_status import HTTPStatus
 from ...schemas.learning_advisor.contract_schema import contract_schema, contracts_schema 
 
 contract_bp = Blueprint("contract_bp", __name__, url_prefix="/contract")
 
-def get_user():
-    identity = get_jwt_identity()
-    user = db.session.get(Account, identity)
-    if not user or not user.employee_id:
-        return None, jsonify({
-            "message": "Unauthorized or employee profile missing"
-        }), HTTPStatus.FORBIDDEN
-
-    return user, None, None
-
 @contract_bp.post("/add")
 @role_required("Learning Advisor")
 def add_contract():
-    try:
-        user, error_response, status = get_user()
-        if error_response:
-            return error_response, status
-        
+    try:        
         if not request.is_json:
             return jsonify({
                 "message": "Missing or invalid JSON"
@@ -58,10 +44,11 @@ def add_contract():
                 "message": "Contract existed"
             }), HTTPStatus.CONFLICT
         
+        employee_id = get_jwt().get("employee_id")
         contract = Contract(
             id=validated["id"],
             student_id=validated["student_id"],
-            employee_id=user.employee_id,
+            employee_id=employee_id,
             course_id=validated["course_id"],
             course_date=validated["course_date"],
             tuition_fee=validated["tuition_fee"],
@@ -104,11 +91,8 @@ def add_contract():
 @role_required("Learning Advisor")
 def get_all():
     try:
-        user, error_response, status = get_user()
-        if error_response:
-            return error_response, status
-        
-        contracts = db.session.query(Contract).filter_by(employee_id=user.employee_id).all()
+        employee_id = get_jwt().get("employee_id")
+        contracts = db.session.query(Contract).filter_by(employee_id=employee_id).all()
         return jsonify(contracts_schema.dump(contracts)), HTTPStatus.OK
 
     except Exception as e:
@@ -122,19 +106,16 @@ def get_all():
 @role_required("Learning Advisor")
 def get_contract():
     try:
-        user, error_response, status = get_user()
-        if error_response:
-            return error_response, status
-    
         id = request.args.get("id")
         if not id:
             return jsonify({
                 "message": "Missing contract ID in query params"
             }), HTTPStatus.BAD_REQUEST
         
+        employee_id = get_jwt().get("employee_id")
         contract = db.session.query(Contract).filter_by(
             id=id,
-            employee_id=user.employee_id
+            employee_id=employee_id
         ).first()
         if not contract:
             return jsonify({
@@ -154,19 +135,16 @@ def get_contract():
 @role_required("Learning Advisor")
 def update_contract():
     try:
-        user, error_response, status = get_user()
-        if error_response:
-            return error_response, status
-
         id = request.args.get("id")
         if not id:
             return jsonify({
                 "message": "Missing contract ID in query params"
             }), HTTPStatus.BAD_REQUEST
         
+        employee_id = get_jwt().get("employee_id")
         contract = db.session.query(Contract).filter_by(
             id=id,
-            employee_id=user.employee_id
+            employee_id=employee_id
         ).first()
         if not contract:
             return jsonify({
@@ -248,19 +226,16 @@ def update_contract():
 @role_required("Learning Advisor")
 def delete_contract():
     try:
-        user, error_response, status = get_user()
-        if error_response:
-            return error_response, status
-    
         id = request.args.get("id")
         if not id:
             return jsonify({
                 "message": "Missing contract ID in query params"
             }), HTTPStatus.BAD_REQUEST
         
+        employee_id = get_jwt().get("employee_id")
         contract = db.session.query(Contract).filter_by(
             id=id,
-            employee_id=user.employee_id
+            employee_id=employee_id
         ).first()
         if not contract:
             return jsonify({

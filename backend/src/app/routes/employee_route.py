@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import get_jwt_identity
+from flask_jwt_extended import get_jwt
 from marshmallow import ValidationError
 from sqlalchemy.exc import IntegrityError, OperationalError
 from extensions import db
@@ -11,18 +11,27 @@ from ..schemas.employee_schema import employee_schema, employees_schema
 employee_bp = Blueprint("employee_bp", __name__,  url_prefix="/employee")
 
 # General features
+@employee_bp.get("/profile")
+@role_required("Teacher", "Learning Advisor", "Manager")
+def get_profile():
+    try:
+        employee_id = get_jwt().get("employee_id")
+        employee = db.session.get(Employee, employee_id)
+        
+        return jsonify(employee_schema.dump(employee)), HTTPStatus.OK
+    
+    except Exception as e:
+        return jsonify({
+            "message": "Unexpected error occurred",
+            "error": str(e)
+        }), HTTPStatus.INTERNAL_SERVER_ERROR
+        
 @employee_bp.put("/update")
 @role_required("Teacher", "Learning Advisor", "Manager")
 def update_employee():
     try:
-        identity = get_jwt_identity()
-        user = db.session.get(Account, identity)
-        if not user or not user.employee_id:
-            return jsonify({
-                "message": "Unauthorised or missing employee profile"
-            }), HTTPStatus.FORBIDDEN
-        
-        employee = db.session.get(Employee, user.employee_id)
+        employee_id = get_jwt().get("employee_id")
+        employee = db.session.get(Employee, employee_id)
         if not employee:
             return jsonify({
                 "message": "Employee not found"
@@ -221,17 +230,10 @@ def delete_employee():
         }), HTTPStatus.INTERNAL_SERVER_ERROR
                 
 # Teacher features
-@employee_bp.get("/")
+@employee_bp.get("/teacher/")
 @role_required("Teacher")
 def get_available_teacher():
-    try:
-        identity = get_jwt_identity()
-        user = db.session.get(Account, identity)
-        if not user or not user.employee_id:
-            return jsonify({
-                "message": "Unauthorised or missing employee profile"
-            }), HTTPStatus.FORBIDDEN
-            
+    try:            
         available_teachers = db.session.query(Employee).filter_by(teacher_status="Available")
         return jsonify(employees_schema.dump(available_teachers)), HTTPStatus.OK
     

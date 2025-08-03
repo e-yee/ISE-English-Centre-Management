@@ -1,9 +1,13 @@
+-- Active: 1752762928634@@db-english-centre-management-myproject-collegein20s.f.aivencloud.com@18403@englishcentre
 CREATE TABLE
     employee (
         id VARCHAR(10),
         full_name NVARCHAR (2000) NOT NULL,
         email VARCHAR(320) NOT NULL, UNIQUE (email),
         phone_number VARCHAR(20), UNIQUE (phone_number),
+        nickname VARCHAR(200),
+        philosophy VARCHAR(200),
+        achievements VARCHAR(200),
         role VARCHAR(20) NOT NULL,
         teacher_status VARCHAR(20),
 
