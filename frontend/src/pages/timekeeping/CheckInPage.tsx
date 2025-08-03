@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Calendar } from "lucide-react";
 
@@ -16,7 +16,7 @@ import { useAuth } from "@/contexts/AuthContext";
 //import { useAuth } from "@/contexts/MockAuthContext";
 
 // Import mock data
-import { upcomingClassesMock, statCardsMock } from "@/mockData/checkinMock";
+import { statCardsMock } from "@/mockData/checkinMock";
 
 interface CheckInPageProps {
   className?: string;
@@ -24,9 +24,27 @@ interface CheckInPageProps {
 
 const CheckInPage: React.FC<CheckInPageProps> = ({ className }) => {
   const { user } = useAuth();
-  const { performCheckIn, isLoading, error, success, clearMessages } = useCheckIn();
+  const { 
+    performCheckIn, 
+    isLoading, 
+    error, 
+    success, 
+    clearMessages,
+    teacherClasses,
+    isLoadingClasses,
+    classesError,
+    fetchTeacherClasses
+  } = useCheckIn();
 
   console.log('🔍 CheckInPage - Current user:', user);
+
+  // Fetch teacher classes when component mounts
+  useEffect(() => {
+    if (user?.id) {
+      console.log('🔍 CheckInPage - Fetching teacher classes for user:', user.id);
+      fetchTeacherClasses();
+    }
+  }, [user?.id, fetchTeacherClasses]);
 
   const handleCheckIn = async () => {
     console.log('🔍 CheckInPage - Check-in button clicked');
@@ -97,7 +115,11 @@ const CheckInPage: React.FC<CheckInPageProps> = ({ className }) => {
           
           {/* Upcoming Classes Panel - Aligns with stats top and check-in bottom */}
           <div className="flex-1 min-h-0 max-h-[calc(100vh-200px)]">
-            <UpcomingClassesPanel classes={upcomingClassesMock} />
+            <UpcomingClassesPanel 
+              classes={teacherClasses} 
+              isLoading={isLoadingClasses}
+              error={classesError}
+            />
           </div>
         </div>
       </div>

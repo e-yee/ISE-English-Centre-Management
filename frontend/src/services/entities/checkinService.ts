@@ -13,6 +13,17 @@ export interface CheckInResponse {
   checkin_id?: string;
 }
 
+// New interface for teacher classes
+export interface TeacherClass {
+  id: string;
+  course_id: string;
+  course_date: string;
+  term: number;
+  teacher_id: string;
+  room_id: string;
+  class_date: string;
+}
+
 class CheckinService extends ApiService {
   async checkIn(employeeId: string): Promise<CheckInResponse> {
     const id = Date.now().toString();
@@ -47,6 +58,19 @@ class CheckinService extends ApiService {
       return result;
     } catch (error) {
       console.error('❌ CheckInService - Check-out error:', error);
+      throw error;
+    }
+  }
+
+  // New method to get teacher classes
+  async getTeacherClasses(): Promise<TeacherClass[]> {
+    console.log('🔍 CheckInService - Fetching teacher classes');
+    try {
+      const result = await this.get<TeacherClass[]>('/class/teacher/');
+      console.log('✅ CheckInService - Teacher classes fetched:', result);
+      return result;
+    } catch (error) {
+      console.error('❌ CheckInService - Error fetching teacher classes:', error);
       throw error;
     }
   }

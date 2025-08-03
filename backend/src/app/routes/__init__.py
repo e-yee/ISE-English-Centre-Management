@@ -2,6 +2,7 @@ from .teacher.attendance_route import attendance_bp
 from .teacher.evaluation_route import evaluation_bp
 from .staff.contract_route import contract_bp
 from .staff.student_route import student_bp
+from .staff.class_route import class_bp
 from .manager.dashboard_route import dashboard_bp
 from .checkin_route import checkin_bp
 from .homepage_route import homepage_bp
@@ -20,7 +21,8 @@ def register_blueprints(app):
         evaluation_bp,
         employee_bp, 
         homepage_bp,
-        student_bp
+        student_bp,
+        class_bp
     ]
     
     for bp in all_blueprints:
