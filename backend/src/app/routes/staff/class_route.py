@@ -169,7 +169,7 @@ def add_class():
         }), HTTPStatus.INTERNAL_SERVER_ERROR
 
 @class_bp.get("/")
-@role_required("Learning Advisor")
+@role_required("Learning Advisor", "Manager")
 def get_all():
     try:
         classes = db.session.query(Class).all()

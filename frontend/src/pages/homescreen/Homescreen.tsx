@@ -3,14 +3,62 @@ import { cn } from "@/lib/utils";
 import ClassList from "@/components/class/ClassList";
 import { SearchInput } from "@/components/ui/SearchInput";
 import { Button } from "@/components/ui/button";
-import { classListMockData } from "@/mockData/classListMock";
+import { useClasses } from "@/hooks/entities/useClasses";
+import type { ClassData } from "@/mockData/classListMock";
+import type { Class } from "@/services/entities/classService";
 
 interface HomescreenPageProps {
   className?: string;
 }
 
+// Transform backend Class to frontend ClassData
+const transformClassToClassData = (classItem: Class): ClassData => {
+  const classDate = new Date(classItem.class_date);
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  
+  // Determine status based on date
+  let status: 'Today' | 'Tomorrow' | 'Coming soon' | 'Expired' | string = 'Coming soon';
+  let statusColor: 'today' | 'tomorrow' | 'coming-soon' | 'expired' | 'custom' = 'coming-soon';
+  
+  const classDateOnly = new Date(classDate.getFullYear(), classDate.getMonth(), classDate.getDate());
+  const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const tomorrowOnly = new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate());
+  
+  if (classDateOnly.getTime() === todayOnly.getTime()) {
+    status = 'Today';
+    statusColor = 'today';
+  } else if (classDateOnly.getTime() === tomorrowOnly.getTime()) {
+    status = 'Tomorrow';
+    statusColor = 'tomorrow';
+  } else if (classDate < today) {
+    status = 'Expired';
+    statusColor = 'expired';
+  }
+  
+  return {
+    id: classItem.id,
+    className: `${classItem.term}.Class ${classItem.id}`,
+    room: classItem.room_id,
+    time: classDate.toTimeString().split(' ')[0],
+    startDate: classDate.toLocaleDateString('en-GB'),
+    endDate: new Date(classDate.getTime() + 60 * 24 * 60 * 60 * 1000).toLocaleDateString('en-GB'), // +60 days
+    status,
+    statusColor,
+    progress: Math.floor(Math.random() * 100) // Random progress for now
+  };
+};
+
 const HomescreenPage: React.FC<HomescreenPageProps> = ({ className }) => {
   const [selectedStatus, setSelectedStatus] = useState("ALL");
+  const { data: classes } = useClasses();
+  console.log('class entered');
+  // Transform backend data to frontend format
+  const transformedClasses: ClassData[] = classes ? classes.map(transformClassToClassData) : [];
+  
+  console.log('🔍 Original classes:', classes);
+  console.log('🔍 Transformed classes:', transformedClasses);
 
   // Status options for horizontal buttons
   const statusOptions = [
@@ -70,7 +118,16 @@ const HomescreenPage: React.FC<HomescreenPageProps> = ({ className }) => {
 
       {/* Class List Container - Full width and height */}
       <div className="flex-1 overflow-hidden">
-        <ClassList classes={classListMockData} maxClasses={8} />
+        {transformedClasses.length > 0 ? (
+          <ClassList classes={transformedClasses} maxClasses={8} />
+        ) : (
+          <div className="flex items-center justify-center h-full">
+            <div className="text-center">
+              <div className="text-2xl font-semibold text-gray-600 mb-2">No Classes Found</div>
+              <div className="text-gray-500">There are no classes available at the moment.</div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

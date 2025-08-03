@@ -1,0 +1,45 @@
+import { ApiService } from '../base/apiService';
+import { getUserRole } from '../../lib/utils';
+
+export interface Class {
+  id: string;
+  course_id: string;
+  course_date: string;
+  term: number;
+  teacher_id: string;
+  room_id: string;
+  class_date: string;
+}
+
+class ClassService extends ApiService {
+  async getAllClasses(): Promise<Class[]> {
+    return this.get<Class[]>('/class/');
+  }
+  
+  async getTeacherClasses(): Promise<Class[]> {
+    // Placeholder for future implementation
+    return this.get<Class[]>('/class/teacher/');
+  }
+
+  async getClassesByRole(): Promise<Class[]> {
+    console.log('🔍 getClassesByRole called');
+    
+    const userRole = getUserRole();
+  
+    console.log('🔍 localStorage user:', userRole);
+    
+    switch (userRole) {
+      case 'Learning Advisor':
+        console.log('🔍 Calling getAllClasses');
+        return this.getAllClasses();
+      case 'Teacher':
+        console.log('🔍 Calling getTeacherClasses (placeholder)');
+        return this.getTeacherClasses();
+      default:
+        console.log('⚠️ Falling to default, role not matched');
+        return [];
+    }
+  }
+}
+
+export default new ClassService(); 
