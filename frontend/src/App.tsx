@@ -59,7 +59,6 @@ function App() {
 }
 
 export default App;
-
 /*
 🔧 HOW TO USE THIS TOGGLE SYSTEM:
 
@@ -96,3 +95,4 @@ export default App;
    - Shared routes: /home, /profile (accessible by all roles)
    - Automatic role-based redirects after login
 */
+

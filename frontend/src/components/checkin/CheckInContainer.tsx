@@ -8,12 +8,18 @@ interface CheckInContainerProps {
   className?: string;
   date?: string;
   onCheckIn?: () => void;
+  isLoading?: boolean;
+  error?: string | null;
+  success?: string | null;
 }
 
 const CheckInContainer: React.FC<CheckInContainerProps> = ({
   className,
   date = "Wednesday, July 23, 2025",
-  onCheckIn
+  onCheckIn,
+  isLoading = false,
+  error = null,
+  success = null
 }) => {
   return (
     <Card className={cn(
@@ -23,7 +29,25 @@ const CheckInContainer: React.FC<CheckInContainerProps> = ({
       className
     )}>
       <TodayCheckIn date={date} />
-      <CheckInButton onClick={onCheckIn} />
+      
+      {/* Error Message */}
+      {error && (
+        <div className="w-full p-3 bg-red-100 border border-red-400 text-red-700 rounded-md text-sm">
+          {error}
+        </div>
+      )}
+      
+      {/* Success Message */}
+      {success && (
+        <div className="w-full p-3 bg-green-100 border border-green-400 text-green-700 rounded-md text-sm">
+          {success}
+        </div>
+      )}
+      
+      <CheckInButton 
+        onClick={onCheckIn} 
+        disabled={isLoading}
+      />
     </Card>
   );
 };

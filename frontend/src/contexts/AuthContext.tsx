@@ -3,9 +3,8 @@ import authService from '../services/auth/authService';
 import { 
   isAuthenticated, 
   getUser, 
-  clearAuthData,
-  getAccessToken,
-  getUserRole
+  getUserRole,
+  getUserIdFromToken
 } from '../lib/utils';
 
 // Types
@@ -123,13 +122,36 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const user = getUser();
       const role = getUserRole();
       
-      // Combine user data with role from localStorage
-      const userWithRole = user ? {
-        ...user,
-        role: role || user.role || 'Teacher' // Fallback to stored role or default
-      } : null;
+      console.log('AuthContext initialization:', {
+        authenticated,
+        user,
+        role,
+        userId: getUserIdFromToken()
+      });
       
-      dispatch({ type: 'SET_USER', payload: authenticated ? userWithRole : null });
+      // If authenticated but no user data, create user object with role
+      if (authenticated && !user && role) {
+        const userWithRole = {
+          id: getUserIdFromToken() || 'unknown',
+          username: 'user',
+          email: 'user@example.com',
+          role: role as 'Teacher' | 'Learning Advisor' | 'Manager'
+        };
+        console.log('Creating user object with role:', userWithRole);
+        dispatch({ type: 'SET_USER', payload: userWithRole });
+      } else if (user) {
+        // Combine user data with role from localStorage
+        const userWithRole = {
+          ...user,
+          role: role || user.role || 'Teacher' // Fallback to stored role or default
+        };
+        console.log('Combining user data with role:', userWithRole);
+        dispatch({ type: 'SET_USER', payload: userWithRole });
+      } else {
+        console.log('No user data available, setting user to null');
+        dispatch({ type: 'SET_USER', payload: null });
+      }
+      
       dispatch({ type: 'SET_AUTHENTICATED', payload: authenticated });
       dispatch({ type: 'SET_LOADING', payload: false });
     };
