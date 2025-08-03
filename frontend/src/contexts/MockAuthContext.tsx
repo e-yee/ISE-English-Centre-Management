@@ -1,4 +1,5 @@
 import React, { createContext, useContext, type ReactNode } from 'react';
+import { clearAuthData } from '../lib/utils';
 
 // Types (same as AuthContext)
 interface User {
@@ -38,7 +39,7 @@ interface AuthContextType extends AuthState {
 
 // Mock user data
 const mockUser: User = {
-  id: 'mock-user-1',
+  id: 'EM001', // Use valid employee ID from database
   username: 'testteacher',
   email: 'teacher@ise.edu.vn',
   role: 'Teacher', // This role has access to /example route
@@ -67,6 +68,10 @@ export const MockAuthProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   const logout = async () => {
     console.log('Mock logout');
+    // Clear all auth data from localStorage
+    clearAuthData();
+    // Navigate to login page
+    window.location.href = '/auth/login';
     return Promise.resolve();
   };
 

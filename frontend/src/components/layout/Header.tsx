@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import UserProfile from "@/components/ui/UserProfile";
+import { useAuth } from "@/contexts/AuthContext";
+//import { useAuth } from "@/contexts/MockAuthContext";
 
 interface HeaderProps {
   isRegistered?: boolean;
@@ -8,6 +11,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ isRegistered = false }) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const { logout, isLoading } = useAuth();
 
   // Safely get navigate function - only works in router context
   let navigate: ((path: string) => void) | null = null;
@@ -32,6 +36,37 @@ const Header: React.FC<HeaderProps> = ({ isRegistered = false }) => {
       navigate("/home");
     } else {
       console.log("Navigation to /home (demo mode - navigation disabled)");
+    }
+  };
+
+  // Profile action handlers
+  const handleProfileClick = () => {
+    if (navigate) {
+      navigate("/profile");
+    } else {
+      console.log("Navigate to profile (demo mode - navigation disabled)");
+    }
+  };
+
+  const handleSettingClick = () => {
+    if (navigate) {
+      navigate("/profile/settings");
+    } else {
+      console.log("Navigate to settings (demo mode - navigation disabled)");
+    }
+  };
+
+  const handleLogoutClick = async () => {
+    try {
+      console.log("Logout clicked");
+      await logout();
+      // Navigation is handled by AuthContext after successful logout
+    } catch (error) {
+      console.error("Logout failed:", error);
+      // Fallback navigation to login page
+      if (navigate) {
+        navigate("/auth/login");
+      }
     }
   };
 
@@ -111,12 +146,12 @@ const Header: React.FC<HeaderProps> = ({ isRegistered = false }) => {
         </button>
 
         {/* User Avatar */}
-        <button
-          className="flex items-center justify-center hover:scale-105 transition-transform duration-200"
-          aria-label="User profile"
-        >
-          <img src="/src/assets/header/avatar.svg" alt="User Avatar" className="w-12 h-12" />
-        </button>
+        <UserProfile
+          onProfileClick={handleProfileClick}
+          onSettingClick={handleSettingClick}
+          onLogoutClick={handleLogoutClick}
+          isLoading={isLoading}
+        />
       </div>
     </header>
   );

@@ -41,6 +41,8 @@ export const authService = {
       if (!token) return null;
       
       const payload = decodeJWT(token);
+      console.log('JWT payload:', payload);
+      console.log('Role from token:', payload?.role);
       return payload?.role || null;
     } catch (error) {
       console.error('Failed to extract role from token:', error);
@@ -127,8 +129,8 @@ export const authService = {
   async logout(): Promise<void> {
     try {
       // Call logout endpoint if it exists
-      await apiRequest('/logout', {
-        method: 'POST',
+      await apiRequest('/auth/logout', {
+        method: 'DELETE',
       });
     } catch (error) {
       console.error('Logout API call failed:', error);

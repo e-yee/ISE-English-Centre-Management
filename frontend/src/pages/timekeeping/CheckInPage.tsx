@@ -10,6 +10,11 @@ import UpcomingClassesPanel from "@/components/checkin/UpcomingClassesPanel";
 import PageTitle from "@/components/checkin/PageTitle";
 import CheckInContainer from "@/components/checkin/CheckInContainer";
 
+// Import hooks
+import { useCheckIn } from "@/hooks/entities/useCheckIn";
+import { useAuth } from "@/contexts/AuthContext";
+//import { useAuth } from "@/contexts/MockAuthContext";
+
 // Import mock data
 import { upcomingClassesMock, statCardsMock } from "@/mockData/checkinMock";
 
@@ -18,9 +23,30 @@ interface CheckInPageProps {
 }
 
 const CheckInPage: React.FC<CheckInPageProps> = ({ className }) => {
-  const handleCheckIn = () => {
-    console.log("Check-in action triggered");
-    // Add check-in logic here
+  const { user } = useAuth();
+  const { performCheckIn, isLoading, error, success, clearMessages } = useCheckIn();
+
+  console.log('🔍 CheckInPage - Current user:', user);
+
+  const handleCheckIn = async () => {
+    console.log('🔍 CheckInPage - Check-in button clicked');
+    console.log('🔍 CheckInPage - User ID:', user?.id);
+    
+    if (!user?.id) {
+      console.error("❌ CheckInPage - No user ID available");
+      return;
+    }
+
+    try {
+      console.log('🔍 CheckInPage - Calling performCheckIn with employee ID:', user.id);
+      await performCheckIn(user.id);
+      // Clear messages after 3 seconds
+      setTimeout(() => {
+        clearMessages();
+      }, 3000);
+    } catch (err) {
+      console.error("❌ CheckInPage - Check-in failed:", err);
+    }
   };
 
   return (
@@ -54,7 +80,12 @@ const CheckInPage: React.FC<CheckInPageProps> = ({ className }) => {
 
           {/* Check-in Container - Takes remaining space with max height */}
           <div className="flex-1 min-h-0 max-h-[calc(100vh-200px)]">
-            <CheckInContainer onCheckIn={handleCheckIn} />
+            <CheckInContainer 
+              onCheckIn={handleCheckIn} 
+              isLoading={isLoading}
+              error={error}
+              success={success}
+            />
           </div>
 
         </div>

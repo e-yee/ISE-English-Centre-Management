@@ -6,6 +6,7 @@ interface UserProfileProps {
   onProfileClick?: () => void;
   onSettingClick?: () => void;
   onLogoutClick?: () => void;
+  isLoading?: boolean;
 }
 
 interface ProfileMenuItem {
@@ -19,6 +20,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
   onProfileClick,
   onSettingClick,
   onLogoutClick,
+  isLoading = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -57,18 +59,15 @@ const UserProfile: React.FC<UserProfileProps> = ({
       <button
         onClick={toggleDropdown}
         className={cn(
-          "w-12 h-12 rounded-full bg-white border-4 border-black",
-          "flex items-center justify-center",
+          "flex items-center justify-center rounded-full",
           "hover:scale-105 transition-transform duration-300 ease-out",
           "focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
         )}
         aria-label="User profile menu"
         aria-expanded={isOpen}
       >
-        {/* Placeholder for user avatar - could be an image or initials */}
-        <div className="w-6 h-6 rounded-full bg-gray-500 flex items-center justify-center">
-          <span className="text-white text-sm font-medium">U</span>
-        </div>
+        {/* Use the original avatar image */}
+        <img src="/src/assets/header/avatar.svg" alt="User Avatar" className="w-12 h-12" />
       </button>
 
       {/* Dropdown Menu */}
@@ -88,6 +87,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
               <button
                 key={item.id}
                 onClick={() => handleItemClick(item)}
+                disabled={isLoading && item.id === "logout"}
                 className={cn(
                   "w-full px-8 py-4 text-left",
                   "font-comfortaa text-[24px] font-normal text-black",
@@ -95,10 +95,12 @@ const UserProfile: React.FC<UserProfileProps> = ({
                   "hover:bg-[#D9D9D9]",
                   "focus:outline-none focus:bg-[#D9D9D9]",
                   // Add border between items (except last)
-                  index < menuItems.length - 1 && "border-b border-black"
+                  index < menuItems.length - 1 && "border-b border-black",
+                  // Disabled state for logout button
+                  isLoading && item.id === "logout" && "opacity-50 cursor-not-allowed"
                 )}
               >
-                {item.label}
+                {isLoading && item.id === "logout" ? "Logging out..." : item.label}
               </button>
             ))}
           </div>

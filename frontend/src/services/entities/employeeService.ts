@@ -1,4 +1,5 @@
 import { ApiService } from '../base/apiService';
+import { getUserRole, setUserRole } from '../../lib/utils';
 
 export interface Employee {
   id: string;
@@ -20,7 +21,7 @@ export interface Employee {
 
 class EmployeeService extends ApiService {
   async getAvailableTeachers(): Promise<Employee[]> {
-    return this.get<Employee[]>('/employee/');
+    return this.get<Employee[]>('/employee/teacher/');
   }
   
   async getAllEmployees(): Promise<Employee[]> {
@@ -44,11 +45,11 @@ class EmployeeService extends ApiService {
   async getEmployeesByRole(): Promise<Employee[]> {
     console.log('�� getEmployeesByRole called');
     
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-    console.log('🔍 localStorage user:', user);
-    console.log('�� user.role:', user.role);
+    const userRole = getUserRole();
+  
+    console.log('🔍 localStorage user:', userRole);
     
-    switch (user.role) {
+    switch (userRole) {
       case 'Teacher':
         console.log('🔍 Calling getAvailableTeachers');
         return this.getAvailableTeachers();
@@ -56,7 +57,7 @@ class EmployeeService extends ApiService {
         console.log('🔍 Calling getAllEmployees');
         return this.getAllEmployees();
       default:
-        console.log('�� Falling to default, role not matched');
+        console.log('⚠️ Falling to default, role not matched');
         return [];
     }
   }

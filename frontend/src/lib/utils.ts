@@ -111,6 +111,7 @@ export function clearAuthData(): void {
   try {
     removeAccessToken();
     removeRefreshToken();
+    clearUserRole(); // Clear user role
     // Remove any other auth-related data
     localStorage.removeItem('user');
     localStorage.removeItem('auth_state');

@@ -25,7 +25,7 @@ const CheckInButton: React.FC<CheckInButtonProps> = ({
         className
       )}
     >
-      Check In
+      {disabled ? "Checking In..." : "Check In"}
     </Button>
   );
 };
