@@ -8,6 +8,7 @@ class ClassSchema(ma.Schema):
     term = fields.Integer(required=True)
     teacher_id = fields.String(required=True)
     room_id = fields.String(required=True)
+    class_date = fields.DateTime(required=True)
 
 class_schema = ClassSchema()
 classes_schema = ClassSchema(many=True)
