@@ -10,6 +10,60 @@ from ...http_status import HTTPStatus
 
 student_bp = Blueprint("student_bp", __name__, url_prefix="/student")
 
+def get_student_id():
+    id = request.args.get("id")
+    if not id:
+        return None, jsonify({
+            "message": "Missing student ID in query params"
+        }), HTTPStatus.BAD_REQUEST
+    
+    return id, None, None
+
+def get_enrolment_id():
+    id = request.args.get("id")
+    if not id:
+        return None, jsonify({
+            "message": "Missing enrolment ID in query params"
+        }), HTTPStatus.BAD_REQUEST
+    
+    return id, None, None
+    
+def validate_student(student_id):
+    student = db.session.get(Student, student_id)
+    if not student:
+        return None, jsonify({
+            "message": "Student not found"
+        }), HTTPStatus.NOT_FOUND
+    
+    return student, None, None
+
+def validate_course(course_id, course_date):
+    course = db.session.get(Course, (course_id, course_date))
+    if not course:
+        return None, jsonify({
+            "message": "Course not found"
+        }), HTTPStatus.NOT_FOUND
+        
+    return course, None, None
+
+def validate_contract(contract_id):
+    contract = db.session.get(Contract, contract_id)
+    if not contract:
+        return None, jsonify({
+            "message": "Contract not found"
+        }), HTTPStatus.NOT_FOUND
+    
+    return contract, None, None
+
+def validate_enrolment(enrolment_id):
+    enrolment = db.session.get(Enrolment, enrolment_id)
+    if not enrolment:
+        return None, jsonify({
+            "message": "Enrolment not found"
+        }), HTTPStatus.BAD_REQUEST
+    
+    return enrolment, None, None
+
 @student_bp.post("/add")
 @role_required("Learning Advisor")
 def add_student(): 
@@ -78,17 +132,13 @@ def get_all():
 @role_required("Learning Advisor")
 def get_student():
     try:
-        id = request.args.get("id")
+        id, response, status = get_student_id()
         if not id:
-            return jsonify({
-                "message": "Missing student ID in query params"
-            }), HTTPStatus.BAD_REQUEST
+            return response, status
         
-        student = db.session.get(Student, id)
+        student, response, status = validate_student(id)
         if not student:
-            return jsonify({
-                "message": "Student not found"
-            }), HTTPStatus.NOT_FOUND
+            return response, status
 
         return jsonify(student_schema.dump(student)), HTTPStatus.OK
 
@@ -102,17 +152,13 @@ def get_student():
 @role_required("Learning Advisor")
 def update_student():
     try:
-        id = request.args.get("id")
+        id, response, status = get_student_id()
         if not id:
-            return jsonify({
-                "message": "Missing student ID in query params"
-            }), HTTPStatus.BAD_REQUEST
+            return response, status
         
-        student = db.session.get(Student, id)
+        student, response, status = validate_student(id)
         if not student:
-            return jsonify({
-                "message": "Student not found"
-            }), HTTPStatus.NOT_FOUND
+            return response, status
         
         if not request.is_json:
             return jsonify({
@@ -160,17 +206,13 @@ def update_student():
 @role_required("Learning Advisor")
 def delete_student():
     try:
-        id = request.args.get("id")
+        id, response, status = get_student_id()
         if not id:
-            return jsonify({
-                "message": "Missing student ID in query params"
-            }), HTTPStatus.BAD_REQUEST
+            return response, status
         
-        student = db.session.get(Student, id)
+        student, response, status = validate_student(id)
         if not student:
-            return jsonify({
-                "message": "Student not found"
-            }), HTTPStatus.NOT_FOUND
+            return response, status
         
         db.session.delete(student)
         db.session.commit()
@@ -211,23 +253,17 @@ def add_enrolment():
         json_data = request.get_json()
         validated = enrolment_schema.load(json_data)
         
-        contract = db.session.get(Contract, validated["contract_id"])
+        contract, response, status = validate_contract(validated["contract_id"])
         if not contract:
-            return jsonify({
-                "message": "Contract not found"
-            }), HTTPStatus.NOT_FOUND
+            return response, status
         
-        student = db.session.get(Student, validated["student_id"])
+        student, response, status = validate_student(validated["student_id"])
         if not student:
-            return jsonify({
-                "message": "Student not found"
-            }), HTTPStatus.NOT_FOUND
+            return response, status
         
-        course = db.session.get(Course, (validated["course_id"], validated["course_date"]))
+        course, response, status = validate_course(validated["course_id"], validated["course_date"])
         if not course:
-            return jsonify({
-                "message": "Course not found"
-            }), HTTPStatus.NOT_FOUND
+            return response, status
         
         enrolment = Enrolment(
             id=validated["id"],
@@ -286,17 +322,13 @@ def get_all_enrolments():
 @role_required("Learning Advisor")
 def get_enrolment():
     try:
-        id = request.args.get("id")
+        id, response, status = get_enrolment_id()
         if not id:
-            return jsonify({
-                "message": "Missing enrolment ID in query params"
-            }), HTTPStatus.BAD_REQUEST
+            return response, status
         
-        enrolment = db.session.get(Enrolment, id)
+        enrolment, response, status = validate_enrolment(id)
         if not enrolment:
-            return jsonify({
-                "message": "Enrolment not found"
-            }), HTTPStatus.NOT_FOUND
+            return response, status
         
         return jsonify(enrolment_schema.dump(enrolment)), HTTPStatus.OK
 
@@ -310,17 +342,13 @@ def get_enrolment():
 @role_required("Learning Advisor")
 def update_enrolment():
     try:
-        id = request.args.get("id")
+        id, response, status = get_enrolment_id()
         if not id:
-            return jsonify({
-                "message": "Missing enrolment ID in query params"
-            }), HTTPStatus.BAD_REQUEST
+            return response, status
         
-        enrolment = db.session.get(Enrolment, id)
+        enrolment, response, status = validate_enrolment(id)
         if not enrolment:
-            return jsonify({
-                "message": "Enrolment not found"
-            }), HTTPStatus.NOT_FOUND
+            return response, status
         
         if not request.is_json:
             return jsonify({
@@ -330,32 +358,25 @@ def update_enrolment():
         json_data = request.get_json()
         update_data = enrolment_schema.load(json_data, partial=True)
         
-       
         contract_id = update_data.get("contract_id", enrolment.contract_id)
         student_id = update_data.get("student_id", enrolment.student_id)
         course_id = update_data.get("course_id", enrolment.course_id)
         course_date = update_data.get("course_date", enrolment.course_date)
         
         if contract_id != enrolment.contract_id:
-            contract = db.session.get(Contract, update_data["contract_id"])
+            contract, response, status = validate_contract(contract_id)
             if not contract:
-                return jsonify({
-                    "message": "Contract not found"
-                }), HTTPStatus.NOT_FOUND
+                return response, status
         
         if student_id != enrolment.student_id:
-            student = db.session.get(Student, update_data["student_id"])
+            student, response, status = validate_student(student_id)
             if not student:
-                return jsonify({
-                    "message": "Student not found"
-                }), HTTPStatus.NOT_FOUND
+                return response, status
                 
         if course_id != enrolment.course_id or course_date != enrolment.course_date:
-            course = db.session.get(Course, (update_data["course_id"], update_data["course_date"]))
+            course, response, status = validate_course(course_id, course_date)
             if not course:
-                return jsonify({
-                    "message": "Course not found"
-                }), HTTPStatus.NOT_FOUND
+                return response, status
         
         existed_course = db.session.query(Enrolment).filter_by(
             contract_id=contract_id,
@@ -407,17 +428,13 @@ def update_enrolment():
 @role_required("Learning Advisor")
 def delete_enrolment():
     try:
-        id = request.args.get("id")
+        id, response, status = get_enrolment_id()
         if not id:
-            return jsonify({
-                "message": "Missing enrolment ID in query params"
-            }), HTTPStatus.BAD_REQUEST
+            return response, status
         
-        enrolment = db.session.get(Enrolment, id)
+        enrolment, response, status = validate_enrolment(id)
         if not enrolment:
-            return jsonify({
-                "message": "Enrolment not found"
-            }), HTTPStatus.BAD_REQUEST
+            return response, status
         
         db.session.delete(enrolment)
         db.session.commit()
