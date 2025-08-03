@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import avatarIcon from "@/assets/header/avatar.svg";
 import mailIcon from "@/assets/header/mail.svg";
 import profileBg from "@/assets/frame.svg";
+import { useProfile } from "@/hooks/entities/useEmployees";
+import employeeService from "@/services/entities/employeeService";
 
 interface ProfileCardProps {
   className?: string;
@@ -20,10 +22,11 @@ interface UserProfile {
 }
 
 const ProfileCard: React.FC<ProfileCardProps> = ({ className }) => {
+  const { data: profileData, isLoading, error, refetch } = useProfile();
   const [isEditing, setIsEditing] = useState(false);
   const [profile, setProfile] = useState<UserProfile>({
-    name: "Nguyen Minh Khoi",
-    email: "nmkhoi231@clc.fitus.edu.vn",
+    name: "Your name",
+    email: "your.email@example.com",
     nickname: "Your nick name",
     philosophy: "Your philosophy...",
     achievements: "Your achievements"
@@ -31,14 +34,43 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ className }) => {
 
   const [editProfile, setEditProfile] = useState<UserProfile>(profile);
 
+  // Update profile when API data is loaded
+  useEffect(() => {
+    if (profileData) {
+      const mappedProfile: UserProfile = {
+        name: profileData.full_name || "Your name",
+        email: profileData.email || "your.email@example.com",
+        nickname: profileData.nickname || "Your nick name",
+        philosophy: profileData.philosophy || "Your philosophy...",
+        achievements: profileData.achievements || "Your achievements"
+      };
+      setProfile(mappedProfile);
+      setEditProfile(mappedProfile);
+    }
+  }, [profileData]);
+
   const handleEdit = () => {
     setEditProfile(profile);
     setIsEditing(true);
   };
 
-  const handleSave = () => {
-    setProfile(editProfile);
-    setIsEditing(false);
+  const handleSave = async () => {
+    try {
+      const updateData = {
+        full_name: editProfile.name,
+        nickname: editProfile.nickname === "Your nick name" ? null : editProfile.nickname,
+        philosophy: editProfile.philosophy === "Your philosophy..." ? null : editProfile.philosophy,
+        achievements: editProfile.achievements === "Your achievements" ? null : editProfile.achievements
+      };
+
+      await employeeService.updateProfile(updateData);
+      setProfile(editProfile);
+      setIsEditing(false);
+      refetch(); // Refresh data from server
+    } catch (error) {
+      console.error('Failed to update profile:', error);
+      // You might want to show an error toast here
+    }
   };
 
   const handleCancel = () => {
@@ -52,6 +84,32 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ className }) => {
       [field]: value
     }));
   };
+
+  if (isLoading) {
+    return (
+      <Card className={cn("bg-white rounded-[15px] overflow-hidden shadow-lg", className)}>
+        <CardContent className="p-9">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded mb-4"></div>
+            <div className="h-6 bg-gray-200 rounded mb-2"></div>
+            <div className="h-6 bg-gray-200 rounded"></div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card className={cn("bg-white rounded-[15px] overflow-hidden shadow-lg", className)}>
+        <CardContent className="p-9">
+          <div className="text-red-500 text-center">
+            Failed to load profile data. Please try again.
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className={cn("bg-white rounded-[15px] overflow-hidden shadow-lg", className)}>

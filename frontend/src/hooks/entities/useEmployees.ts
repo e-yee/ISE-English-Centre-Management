@@ -18,4 +18,11 @@ export function useAvailableTeachers() {
     ['employees', 'available'],
     () => employeeService.getAvailableTeachers()
   );
+}
+
+export function useProfile() {
+  return useDataFetching(
+    ['profile'],
+    () => employeeService.getProfile()
+  );
 } 

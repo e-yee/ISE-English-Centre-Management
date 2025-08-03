@@ -19,6 +19,18 @@ export interface Employee {
   courses?: string[];
 }
 
+export interface ProfileData {
+  id: string;
+  full_name: string;
+  email: string;
+  nickname?: string | null;
+  philosophy?: string | null;
+  achievements?: string | null;
+  role: string;
+  phone_number?: string | null;
+  teacher_status?: string | null;
+}
+
 class EmployeeService extends ApiService {
   async getAvailableTeachers(): Promise<Employee[]> {
     return this.get<Employee[]>('/employee/teacher/');
@@ -27,7 +39,15 @@ class EmployeeService extends ApiService {
   async getAllEmployees(): Promise<Employee[]> {
     return this.get<Employee[]>('/employee/');
   }
-  
+
+  async getProfile(): Promise<ProfileData> {
+    return this.get<ProfileData>('/employee/profile');
+  }
+
+  async updateProfile(profileData: Partial<ProfileData>): Promise<{ message: string }> {
+    return this.put<{ message: string }>('/employee/update', profileData);
+  }
+
 //   async getEmployeesByRole(): Promise<Employee[]> {
 //     const user = JSON.parse(localStorage.getItem('user') || '{}');
     
