@@ -7,13 +7,14 @@ import ExamplePage from './pages/ExamplePage';
 import DemoLayout from './components/demo/DemoLayout';
 import ScoreList from './components/scoring/ScoreList';
 import CoursePage from './pages/course/CoursePage';
+import ContractPage from './pages/contract/ContractPage';
 
 {/*For development */}
 import { StagewiseToolbar } from '@stagewise/toolbar-react';
 import ReactPlugin from '@stagewise-plugins/react';
 
 // 🔧 EASY TOGGLE: Set to true for production routes, false for demo mode
-const USE_PRODUCTION_ROUTES = true;
+const USE_PRODUCTION_ROUTES = false;
 
 // Create a client
 const queryClient = new QueryClient({
@@ -45,7 +46,7 @@ function App() {
       <StagewiseToolbar config={{ plugins: [ReactPlugin] }} />
       <AuthProvider>
         <DemoLayout>
-          <CoursePage />
+          <ContractPage />
         </DemoLayout>
       </AuthProvider>
     </QueryClientProvider>
