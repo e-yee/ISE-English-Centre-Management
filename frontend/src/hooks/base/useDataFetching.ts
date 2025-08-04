@@ -7,16 +7,12 @@ export function useRoleBasedData<T>(
   fetchFn: () => Promise<T>,
   options?: Omit<UseQueryOptions<T>, 'queryKey' | 'queryFn'>
 ) {
-  //const { user } = useAuth();
-  const mockUser = {
-    role: 'Teacher',
-    
-  };
+  const { user } = useAuth();
 
   return useQuery({
-    queryKey: [...queryKey, mockUser?.role],
+    queryKey: [...queryKey, user?.role],
     queryFn: fetchFn,
-    enabled: !!mockUser?.role,
+    enabled: !!user?.role,
     staleTime: 5 * 60 * 1000, // 5 minutes
     ...options,
   });

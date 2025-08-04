@@ -6,7 +6,7 @@ export function useClasses() {
     ['classes'],
     () => {
       console.log('fetching classes');
-      return classService.getAllClasses(); // Test with getAllClasses directly
+      return classService.getClassesByRole(); // Use role-based method instead of getAllClasses
     }
   );
 }
