@@ -11,6 +11,6 @@ class EmployeeSchema(ma.Schema):
     role = fields.String(required=True)
     phone_number = fields.String(allow_none=True)
     teacher_status = fields.String(allow_none=True)
-    
+
 employee_schema = EmployeeSchema()
 employees_schema = EmployeeSchema(many=True)

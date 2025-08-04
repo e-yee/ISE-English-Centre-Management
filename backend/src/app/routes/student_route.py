@@ -2,14 +2,15 @@ from flask import Blueprint, request, jsonify
 from marshmallow import ValidationError
 from sqlalchemy.exc import IntegrityError, OperationalError
 from extensions import db
-from ...auth import role_required
-from ...models import Student, Enrolment, Contract, Course
-from ...schemas.learning_advisor.student_schema import student_schema, students_schema
-from ...schemas.learning_advisor.enrolment_schema import enrolment_schema, enrolments_schema
-from ...http_status import HTTPStatus
+from ..auth import role_required
+from ..models import Student, Enrolment, Contract, Course, Class
+from ..schemas.learning_advisor.student_schema import student_schema, students_schema
+from ..schemas.learning_advisor.enrolment_schema import enrolment_schema, enrolments_schema
+from ..http_status import HTTPStatus
 
 student_bp = Blueprint("student_bp", __name__, url_prefix="/student")
 
+# Helper Functions
 def get_student_id():
     id = request.args.get("id")
     if not id:
@@ -64,9 +65,78 @@ def validate_enrolment(enrolment_id):
     
     return enrolment, None, None
 
-@student_bp.post("/add")
+# General Features
+@student_bp.get("/")
+@role_required("Learning Advisor", "Manager")
+def get_all():
+    try:
+        students = db.session.query(Student).all()
+        return jsonify(students_schema.dump(students)), HTTPStatus.OK
+    
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            "message": "Unexpected error occurred",
+            "error": str(e)
+        }), HTTPStatus.INTERNAL_SERVER_ERROR
+
+@student_bp.get("/search")
+@role_required("Learning Advisor", "Manager")
+def get_student():
+    try:
+        id, response, status = get_student_id()
+        if not id:
+            return response, status
+        
+        student, response, status = validate_student(id)
+        if not student:
+            return response, status
+
+        return jsonify(student_schema.dump(student)), HTTPStatus.OK
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            "message": "Unexpected error occurred"
+        }), HTTPStatus.INTERNAL_SERVER_ERROR
+
+@student_bp.get("/enrolment/")
+@role_required("Learning Advisor", "Manager")
+def get_all_enrolments():
+    try:
+        enrolments = db.session.query(Enrolment).all()
+        return jsonify(enrolments_schema.dump(enrolments)), HTTPStatus.OK
+    
+    except Exception as e:
+        return jsonify({
+            "message": "Unexpected error occurred",
+            "error": str(e)
+        }), HTTPStatus.INTERNAL_SERVER_ERROR
+
+@student_bp.get("/enrolment/search")
+@role_required("Learning Advisor", "Manager")
+def get_enrolment():
+    try:
+        id, response, status = get_enrolment_id()
+        if not id:
+            return response, status
+        
+        enrolment, response, status = validate_enrolment(id)
+        if not enrolment:
+            return response, status
+        
+        return jsonify(enrolment_schema.dump(enrolment)), HTTPStatus.OK
+
+    except Exception as e:
+        return jsonify({
+            "message": "Unexpected error occurred",
+            "error": str(e)
+        }), HTTPStatus.INTERNAL_SERVER_ERROR
+        
+# Learning Advisor Features
+@student_bp.post("/learningadvisor/add")
 @role_required("Learning Advisor")
-def add_student(): 
+def la_add_student(): 
     try:
         if not request.is_json:
             return jsonify({
@@ -114,43 +184,9 @@ def add_student():
             "error": str(e)
         }), HTTPStatus.INTERNAL_SERVER_ERROR
 
-@student_bp.get("/")
+@student_bp.put("/learningadvisor/update")
 @role_required("Learning Advisor")
-def get_all():
-    try:
-        students = db.session.query(Student).all()
-        return jsonify(students_schema.dump(students)), HTTPStatus.OK
-    
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({
-            "message": "Unexpected error occurred",
-            "error": str(e)
-        }), HTTPStatus.INTERNAL_SERVER_ERROR
-
-@student_bp.get("/search")
-@role_required("Learning Advisor")
-def get_student():
-    try:
-        id, response, status = get_student_id()
-        if not id:
-            return response, status
-        
-        student, response, status = validate_student(id)
-        if not student:
-            return response, status
-
-        return jsonify(student_schema.dump(student)), HTTPStatus.OK
-
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({
-            "message": "Unexpected error occurred"
-        }), HTTPStatus.INTERNAL_SERVER_ERROR
-
-@student_bp.put("/update")
-@role_required("Learning Advisor")
-def update_student():
+def la_update_student():
     try:
         id, response, status = get_student_id()
         if not id:
@@ -202,9 +238,9 @@ def update_student():
             "error": str(e)
         }), HTTPStatus.INTERNAL_SERVER_ERROR
 
-@student_bp.delete("/delete")
+@student_bp.delete("/learningadvisor/delete")
 @role_required("Learning Advisor")
-def delete_student():
+def la_delete_student():
     try:
         id, response, status = get_student_id()
         if not id:
@@ -241,9 +277,9 @@ def delete_student():
             "error": str(e)
         }), HTTPStatus.INTERNAL_SERVER_ERROR
     
-@student_bp.post("/enrolment/add")
+@student_bp.post("/enrolment/learningadvisor/add")
 @role_required("Learning Advisor")
-def add_enrolment():
+def la_add_enrolment():
     try:
         if not request.is_json:
             return jsonify({
@@ -305,42 +341,9 @@ def add_enrolment():
             "error": str(e)
         }), HTTPStatus.INTERNAL_SERVER_ERROR
 
-@student_bp.get("/enrolment/")
+@student_bp.put("/enrolment/learningadvisor/update")
 @role_required("Learning Advisor")
-def get_all_enrolments():
-    try:
-        enrolments = db.session.query(Enrolment).all()
-        return jsonify(enrolments_schema.dump(enrolments)), HTTPStatus.OK
-    
-    except Exception as e:
-        return jsonify({
-            "message": "Unexpected error occurred",
-            "error": str(e)
-        }), HTTPStatus.INTERNAL_SERVER_ERROR
-
-@student_bp.get("/enrolment/search")
-@role_required("Learning Advisor")
-def get_enrolment():
-    try:
-        id, response, status = get_enrolment_id()
-        if not id:
-            return response, status
-        
-        enrolment, response, status = validate_enrolment(id)
-        if not enrolment:
-            return response, status
-        
-        return jsonify(enrolment_schema.dump(enrolment)), HTTPStatus.OK
-
-    except Exception as e:
-        return jsonify({
-            "message": "Unexpected error occurred",
-            "error": str(e)
-        }), HTTPStatus.INTERNAL_SERVER_ERROR
-
-@student_bp.put("/enrolment/update")
-@role_required("Learning Advisor")
-def update_enrolment():
+def la_update_enrolment():
     try:
         id, response, status = get_enrolment_id()
         if not id:
@@ -424,9 +427,9 @@ def update_enrolment():
             "error": str(e)
         }), HTTPStatus.INTERNAL_SERVER_ERROR
         
-@student_bp.delete("/enrolment/delete")
+@student_bp.delete("/enrolment/learningadvisor/delete")
 @role_required("Learning Advisor")
-def delete_enrolment():
+def la_delete_enrolment():
     try:
         id, response, status = get_enrolment_id()
         if not id:
@@ -462,3 +465,29 @@ def delete_enrolment():
             "message": "Unexpected error occurred",
             "error": str(e)
         }), HTTPStatus.INTERNAL_SERVER_ERROR 
+
+# Teacher Features        
+@student_bp.get("/teacher/")
+@role_required("Teacher")
+def teacher_get_students():
+    try:
+        class_id = request.args.get("id")
+        if not class_id:
+            return jsonify({
+                "message": "Missing class ID in query params"
+            }), HTTPStatus.NOT_FOUND
+        
+        class_ = db.session.get(Class, class_id)
+        if not class_:
+            return jsonify({
+                "message": "Class not found"
+            }), HTTPStatus.NOT_FOUND
+        
+        students = [student_attendance.student for student_attendance in class_.student_attendance]
+        
+        return jsonify(students_schema.dump(students)), HTTPStatus.OK
+    
+    except Exception as e:
+        return jsonify({
+            "message": "Unexpected error occurred"
+        }), HTTPStatus.INTERNAL_SERVER_ERROR

@@ -1,15 +1,16 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import get_jwt_identity, get_jwt
+from flask_jwt_extended import get_jwt
 from marshmallow import ValidationError
 from sqlalchemy.exc import IntegrityError, OperationalError
 from extensions import db
-from ...auth import role_required
-from ...models import Contract, Student, Course
-from ...http_status import HTTPStatus
-from ...schemas.learning_advisor.contract_schema import contract_schema, contracts_schema 
+from ..auth import role_required
+from ..models import Contract, Student, Course
+from ..http_status import HTTPStatus
+from ..schemas.learning_advisor.contract_schema import contract_schema, contracts_schema 
 
 contract_bp = Blueprint("contract_bp", __name__, url_prefix="/contract")
 
+# Helper Function
 def get_contract_id():
     id = request.args.get("id")
     if not id:
@@ -29,7 +30,12 @@ def validate_student(student_id):
     return student, None, None
 
 def validate_course(course_id, course_date):
-    course = db.session.get(Course, (course_id, course_date))
+    employee_id = get_jwt().get("employee_id")
+    course = db.session.query(Course).filter_by(
+        course_id=course_id, 
+        course_date=course_date,
+        learning_advisor_id=employee_id
+    )
     if not course:
         return None, jsonify({
             "message": "Course not found"
@@ -63,9 +69,10 @@ def check_existed_contract(student_id, course_id, course_date):
     
     return True, None, None
 
-@contract_bp.post("/add")
+# Learning Advisor Features
+@contract_bp.post("/learningadvisor/add")
 @role_required("Learning Advisor")
-def add_contract():
+def la_add_contract():
     try:        
         if not request.is_json:
             return jsonify({
@@ -129,10 +136,10 @@ def add_contract():
             "message": "Unexpected error occurred", 
             "error": str(e)
         }), HTTPStatus.INTERNAL_SERVER_ERROR
-        
-@contract_bp.get("/")
+
+@contract_bp.get("/learningadvisor/")
 @role_required("Learning Advisor")
-def get_all():
+def la_get_all():
     try:
         employee_id = get_jwt().get("employee_id")
         contracts = db.session.query(Contract).filter_by(employee_id=employee_id).all()
@@ -145,9 +152,9 @@ def get_all():
             "error": str(e)
         }), HTTPStatus.INTERNAL_SERVER_ERROR
     
-@contract_bp.get("/search")
+@contract_bp.get("/learningadvisor/search")
 @role_required("Learning Advisor")
-def get_contract():
+def la_get_contract():
     try:
         id, response, status = get_contract_id()
         if not id:
@@ -166,9 +173,9 @@ def get_contract():
             "error": str(e)
         }), HTTPStatus.INTERNAL_SERVER_ERROR
     
-@contract_bp.put("/update")
+@contract_bp.put("/learningadvisor/update")
 @role_required("Learning Advisor")
-def update_contract():
+def la_update_contract():
     try:
         id, response, status = get_contract_id()
         if not id:
@@ -239,9 +246,9 @@ def update_contract():
             "error": str(e)
         }), HTTPStatus.INTERNAL_SERVER_ERROR
 
-@contract_bp.delete("/delete")
+@contract_bp.delete("/learningadvisor/delete")
 @role_required("Learning Advisor")
-def delete_contract():
+def la_delete_contract():
     try:
         id, response, status = get_contract_id()
         if not id:
@@ -275,5 +282,42 @@ def delete_contract():
         db.session.rollback()
         return jsonify({
             "message": "Unexpected error occurred", 
+            "error": str(e)
+        }), HTTPStatus.INTERNAL_SERVER_ERROR
+        
+# Manager Features
+@contract_bp.get("/manager/")
+@role_required("Manager")
+def manager_get_all():
+    try:
+        contracts = db.session.query(Contract).all()
+        return jsonify(contracts_schema.dump(contracts)), HTTPStatus.OK
+
+    except Exception as e:
+        return jsonify({
+            "message": "Unexpected error occurred",
+            "error": str(e)
+        }), HTTPStatus.INTERNAL_SERVER_ERROR
+
+@contract_bp.get("/manager/search")
+@role_required("Manager")
+def manager_get_contract():
+    try:
+        id, response, status = get_contract_id()
+        if not id:
+            return response, status
+        
+        contract = db.session.get(Contract, id)
+        if not contract:
+            return jsonify({
+                "message": "Contract not found"
+            }), HTTPStatus.NOT_FOUND
+        
+        return jsonify(contract_schema.dump(contract)), HTTPStatus.OK
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            "message": "Unexpected error occurred",
             "error": str(e)
         }), HTTPStatus.INTERNAL_SERVER_ERROR

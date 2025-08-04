@@ -4,13 +4,14 @@ from flask_jwt_extended import get_jwt
 from marshmallow import ValidationError
 from sqlalchemy.exc import IntegrityError, OperationalError
 from extensions import db
-from ...auth import role_required
-from ...http_status import HTTPStatus
-from ...models import Class, Course, Contract, Employee, Room
-from ...schemas.learning_advisor.class_schema import class_schema, classes_schema
+from ..auth import role_required
+from ..http_status import HTTPStatus
+from ..models import Class, Course, Contract, Employee, Room
+from ..schemas.learning_advisor.class_schema import class_schema, classes_schema
 
 class_bp = Blueprint("class_bp", __name__, url_prefix="/class")
 
+# Helper Function
 def get_class_id():
     id = request.args.get("id")
     
@@ -99,9 +100,43 @@ def validate_class(class_id):
     
     return class_, None, None
 
-@class_bp.post("/add")
+# General Features
+@class_bp.get("/")
+@role_required("Learning Advisor", "Manager")
+def get_all():
+    try:
+        classes = db.session.query(Class).all()
+        return jsonify(classes_schema.dump(classes)), HTTPStatus.OK
+    
+    except Exception as e:
+        return jsonify({
+            "message": "Unexpected error occurred",
+            "error": str(e)
+        }), HTTPStatus.INTERNAL_SERVER_ERROR
+
+@class_bp.get("/search")
+@role_required("Learning Advisor", "Manager")
+def get_class():
+    try:
+        id, response, status = get_class_id()
+        if not id:
+            return response, status
+        
+        class_, response, status = validate_class(id)
+        if not class_:
+            return response, status
+        
+        return jsonify(class_schema.dump(class_)), HTTPStatus.OK
+
+    except Exception as e:
+        return jsonify({
+            "message": "Unexpected error occurred"
+        }), HTTPStatus.INTERNAL_SERVER_ERROR
+
+# Learning Advisor Features
+@class_bp.post("/learningadvisor/add")
 @role_required("Learning Advisor")
-def add_class():
+def la_add_class():
     try:
         if not request.is_json:
             return jsonify({
@@ -168,41 +203,9 @@ def add_class():
             "error": str(e)
         }), HTTPStatus.INTERNAL_SERVER_ERROR
 
-@class_bp.get("/")
-@role_required("Learning Advisor", "Manager")
-def get_all():
-    try:
-        classes = db.session.query(Class).all()
-        return jsonify(classes_schema.dump(classes)), HTTPStatus.OK
-    
-    except Exception as e:
-        return jsonify({
-            "message": "Unexpected error occurred",
-            "error": str(e)
-        }), HTTPStatus.INTERNAL_SERVER_ERROR
-
-@class_bp.get("/search")
+@class_bp.put("/learningadvisor/update")
 @role_required("Learning Advisor")
-def get_class():
-    try:
-        id, response, status = get_class_id()
-        if not id:
-            return response, status
-        
-        class_, response, status = validate_class(id)
-        if not class_:
-            return response, status
-        
-        return jsonify(class_schema.dump(class_)), HTTPStatus.OK
-
-    except Exception as e:
-        return jsonify({
-            "message": "Unexpected error occurred"
-        }), HTTPStatus.INTERNAL_SERVER_ERROR
-
-@class_bp.put("/update")
-@role_required("Learning Advisor")
-def update_class():
+def la_update_class():
     try:
         id, response, status = get_class_id()
         if not id:
@@ -276,9 +279,9 @@ def update_class():
             "error": str(e)
         }), HTTPStatus.INTERNAL_SERVER_ERROR
 
-@class_bp.delete("/delete")
+@class_bp.delete("/learningadvisor/delete")
 @role_required("Learning Advisor")
-def delete_class():
+def la_delete_class():
     try:
         id, response, status = get_class_id()
         if not id:
@@ -324,10 +327,11 @@ def delete_class():
             "message": "Unexpected error occurred",
             "error": str(e)
         }), HTTPStatus.INTERNAL_SERVER_ERROR
-        
+
+# Teacher Features
 @class_bp.get("/teacher/")
 @role_required("Teacher")
-def get_upcoming_classes():
+def teacher_get_class():
     try:
         teacher_id = get_jwt().get("employee_id")
         classes = db.session.query(Class).filter_by(teacher_id=teacher_id).all()
