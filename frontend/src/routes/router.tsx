@@ -20,6 +20,7 @@ import AttendancePage from '../pages/attendance/AttendancePage';
 import AddMaterialsPage from '../pages/materials/AddMaterialsPage';
 import ClassReportPage from '../pages/class-report/ClassReportPage';
 import ScoringPage from '../pages/scoring/ScoringPage';
+import CoursePage from '../pages/course/CoursePage';
 
 export const router = createBrowserRouter([
   {
@@ -61,6 +62,19 @@ export const router = createBrowserRouter([
           
           // Fallback redirect for authenticated users at the root
           { path: '/', element: <Navigate to="/home" replace /> },
+        ],
+      },
+    ],
+  },
+  {
+    // Learning Advisor specific routes
+    element: <ProtectedRoute allowedRoles={['Learning Advisor']} />,
+    children: [
+      {
+        path: '/',
+        element: <AppLayout />,
+        children: [
+          { path: 'courses', element: <CoursePage /> },
         ],
       },
     ],

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { getUserRole } from "@/lib/utils";
 import {
   Sidebar,
   SidebarContent,
@@ -46,7 +47,11 @@ const MainSidebar: React.FC<SidebarProps> = ({ className }) => {
     console.log("Sidebar: Not in router context, navigation disabled");
   }
 
-  const menuItems: SidebarItem[] = [
+  // Get user role for conditional rendering
+  const userRole = getUserRole();
+
+  // Base menu items that all roles can see
+  const baseMenuItems: SidebarItem[] = [
     {
       id: "dashboard",
       title: "Dashboard",
@@ -78,6 +83,22 @@ const MainSidebar: React.FC<SidebarProps> = ({ className }) => {
       url: "#",
     },
   ];
+
+  // Role-specific menu items
+  const roleSpecificItems: SidebarItem[] = [];
+  
+  // Add courses option for Learning Advisor role
+  if (userRole === 'Learning Advisor') {
+    roleSpecificItems.push({
+      id: "courses",
+      title: "Courses",
+      icon: "/src/assets/sidebar/add-course.svg",
+      url: "#",
+    });
+  }
+
+  // Combine base items with role-specific items
+  const menuItems = [...baseMenuItems, ...roleSpecificItems];
 
   const handleItemClick = (itemId: string) => {
     setActiveItem(itemId);
@@ -112,6 +133,12 @@ const MainSidebar: React.FC<SidebarProps> = ({ className }) => {
         navigate("/materials");
       } else {
         console.log("Navigation to /materials (demo mode - navigation disabled)");
+      }
+    } else if (itemId === "courses") {
+      if (navigate) {
+        navigate("/courses");
+      } else {
+        console.log("Navigation to /courses (demo mode - navigation disabled)");
       }
     } else {
       // For other items, just log for now (can be extended later)

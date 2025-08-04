@@ -3,8 +3,9 @@ import { cn } from '@/lib/utils';
 import FeatureButtonList from '@/components/class/FeatureButtonList';
 import ClassInfo from '@/components/class/ClassInfo';
 import StudentList from '@/components/class/StudentList';
-import { getStudentsByClassId, getFormattedStudentCount } from '@/mockData/studentListMock';
+import { getFormattedStudentCount } from '@/mockData/studentListMock';
 import { classListMockData } from '@/mockData/classListMock';
+import { useClassStudents } from '@/hooks/entities/useStudent';
 
 interface ClassScreenProps {
   classId?: string; // Optional prop to specify which class to display
@@ -18,9 +19,19 @@ const ClassScreen: React.FC<ClassScreenProps> = ({ classId = 'CL001', className 
     return <div>Class not found</div>;
   }
 
-  // Get students for this class
-  const students = getStudentsByClassId(classId);
+  // Get students for this class using real API
+  const { data: students = [], isLoading, error } = useClassStudents(classId);
   const studentCount = getFormattedStudentCount(classId);
+
+  // Handle loading state
+  if (isLoading) {
+    return <div className="flex items-center justify-center h-full">Loading students...</div>;
+  }
+
+  // Handle error state
+  if (error) {
+    return <div className="flex items-center justify-center h-full text-red-500">Error loading students: {error.message}</div>;
+  }
 
   return (
     <div className={cn("h-full overflow-hidden flex flex-col", className)}>

@@ -6,6 +6,7 @@ import { router } from './routes/router';
 import ExamplePage from './pages/ExamplePage';
 import DemoLayout from './components/demo/DemoLayout';
 import ScoreList from './components/scoring/ScoreList';
+import CoursePage from './pages/course/CoursePage';
 
 {/*For development */}
 import { StagewiseToolbar } from '@stagewise/toolbar-react';
@@ -44,7 +45,7 @@ function App() {
       <StagewiseToolbar config={{ plugins: [ReactPlugin] }} />
       <AuthProvider>
         <DemoLayout>
-          <ScoreList classId="class-1a" />
+          <CoursePage />
         </DemoLayout>
       </AuthProvider>
     </QueryClientProvider>
