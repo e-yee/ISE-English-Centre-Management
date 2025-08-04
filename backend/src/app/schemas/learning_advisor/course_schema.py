@@ -2,7 +2,6 @@ from extensions import ma
 from marshmallow import fields
 
 class CourseSchema(ma.Schema):
-    id = fields.String(required=True)
     name = fields.String(required=True)
     duration = fields.Integer(required=True)
     start_date = fields.Date(required=True)

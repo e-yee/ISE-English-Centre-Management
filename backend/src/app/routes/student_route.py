@@ -147,7 +147,6 @@ def la_add_student():
         validated = student_schema.load(json_data)
         
         student = Student(
-            id=validated["id"],
             fullname=validated["fullname"],
             contact_info=validated["contact_info"],
             date_of_birth=validated["date_of_birth"]
@@ -302,7 +301,6 @@ def la_add_enrolment():
             return response, status
         
         enrolment = Enrolment(
-            id=validated["id"],
             contract_id=validated["contract_id"],
             student_id=validated["student_id"],
             course_id=validated["course_id"],
@@ -466,10 +464,10 @@ def la_delete_enrolment():
             "error": str(e)
         }), HTTPStatus.INTERNAL_SERVER_ERROR 
 
-# Teacher Features        
-@student_bp.get("/teacher/")
-@role_required("Teacher")
-def teacher_get_students():
+# General Features        
+@student_bp.get("/")
+@role_required("Teacher", "Learning Advisor", "Manager")
+def get_students_in_class():
     try:
         class_id = request.args.get("id")
         if not class_id:

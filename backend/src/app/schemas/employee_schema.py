@@ -2,7 +2,6 @@ from extensions import ma
 from marshmallow import fields
 
 class EmployeeSchema(ma.Schema):
-    id = fields.String(required=True)
     full_name = fields.String(required=True)
     email = fields.String(required=True)
     nickname = fields.String(allow_none=True)

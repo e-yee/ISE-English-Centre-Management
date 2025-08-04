@@ -4,7 +4,6 @@ from extensions import ma
 from .course_schema import CourseSchema
 
 class ClassSchema(ma.Schema):
-    id = fields.String(required=True)
     course_id = fields.String(required=True)
     course_date = fields.Date(required=True)
     term = fields.Integer(required=True)

@@ -96,7 +96,6 @@ def la_add_contract():
         
         employee_id = get_jwt().get("employee_id")
         contract = Contract(
-            id=validated["id"],
             student_id=validated["student_id"],
             employee_id=employee_id,
             course_id=validated["course_id"],

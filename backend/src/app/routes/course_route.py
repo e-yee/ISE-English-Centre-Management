@@ -17,19 +17,19 @@ def get_course_id_date():
     course_id = request.args.get("id")
     
     if not course_id:
-        return None, jsonify({
+        return None, None, jsonify({
             "message": "Missing course ID in query params"
         }), HTTPStatus.BAD_REQUEST
     
     course_date = request.args.get("course_date")
     
     if not course_date:
-        return None, jsonify({
+        return None, None, jsonify({
             "message": "Missing course date in query params"
         }), HTTPStatus.BAD_REQUEST
     
     if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", course_date):
-        return None, jsonify({
+        return None, None, jsonify({
             "message": "Invalid date format"
         }), HTTPStatus.BAD_REQUEST
         
@@ -139,7 +139,6 @@ def la_add_course():
         
         employee_id = get_jwt().get("employee_id")
         course = Course(
-            id=validated["id"],
             name=validated["name"],
             duration=duration,
             start_date=start_date,
@@ -185,7 +184,7 @@ def la_add_course():
         
 @course_bp.get("/learningadvisor/")
 @role_required("Learning Advisor")
-def get_all():
+def la_get_all():
     try:
         employee_id = get_jwt().get("employee_id")
         courses = db.session.query(Course).filter_by(learning_advisor_id=employee_id).all()
@@ -198,7 +197,7 @@ def get_all():
 
 @course_bp.get("/learningadvisor/search")
 @role_required("Learning Advisor")
-def get_course():
+def la_get_course():
     try:
         course_id, course_date, response, status = get_course_id_date()
         if not course_id or not course_date:
@@ -209,7 +208,7 @@ def get_course():
             course_id=course_id, 
             course_date=course_date,
             learning_advisor_id=employee_id
-        )
+        ).first()
         if not course:
             return jsonify({
                 "message": "Course not found"
@@ -224,7 +223,7 @@ def get_course():
         
 @course_bp.put("/learningadvisor/update")
 @role_required("Learning Advisor")
-def update_course():
+def la_update_course():
     try:
         course_id, course_date, response, status = get_course_id_date()
         if not course_id or not course_date:
@@ -313,4 +312,88 @@ def update_course():
         return jsonify({
             "message": "Unexpected error occurred",
             "error": str(e)
+        }), HTTPStatus.INTERNAL_SERVER_ERROR
+
+@course_bp.delete("/learningadvisor/delete")
+@role_required("Learning Advisor")
+def la_delete_course():
+    try:
+        course_id, course_date, response, status = get_course_id_date()
+        if not course_id or not course_date:
+            return response, status
+        
+        employee_id = get_jwt().get("employee_id")
+        course = db.session.query(Course).filter_by(
+            course_id=course_id, 
+            course_date=course_date,
+            learning_advisor_id=employee_id
+        ).first()
+        if not course:
+            return jsonify({
+                "message": "Course not found"
+            }), HTTPStatus.NOT_FOUND
+        
+        db.session.delete(course)
+        db.session.commit()
+        
+        return jsonify({
+            "message": "Course deleted successfully"
+        }), HTTPStatus.OK
+    
+    except IntegrityError as ie:
+        db.session.rollback()
+        return jsonify({
+            "message": "Violate database constraint",
+            "error": str(ie.orig)
+        }), HTTPStatus.BAD_REQUEST
+    
+    except OperationalError as oe:
+        db.session.rollback()
+        return jsonify({
+            "message": "Violate database constraint",
+            "error": str(oe.orig)
+        }), HTTPStatus.BAD_REQUEST
+    
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            "message": "Unexpected error occurred",
+            "error": str(e)
+        }), HTTPStatus.INTERNAL_SERVER_ERROR 
+
+# Manager Features
+@course_bp.get("/manager/")
+@role_required("Manager")
+def manager_get_all():
+    try:
+        courses = db.session.query(Course).all()
+        return jsonify(course_schema.dump(courses, many=True)), HTTPStatus.OK
+
+    except Exception as e:
+        return jsonify({
+            "message": "Unexpected error occurred"
+        }), HTTPStatus.INTERNAL_SERVER_ERROR
+
+@course_bp.get("/manager/search")
+@role_required("Manager")
+def manager_get_course():
+    try:
+        course_id, course_date, response, status = get_course_id_date()
+        if not course_id or not course_date:
+            return response, status
+
+        course = db.session.query(Course).filter_by(
+            course_id=course_id, 
+            course_date=course_date,
+        ).first()
+        if not course:
+            return jsonify({
+                "message": "Course not found"
+            }), HTTPStatus.NOT_FOUND
+        
+        return jsonify(course_schema.dump(course)), HTTPStatus.OK
+
+    except Exception as e:
+        return jsonify({
+            "message": "Unexpected error occurred"
         }), HTTPStatus.INTERNAL_SERVER_ERROR

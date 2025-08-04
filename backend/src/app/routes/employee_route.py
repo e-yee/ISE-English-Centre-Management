@@ -1,15 +1,30 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import get_jwt
 from marshmallow import ValidationError
+from sqlalchemy import cast, Integer, func
 from sqlalchemy.exc import IntegrityError, OperationalError
 from extensions import db
 from ..auth import role_required
 from ..http_status import HTTPStatus
-from ..models import Employee, Account
+from ..models import Employee
 from ..schemas.employee_schema import employee_schema, employee_schema
 
 employee_bp = Blueprint("employee_bp", __name__,  url_prefix="/employee")
 
+# Helper Functions
+def generate_next_id():
+    last_employee = db.session.query(Employee).order_by(
+        cast(func.substring(Employee.id, 2), Integer).desc()
+    ).first()
+    
+    if not last_employee:
+        return "EM001"
+    else:
+        prefix = last_employee.id[:2]
+        num = int(last_employee.id[2:]) + 1
+        
+        return f"{prefix}{num:03}"
+    
 # General features
 @employee_bp.get("/profile")
 @role_required("Teacher", "Learning Advisor", "Manager")
@@ -86,9 +101,9 @@ def update_employee():
         }), HTTPStatus.INTERNAL_SERVER_ERROR
 
 # Manager features
-@employee_bp.post("/add")
+@employee_bp.post("/manager/add")
 @role_required("Manager")
-def add_employee():
+def manager_add_employee():
     try:
         if not request.is_json:
             return jsonify({
@@ -104,9 +119,12 @@ def add_employee():
             }), HTTPStatus.FORBIDDEN
         
         employee = Employee(
-            id=validated["id"],
+            id=generate_next_id(),
             full_name=validated["full_name"],
             email=validated["email"],
+            nickname=validated["nickname"],
+            philosophy=validated["philosophy"],
+            achievements=validated["achievements"],
             role=validated["role"],
             phone_number=validated["phone_number"],
             teacher_status=validated["teacher_status"]
@@ -143,9 +161,9 @@ def add_employee():
             "error": str(e)
         }), HTTPStatus.INTERNAL_SERVER_ERROR
 
-@employee_bp.get("/")
+@employee_bp.get("/manager/")
 @role_required("Manager")
-def get_all_manager():
+def manager_get_all():
     try:
         employees = db.session.query(Employee).all()
         return jsonify(employee_schema.dump(employees, many=True)), HTTPStatus.OK
@@ -156,9 +174,9 @@ def get_all_manager():
             "error": str(e)
         }), HTTPStatus.INTERNAL_SERVER_ERROR
 
-@employee_bp.get("/search")
+@employee_bp.get("/manager/search")
 @role_required("Manager")
-def get_employee_manager():
+def manager_get_employee():
     try:
         id = request.args.get("id")
         if not id:
@@ -181,9 +199,9 @@ def get_employee_manager():
             "error": str(e)
         }), HTTPStatus.INTERNAL_SERVER_ERROR
 
-@employee_bp.delete("/delete")
+@employee_bp.delete("/manager/delete")
 @role_required("Manager")
-def delete_employee():
+def manager_delete_employee():
     try:
         id = request.args.get("id")
         if not id:
@@ -242,3 +260,58 @@ def get_available_teacher():
             "message": "Unexpected error occurred",
             "error": str(e)
         }), HTTPStatus.INTERNAL_SERVER_ERROR 
+        
+# Admin
+@employee_bp.post("/add")
+def admin_add_employee():
+    try:
+        if not request.is_json:
+            return jsonify({
+                "message": "Missing or invalid JSON"
+            }), HTTPStatus.BAD_REQUEST
+        
+        json_data = request.get_json()
+        validated = employee_schema.load(json_data)
+    
+        employee = Employee(
+            id=generate_next_id(),
+            full_name=validated["full_name"],
+            email=validated["email"],
+            nickname=validated["nickname"],
+            philosophy=validated["philosophy"],
+            achievements=validated["achievements"],
+            role=validated["role"],
+            phone_number=validated["phone_number"],
+            teacher_status=validated["teacher_status"]
+        )
+        db.session.add(employee)
+        db.session.commit()
+        
+        return jsonify(employee_schema.dump(employee)), HTTPStatus.CREATED
+
+    except ValidationError as ve:
+        return jsonify({
+            "message": "Invalid input",
+            "error": ve.messages
+        }), HTTPStatus.BAD_REQUEST
+    
+    except IntegrityError as ie:
+        db.session.rollback()
+        return jsonify({
+            "message": "Violate database constraint",
+            "error": str(ie.orig)
+        }), HTTPStatus.BAD_REQUEST
+    
+    except OperationalError as oe:
+        db.session.rollback()
+        return jsonify({
+            "message": "Violate database constraint",
+            "error": str(oe.orig)
+        }), HTTPStatus.BAD_REQUEST
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            "message": "Unexpected error occurred",
+            "error": str(e)
+        }), HTTPStatus.INTERNAL_SERVER_ERROR

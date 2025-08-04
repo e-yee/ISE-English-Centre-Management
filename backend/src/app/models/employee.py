@@ -22,7 +22,7 @@ class Employee(db.Model):
     email: Mapped[str] = mapped_column(String(320), nullable=False, unique=True)
     nickname: Mapped[str] = mapped_column(String(200))
     philosophy: Mapped[str] = mapped_column(String(200))
-    achivements: Mapped[str] = mapped_column(String(200))
+    achievements: Mapped[str] = mapped_column(String(200))
     role: Mapped[str] = mapped_column(String(20), nullable=False)
     phone_number: Mapped[Optional[str]] = mapped_column(String(20), unique=True)
     teacher_status: Mapped[Optional[str]] = mapped_column(String(20))
