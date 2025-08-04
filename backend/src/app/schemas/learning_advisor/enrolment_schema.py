@@ -10,4 +10,3 @@ class EnrolmentSchema(ma.Schema):
     enrolment_date = fields.Date(required=True)
     
 enrolment_schema = EnrolmentSchema()
-enrolments_schema = EnrolmentSchema(many=True)

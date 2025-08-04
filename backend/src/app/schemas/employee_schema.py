@@ -13,4 +13,3 @@ class EmployeeSchema(ma.Schema):
     teacher_status = fields.String(allow_none=True)
 
 employee_schema = EmployeeSchema()
-employees_schema = EmployeeSchema(many=True)

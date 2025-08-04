@@ -7,4 +7,3 @@ class RoomSchema(ma.Schema):
     status = fields.String(required=True)
 
 room_schema = RoomSchema()
-rooms_schema = RoomSchema(many=True)

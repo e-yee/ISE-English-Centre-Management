@@ -6,7 +6,7 @@ from extensions import db
 from ..auth import role_required
 from ..http_status import HTTPStatus
 from ..models import Employee, Account
-from ..schemas.employee_schema import employee_schema, employees_schema
+from ..schemas.employee_schema import employee_schema, employee_schema
 
 employee_bp = Blueprint("employee_bp", __name__,  url_prefix="/employee")
 
@@ -148,7 +148,7 @@ def add_employee():
 def get_all_manager():
     try:
         employees = db.session.query(Employee).all()
-        return jsonify(employees_schema.dump(employees)), HTTPStatus.OK
+        return jsonify(employee_schema.dump(employees, many=True)), HTTPStatus.OK
 
     except Exception as e:
         return jsonify({
@@ -235,7 +235,7 @@ def delete_employee():
 def get_available_teacher():
     try:            
         available_teachers = db.session.query(Employee).filter_by(teacher_status="Available")
-        return jsonify(employees_schema.dump(available_teachers)), HTTPStatus.OK
+        return jsonify(employee_schema.dump(available_teachers, many=True)), HTTPStatus.OK
     
     except Exception as e:
         return jsonify({

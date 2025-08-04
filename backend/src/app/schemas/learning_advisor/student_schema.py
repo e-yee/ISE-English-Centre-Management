@@ -8,4 +8,3 @@ class StudentSchema(ma.Schema):
     date_of_birth = fields.Date(required=True)
     
 student_schema = StudentSchema()
-students_schema = StudentSchema(many=True)

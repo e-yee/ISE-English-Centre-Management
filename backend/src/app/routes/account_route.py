@@ -3,7 +3,7 @@ from marshmallow import ValidationError
 from sqlalchemy.exc import IntegrityError, OperationalError
 from extensions import db, pwd_context
 from ..models import Account
-from ..schemas.account_schema import account_schema, accounts_schema
+from ..schemas.account_schema import account_schema
 from ..http_status import HTTPStatus
 
 account_bp = Blueprint("account_bp", __name__, url_prefix="/account")
@@ -60,7 +60,7 @@ def add_account():
 def get_all():
     try:
         accounts = db.session.query(Account).all()
-        return jsonify(accounts_schema.dump(accounts)), HTTPStatus.OK
+        return jsonify(account_schema.dump(accounts, many=True)), HTTPStatus.OK
 
     except Exception as e:
         return jsonify({

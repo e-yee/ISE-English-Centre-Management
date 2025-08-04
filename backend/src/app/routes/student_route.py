@@ -4,8 +4,8 @@ from sqlalchemy.exc import IntegrityError, OperationalError
 from extensions import db
 from ..auth import role_required
 from ..models import Student, Enrolment, Contract, Course, Class
-from ..schemas.learning_advisor.student_schema import student_schema, students_schema
-from ..schemas.learning_advisor.enrolment_schema import enrolment_schema, enrolments_schema
+from ..schemas.learning_advisor.student_schema import student_schema
+from ..schemas.learning_advisor.enrolment_schema import enrolment_schema
 from ..http_status import HTTPStatus
 
 student_bp = Blueprint("student_bp", __name__, url_prefix="/student")
@@ -71,7 +71,7 @@ def validate_enrolment(enrolment_id):
 def get_all():
     try:
         students = db.session.query(Student).all()
-        return jsonify(students_schema.dump(students)), HTTPStatus.OK
+        return jsonify(student_schema.dump(students, many=True)), HTTPStatus.OK
     
     except Exception as e:
         db.session.rollback()
@@ -105,7 +105,7 @@ def get_student():
 def get_all_enrolments():
     try:
         enrolments = db.session.query(Enrolment).all()
-        return jsonify(enrolments_schema.dump(enrolments)), HTTPStatus.OK
+        return jsonify(enrolment_schema.dump(enrolments, many=True)), HTTPStatus.OK
     
     except Exception as e:
         return jsonify({
@@ -485,9 +485,10 @@ def teacher_get_students():
         
         students = [student_attendance.student for student_attendance in class_.student_attendance]
         
-        return jsonify(students_schema.dump(students)), HTTPStatus.OK
+        return jsonify(student_schema.dump(students, many=True)), HTTPStatus.OK
     
     except Exception as e:
         return jsonify({
-            "message": "Unexpected error occurred"
+            "message": "Unexpected error occurred",
+            "error": str(e)
         }), HTTPStatus.INTERNAL_SERVER_ERROR

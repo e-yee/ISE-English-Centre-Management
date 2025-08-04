@@ -6,7 +6,7 @@ from extensions import db
 from ..auth import role_required
 from ..models import Contract, Student, Course
 from ..http_status import HTTPStatus
-from ..schemas.learning_advisor.contract_schema import contract_schema, contracts_schema 
+from ..schemas.learning_advisor.contract_schema import contract_schema
 
 contract_bp = Blueprint("contract_bp", __name__, url_prefix="/contract")
 
@@ -143,7 +143,7 @@ def la_get_all():
     try:
         employee_id = get_jwt().get("employee_id")
         contracts = db.session.query(Contract).filter_by(employee_id=employee_id).all()
-        return jsonify(contracts_schema.dump(contracts)), HTTPStatus.OK
+        return jsonify(contract_schema.dump(contracts, many=True)), HTTPStatus.OK
 
     except Exception as e:
         db.session.rollback()
@@ -291,7 +291,7 @@ def la_delete_contract():
 def manager_get_all():
     try:
         contracts = db.session.query(Contract).all()
-        return jsonify(contracts_schema.dump(contracts)), HTTPStatus.OK
+        return jsonify(contract_schema.dump(contracts, many=True)), HTTPStatus.OK
 
     except Exception as e:
         return jsonify({

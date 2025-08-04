@@ -14,4 +14,3 @@ class ClassSchema(ma.Schema):
     course = Nested(CourseSchema)
 
 class_schema = ClassSchema()
-classes_schema = ClassSchema(many=True)

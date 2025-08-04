@@ -8,4 +8,3 @@ class AccountSchema(ma.Schema):
     password = fields.String(required=True, load_only=True)
     
 account_schema = AccountSchema()
-accounts_schema = AccountSchema(many=True)

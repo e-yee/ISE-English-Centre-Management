@@ -7,7 +7,7 @@ from extensions import db
 from ..auth import role_required
 from ..http_status import HTTPStatus
 from ..models import Class, Course, Contract, Employee, Room
-from ..schemas.learning_advisor.class_schema import class_schema, classes_schema
+from ..schemas.learning_advisor.class_schema import class_schema
 
 class_bp = Blueprint("class_bp", __name__, url_prefix="/class")
 
@@ -106,7 +106,7 @@ def validate_class(class_id):
 def get_all():
     try:
         classes = db.session.query(Class).all()
-        return jsonify(classes_schema.dump(classes)), HTTPStatus.OK
+        return jsonify(class_schema.dump(classes)), HTTPStatus.OK
     
     except Exception as e:
         return jsonify({
@@ -335,7 +335,7 @@ def teacher_get_class():
     try:
         teacher_id = get_jwt().get("employee_id")
         classes = db.session.query(Class).filter_by(teacher_id=teacher_id).all()
-        return jsonify(classes_schema.dump(classes)), HTTPStatus.OK
+        return jsonify(class_schema.dump(classes)), HTTPStatus.OK
     
     except Exception as e:
         return jsonify({

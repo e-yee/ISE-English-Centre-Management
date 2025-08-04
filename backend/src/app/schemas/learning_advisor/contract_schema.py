@@ -11,4 +11,3 @@ class ContractSchema(ma.Schema):
     end_date = fields.Date(required=True)
 
 contract_schema = ContractSchema()
-contracts_schema = ContractSchema(many=True)
