@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import UserProfile from "@/components/ui/UserProfile";
 import { useAuth } from "@/contexts/AuthContext";
+import Avatar from "@/components/ui/Avatar";
 //import { useAuth } from "@/contexts/MockAuthContext";
 
 interface HeaderProps {
@@ -121,21 +122,7 @@ const Header: React.FC<HeaderProps> = ({ isRegistered = false }) => {
           <img src="/src/assets/header/search.svg" alt="Search" className="w-6 h-6" />
         </button>
 
-        {/* Theme Toggle Switch */}
-        <button
-          onClick={toggleTheme}
-          className="relative hover:scale-105 transition-transform duration-200"
-          aria-label="Toggle theme"
-        >
-          <div className="w-[60px] h-[30px] bg-white border-2 border-black rounded-full flex items-center p-1">
-            <div
-              className={cn(
-                "w-[23px] h-[23px] bg-white border border-black rounded-full transition-transform duration-200",
-                isDarkMode ? "translate-x-[26px]" : "translate-x-0"
-              )}
-            />
-          </div>
-        </button>
+
 
         {/* Notification Bell */}
         <button

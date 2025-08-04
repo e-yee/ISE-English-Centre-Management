@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import type { Colleague } from '../../mockData/colleaguesMock';
 import { SearchInput } from '../ui/SearchInput';
 import { Card, CardContent } from '../ui/card';
+import Avatar from '../ui/Avatar';
 
 interface ColleagueListProps {
   colleagues: Colleague[];
@@ -59,10 +60,10 @@ const ColleagueList: React.FC<ColleagueListProps> = ({ colleagues, selectedColle
                     >
                       <CardContent className="p-4">
                         <div className="flex items-center space-x-4">
-                          <img 
-                            src={colleague.avatar} 
-                            alt={colleague.name} 
-                            className="w-12 h-12 rounded-full object-cover border-2 border-gray-200"
+                          <Avatar 
+                            name={colleague.name}
+                            src={colleague.avatar}
+                            size="md"
                           />
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center space-x-2 mb-1">

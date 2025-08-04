@@ -1,11 +1,9 @@
 import React, { useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { Calendar } from "lucide-react";
+import { Calendar, Clock } from "lucide-react";
 
 // Import check-in components
 import StatCard from "@/components/checkin/StatCard";
-import CheckInButton from "@/components/checkin/CheckInButton";
-import TodayCheckIn from "@/components/checkin/TodayCheckIn";
 import UpcomingClassesPanel from "@/components/checkin/UpcomingClassesPanel";
 import PageTitle from "@/components/checkin/PageTitle";
 import CheckInContainer from "@/components/checkin/CheckInContainer";
@@ -17,6 +15,9 @@ import { useAuth } from "@/contexts/AuthContext";
 
 // Import mock data
 import { statCardsMock } from "@/mockData/checkinMock";
+
+// Import time utility
+import { getCurrentTime } from "@/lib/utils";
 
 interface CheckInPageProps {
   className?: string;
@@ -35,6 +36,9 @@ const CheckInPage: React.FC<CheckInPageProps> = ({ className }) => {
     classesError,
     fetchTeacherClasses
   } = useCheckIn();
+
+  // Get current time once when component mounts
+  const currentTime = getCurrentTime();
 
   console.log('🔍 CheckInPage - Current user:', user);
 
@@ -87,10 +91,10 @@ const CheckInPage: React.FC<CheckInPageProps> = ({ className }) => {
                   stat.icon === "calendar" ? (
                     <Calendar className="w-8 h-8" />
                   ) : (
-                    <Calendar className="w-8 h-8" />
+                    <Clock className="w-8 h-8" />
                   )
                 }
-                value={stat.value}
+                value={index === 1 ? currentTime : stat.value}
                 label={stat.label}
               />
             ))}

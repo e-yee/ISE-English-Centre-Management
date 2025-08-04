@@ -2,6 +2,7 @@ import React from 'react';
 import { cn } from "@/lib/utils";
 import type { Colleague } from '../../mockData/colleaguesMock';
 import { Card, CardContent } from '../ui/card';
+import Avatar from '../ui/Avatar';
 
 interface ColleagueProfilePanelProps {
   colleague: Colleague;
@@ -58,10 +59,11 @@ const ColleagueProfilePanel: React.FC<ColleagueProfilePanelProps> = ({ colleague
         </div>
         <div className="relative pt-21 px-6">
           <div className="flex items-end">
-            <img 
-              src={colleague.avatar} 
-              alt={colleague.name} 
-              className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg mr-6 z-10"
+            <Avatar 
+              name={colleague.name}
+              src={colleague.avatar}
+              size="xl"
+              className="mr-6 z-10 border-4 border-white shadow-lg"
             />
             <div className="z-10 pb-4">
               <h1 className="text-3xl font-bold text-gray-900 font-comfortaa mb-2">

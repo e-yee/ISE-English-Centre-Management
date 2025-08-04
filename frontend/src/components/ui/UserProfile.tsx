@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
+import Avatar from "./Avatar";
 
 interface UserProfileProps {
   className?: string;
@@ -66,8 +67,11 @@ const UserProfile: React.FC<UserProfileProps> = ({
         aria-label="User profile menu"
         aria-expanded={isOpen}
       >
-        {/* Use the original avatar image */}
-        <img src="/src/assets/header/avatar.svg" alt="User Avatar" className="w-12 h-12" />
+        {/* Use the new Avatar component */}
+        <Avatar 
+          name="User"
+          size="md"
+        />
       </button>
 
       {/* Dropdown Menu */}
