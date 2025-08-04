@@ -55,7 +55,7 @@ def checkin():
             for item in classes:
                 # Sample schedule format: "Mon - Wed, 09:00 - 10:30"   
                 # Please follow the following format
-                matched = re.search(r"(\w{3}) - (\w{3}), (\d{1,2}:\d{2}) - (\d{1,2}:\d{2})", item.schedule)
+                matched = re.search(r"(\w{3}) - (\w{3}), (\d{2}:\d{2}) - (\d{2}:\d{2})", item.schedule)
                 if matched:
                     first_day_of_week = matched.group(1)
                     second_day_of_week = matched.group(2)

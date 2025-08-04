@@ -77,14 +77,14 @@ def validate_class_date(course_id, course_date, class_date):
     dt = class_date.split(" ")
     date = dt[0]
     time = dt[1]
-    weekday = datetime.strptime(date, "%Y-%m-%d").strftime("%A")
+    weekday = datetime.strptime(date, "%Y-%m-%d").strftime("%a")
     
     if weekday not in class_days:
         return None, jsonify({
             "message": "Weekday not in course's schedule"
         }), HTTPStatus.BAD_REQUEST
         
-    if time != class_hours[0]:
+    if time != (class_hours[0] + ":00"):
         return None, jsonify({
             "message": "Start hour not in course's schedule"
         }), HTTPStatus.BAD_REQUEST
