@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useEffect, type ReactNode } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, useMemo, type ReactNode } from 'react';
 import authService from '../services/auth/authService';
 import { setUser } from '../lib/utils';
 import { 
@@ -71,7 +71,7 @@ type AuthAction =
 // Initial state
 const initialState: AuthState = {
   user: null,
-  isLoading: false,
+  isLoading: true, // Start with loading true to prevent race condition
   error: null,
   isAuthenticated: false,
 };
@@ -130,48 +130,57 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Initialize auth state on mount
   useEffect(() => {
     const initializeAuth = async () => {
-      const authenticated = isAuthenticated();
-      const user = getUser();
-      const role = getUserRole();
-      const employeeId = getEmployeeIdFromToken();
-      const userId = getUserIdFromToken();
-      
-      console.log('AuthContext initialization:', {
-        authenticated,
-        user,
-        role,
-        userId,
-        employeeId
-      });
-      
-      // If authenticated but no user data, create user object from JWT token
-      if (authenticated && !user) {
-        const userWithRole = {
-          id: employeeId || userId || 'unknown',
-          username: 'user',
-          email: 'user@example.com',
-          role: role as 'Teacher' | 'Learning Advisor' | 'Manager'
-        };
-        console.log('Creating user object from JWT token:', userWithRole);
-        dispatch({ type: 'SET_USER', payload: userWithRole });
-        dispatch({ type: 'SET_AUTHENTICATED', payload: true });
-      } else if (user) {
-        // Combine user data with role from localStorage
-        const userWithRole = {
-          ...user,
-          id: employeeId || user.id, // Use employee ID if available
-          role: role || user.role || 'Teacher' // Fallback to stored role or default
-        };
-        console.log('Combining user data with role:', userWithRole);
-        dispatch({ type: 'SET_USER', payload: userWithRole });
-        dispatch({ type: 'SET_AUTHENTICATED', payload: true });
-      } else {
-        console.log('No user data available, setting user to null');
+      try {
+        console.log('AuthContext: Starting auth initialization');
+        
+        const authenticated = isAuthenticated();
+        const user = getUser();
+        const role = getUserRole();
+        const employeeId = getEmployeeIdFromToken();
+        const userId = getUserIdFromToken();
+        
+        console.log('AuthContext initialization:', {
+          authenticated,
+          user,
+          role,
+          userId,
+          employeeId
+        });
+        
+        // If authenticated but no user data, create user object from JWT token
+        if (authenticated && !user) {
+          const userWithRole = {
+            id: employeeId || userId || 'unknown',
+            username: 'user',
+            email: 'user@example.com',
+            role: role as 'Teacher' | 'Learning Advisor' | 'Manager'
+          };
+          console.log('Creating user object from JWT token:', userWithRole);
+          dispatch({ type: 'SET_USER', payload: userWithRole });
+          dispatch({ type: 'SET_AUTHENTICATED', payload: true });
+        } else if (user) {
+          // Combine user data with role from localStorage
+          const userWithRole = {
+            ...user,
+            id: employeeId || user.id, // Use employee ID if available
+            role: role || user.role || 'Teacher' // Fallback to stored role or default
+          };
+          console.log('Combining user data with role:', userWithRole);
+          dispatch({ type: 'SET_USER', payload: userWithRole });
+          dispatch({ type: 'SET_AUTHENTICATED', payload: true });
+        } else {
+          console.log('No user data available, setting user to null');
+          dispatch({ type: 'SET_USER', payload: null });
+          dispatch({ type: 'SET_AUTHENTICATED', payload: false });
+        }
+      } catch (error) {
+        console.error('Error during auth initialization:', error);
         dispatch({ type: 'SET_USER', payload: null });
         dispatch({ type: 'SET_AUTHENTICATED', payload: false });
+      } finally {
+        console.log('AuthContext: Auth initialization complete, setting loading to false');
+        dispatch({ type: 'SET_LOADING', payload: false });
       }
-      
-      dispatch({ type: 'SET_LOADING', payload: false });
     };
 
     initializeAuth();
@@ -359,7 +368,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     dispatch({ type: 'SET_ERROR', payload: null });
   };
 
-  const contextValue: AuthContextType = {
+  const contextValue: AuthContextType = useMemo(() => ({
     // Auth state
     user: authState.user,
     isLoading: authState.isLoading,
@@ -385,7 +394,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     
     // Navigation callbacks
     setNavigationCallbacks,
-  };
+  }), [
+    authState.user,
+    authState.isLoading,
+    authState.error,
+    authState.isAuthenticated,
+    forgotPasswordState.email,
+    forgotPasswordState.step,
+    login,
+    logout,
+    sendForgotPasswordEmail,
+    forgotPasswordVerify,
+    forgotPasswordReset,
+    checkAuth,
+    clearError,
+    setNavigationCallbacks,
+  ]);
 
   return (
     <AuthContext.Provider value={contextValue}>

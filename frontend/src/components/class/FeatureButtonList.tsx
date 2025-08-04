@@ -32,20 +32,14 @@ const FeatureButtonList: React.FC<FeatureButtonListProps> = ({ className, classI
     {
       id: "scoring",
       title: "Scoring", 
-      route: "/report", // Using report as closest match for scoring
-      onClick: () => navigate("/report")
+      route: classId ? `/scoring/${classId}` : "/scoring/1", // Use class-specific scoring route
+      onClick: () => navigate(classId ? `/scoring/${classId}` : "/scoring/1")
     },
     {
       id: "daily-attendance",
       title: "Daily Attendance",
       route: "/attendance",
       onClick: () => navigate("/attendance")
-    },
-    {
-      id: "materials",
-      title: "Materials",
-      route: "/materials",
-      onClick: () => navigate("/materials")
     },
     {
       id: "report",

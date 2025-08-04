@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { cn } from "@/lib/utils";
 import UserProfile from "@/components/ui/UserProfile";
 import { useAuth } from "@/contexts/AuthContext";
-import Avatar from "@/components/ui/Avatar";
 //import { useAuth } from "@/contexts/MockAuthContext";
 
 interface HeaderProps {

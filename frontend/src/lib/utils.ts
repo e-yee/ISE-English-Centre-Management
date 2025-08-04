@@ -72,7 +72,8 @@ export function isTokenValid(token: string | null): boolean {
       hasExp: !!payload.exp,
       exp: payload.exp,
       currentTime,
-      isValid
+      isValid,
+      timeRemaining: payload.exp ? payload.exp - currentTime : null
     });
 
     return isValid;
@@ -92,7 +93,8 @@ export function isAuthenticated(): boolean {
   console.log('isAuthenticated check:', {
     hasToken: !!token,
     isValid,
-    tokenLength: token?.length
+    tokenLength: token?.length,
+    timestamp: new Date().toISOString()
   });
   
   return isValid;

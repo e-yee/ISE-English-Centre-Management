@@ -17,6 +17,7 @@ import TimeEntriesPage from "./timekeeping/TimeEntriesPage";
 import { List, Grid3X3 } from "lucide-react";
 import ColleaguesPage from "./colleagues/ColleaguesPage";
 import HomescreenPage from "./homescreen/Homescreen";
+import ScoreList from "@/components/scoring/ScoreList";
 
 interface ExamplePageProps {
   className?: string;
@@ -155,6 +156,17 @@ const developmentItems = [
     lastUpdated: "2024-01-20",
     demoAvailable: true,
     demoComponent: TimeEntriesPage
+  },
+  {
+    id: "scoring-page",
+    name: "Scoring",
+    description: "Student scoring and assessment management with editable scores and notes",
+    status: "completed" as const,
+    priority: "high" as const,
+    category: "Pages",
+    lastUpdated: "2024-01-21",
+    demoAvailable: true,
+    demoComponent: () => <ScoreList classId="class-1a" />
   },
   {
     id: "sidebar",

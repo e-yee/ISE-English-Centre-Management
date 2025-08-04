@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 //import { useAuth } from '../contexts/MockAuthContext';
@@ -22,6 +22,17 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles }) => {
   const { user, isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
 
+  // Log auth state changes for debugging
+  useEffect(() => {
+    console.log('ProtectedRoute useEffect - Auth state changed:', {
+      pathname: location.pathname,
+      isAuthenticated,
+      isLoading,
+      user,
+      allowedRoles
+    });
+  }, [location.pathname, isAuthenticated, isLoading, user, allowedRoles]);
+
   console.log('ProtectedRoute check:', {
     pathname: location.pathname,
     user,
@@ -33,6 +44,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles }) => {
 
   // Show loading state while checking authentication
   if (isLoading) {
+    console.log('ProtectedRoute: Showing loading state');
     return (
       <div className="h-screen w-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
@@ -45,7 +57,11 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles }) => {
 
   // If not authenticated, redirect to login
   if (!isAuthenticated) {
-    console.log('ProtectedRoute: User not authenticated, redirecting to login');
+    console.log('ProtectedRoute: User not authenticated, redirecting to login', {
+      pathname: location.pathname,
+      isAuthenticated,
+      user
+    });
     return <Navigate to="/auth/login" replace />;
   }
 

@@ -3,7 +3,7 @@ import { getAccessToken } from './utils';
 
 // Configuration constants
 const API_BASE_URL = 'http://localhost:5000'; // Adjust port if needed
-const DEFAULT_TIMEOUT = 10000; // 10 seconds timeout
+const DEFAULT_TIMEOUT = 5000; // 5 seconds timeout (reduced from 10)
 
 // Type definitions for API responses
 export interface ApiResponse {

@@ -19,6 +19,7 @@ import ClassInformationPage from '../pages/class/ClassInformationPage';
 import AttendancePage from '../pages/attendance/AttendancePage';
 import AddMaterialsPage from '../pages/materials/AddMaterialsPage';
 import ClassReportPage from '../pages/class-report/ClassReportPage';
+import ScoringPage from '../pages/scoring/ScoringPage';
 
 export const router = createBrowserRouter([
   {
@@ -26,15 +27,23 @@ export const router = createBrowserRouter([
     element: <UnauthorizedPage />,
   },
   {
-    // This is the main application layout route
-    path: '/',
-    element: <AppLayout />, // AppLayout provides Header, Sidebar, and Outlet for child routes
+    path: '/auth',
     children: [
-
-         // --- Teacher Routes (accessible by Teacher, Learning Advisor, Manager) ---
+      { path: 'login', element: <AuthPage /> },
+      { path: 'forget-password/email', element: <AuthPage /> },
+      { path: 'forget-password/verify', element: <AuthPage /> },
+      { path: 'forget-password/new-password', element: <AuthPage /> },
+    ],
+  },
+  {
+    // Protected routes - wrap AppLayout with ProtectedRoute
+    element: <ProtectedRoute allowedRoles={['Teacher', 'Manager', 'Learning Advisor']} />,
+    children: [
       {
-        element: <ProtectedRoute allowedRoles={['Teacher', 'Manager', 'Learning Advisor']} />,
+        path: '/',
+        element: <AppLayout />, // AppLayout provides Header, Sidebar, and Outlet for child routes
         children: [
+          // --- Teacher Routes (accessible by Teacher, Learning Advisor, Manager) ---
           {path: 'home', element: <Homescreen />},
           {path: 'colleagues', element: <ColleaguesPage />},
           { path: 'example', element: <ExamplePage /> },
@@ -48,44 +57,12 @@ export const router = createBrowserRouter([
           { path: 'attendance', element: <AttendancePage /> },
           { path: 'materials', element: <AddMaterialsPage /> },
           { path: 'report', element: <ClassReportPage /> },
+          { path: 'scoring/:classId', element: <ScoringPage /> },
+          
+          // Fallback redirect for authenticated users at the root
+          { path: '/', element: <Navigate to="/home" replace /> },
         ],
       },
-      
-      // --- Learning Advisor Routes (accessible by Learning Advisor and Manager) ---
-      {
-        element: <ProtectedRoute allowedRoles={['Manager', 'Learning Advisor']} />,
-        children: [
-          // Add Learning Advisor specific routes here
-          // { path: 'adviser/schedule', element: <AdviserSchedule /> },
-        ],
-      },
-      
-      // --- Manager Routes (accessible only by Manager) ---
-      {
-        element: <ProtectedRoute allowedRoles={['Manager']} />,
-        children: [
-          // Add Manager specific routes here
-        ],
-      },
-      
-      // Fallback redirect for authenticated users at the root
-      {
-        element: (
-          <ProtectedRoute
-            allowedRoles={['Teacher', 'Manager', 'Learning Advisor']}
-          />
-        ),
-        children: [{ path: '/', element: <Navigate to="/home" replace /> }],
-      },
-    ],
-  },
-  {
-    path: '/auth',
-    children: [
-      { path: 'login', element: <AuthPage /> },
-      { path: 'forget-password/email', element: <AuthPage /> },
-      { path: 'forget-password/verify', element: <AuthPage /> },
-      { path: 'forget-password/new-password', element: <AuthPage /> },
     ],
   },
   // Catch-all for 404 Not Found pages

@@ -52,12 +52,28 @@ const transformClassToClassData = (classItem: Class): ClassData => {
 
 const HomescreenPage: React.FC<HomescreenPageProps> = ({ className }) => {
   const [selectedStatus, setSelectedStatus] = useState("ALL");
-  const { data: classes } = useClasses();
-  console.log('class entered');
-  // Transform backend data to frontend format
-  const transformedClasses: ClassData[] = classes ? classes.map(transformClassToClassData) : [];
+  const { data: classes, isLoading, error } = useClasses();
   
-  console.log('🔍 Original classes:', classes);
+  console.log('🔍 Classes data type:', typeof classes);
+  console.log('🔍 Classes data:', classes);
+  console.log('🔍 Is loading:', isLoading);
+  console.log('🔍 Error:', error);
+
+  // Transform backend data to frontend format with proper type checking
+  const transformedClasses: ClassData[] = React.useMemo(() => {
+    if (!classes || !Array.isArray(classes)) {
+      console.log('⚠️ Classes is not an array:', classes);
+      return [];
+    }
+    
+    try {
+      return classes.map(transformClassToClassData);
+    } catch (error) {
+      console.error('❌ Error transforming classes:', error);
+      return [];
+    }
+  }, [classes]);
+  
   console.log('🔍 Transformed classes:', transformedClasses);
 
   // Status options for horizontal buttons
@@ -78,6 +94,35 @@ const HomescreenPage: React.FC<HomescreenPageProps> = ({ className }) => {
     setSelectedStatus(status);
     console.log("Selected status:", status);
   };
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className={cn("h-full overflow-hidden flex flex-col", className)}>
+        <div className="flex items-center justify-center h-full">
+          <div className="text-center">
+            <div className="text-2xl font-semibold text-gray-600 mb-2">Loading Classes...</div>
+            <div className="text-gray-500">Please wait while we fetch your classes.</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className={cn("h-full overflow-hidden flex flex-col", className)}>
+        <div className="flex items-center justify-center h-full">
+          <div className="text-center">
+            <div className="text-2xl font-semibold text-red-600 mb-2">Error Loading Classes</div>
+            <div className="text-gray-500">Failed to load classes. Please try again later.</div>
+            <div className="text-sm text-gray-400 mt-2">Error: {error.message}</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={cn("h-full overflow-hidden flex flex-col", className)}>
