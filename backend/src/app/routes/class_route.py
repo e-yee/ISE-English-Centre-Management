@@ -24,18 +24,18 @@ def get_class_id():
 
 def validate_course(course_id, course_date):
     employee_id = get_jwt().get("employee_id")
-    contract = db.session.query(Contract).filter_by(
-        employee_id=employee_id,
+    course = db.session.query(Course).filter_by(
+        learning_advisor_id=employee_id,
         course_id=course_id,
         course_date=course_date
     )
     
-    if not contract:
+    if not course:
         return None, jsonify({
-            "message": "Contract for this course not found"
+            "message": "Course not found"
         }), HTTPStatus.NOT_FOUND
     
-    return contract, None, None
+    return course, None, None
 
 def validate_teacher(teacher_id):
     teacher = db.session.get(Employee, teacher_id)
