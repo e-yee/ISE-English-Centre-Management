@@ -22,7 +22,7 @@ const ColleaguesPage: React.FC<ColleaguesPageProps> = ({ className }) => {
     name: employee.name || employee.full_name,
     email: employee.email,
     phone: employee.phone || employee.phone_number,
-    avatar: employee.avatar || '/default-avatar.png',
+    avatar: '', // Let Avatar component generate colored avatars
     nickname: employee.nickname || '',
     achievements: employee.achievements?.join(', ') || '',
     philosophy: employee.philosophy || '',

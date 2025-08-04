@@ -206,3 +206,28 @@ export function clearUserRole(): void {
     console.error('Error clearing user role:', error);
   }
 }
+
+// Time Utility Functions
+
+/**
+ * Get current time in HH:MM format
+ * @returns string in HH:MM format (e.g., "14:30")
+ */
+export function getCurrentTime(): string {
+  const now = new Date();
+  const hours = now.getHours().toString().padStart(2, '0');
+  const minutes = now.getMinutes().toString().padStart(2, '0');
+  return `${hours}:${minutes}`;
+}
+
+/**
+ * Get current time in HH:MM:SS format
+ * @returns string in HH:MM:SS format (e.g., "14:30:45")
+ */
+export function getCurrentTimeWithSeconds(): string {
+  const now = new Date();
+  const hours = now.getHours().toString().padStart(2, '0');
+  const minutes = now.getMinutes().toString().padStart(2, '0');
+  const seconds = now.getSeconds().toString().padStart(2, '0');
+  return `${hours}:${minutes}:${seconds}`;
+}
