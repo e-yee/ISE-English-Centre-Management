@@ -24,14 +24,19 @@ def checkin():
             return jsonify({"message": "Employee not found"}), HTTPStatus.NOT_FOUND
 
         if employee.role == "Learning Advisor" or employee.role == "Manager":
-            required_time = datetime(9, 0, 0)
-            leave_time = datetime(20, 0, 0)
+            required_time = datetime.time(9, 0, 0)
+            leave_time = datetime.time(20, 0, 0)
             time = datetime.datetime.now().time()
 
             if time < required_time or time > leave_time:
                 return jsonify({"message": "Check-in time must be between 9:00 AM and 8:00 PM"}), HTTPStatus.BAD_REQUEST
             
-            if time > required_time + datetime.timedelta(minutes=15):
+            # Convert to datetime for timedelta comparison
+            today = datetime.datetime.now().date()
+            required_datetime = datetime.datetime.combine(today, required_time)
+            current_datetime = datetime.datetime.combine(today, time)
+            
+            if current_datetime > required_datetime + datetime.timedelta(minutes=15):
                 status = "Late"    
             else:
                 status = "Checked In"           
@@ -98,6 +103,7 @@ def checkin():
         return jsonify({"message": "Database error", "error": str(ie.orig)}), HTTPStatus.INTERNAL_SERVER_ERROR
 
     except Exception as e:
+        print(f"DEBUG: Actual error: {str(e)}")
         return jsonify({"message": "Unexpected error occured", "error": str(e)}), HTTPStatus.INTERNAL_SERVER_ERROR
 
 @checkin_bp.put("/out")

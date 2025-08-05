@@ -40,6 +40,12 @@ const calculateTimeDifference = (classDate: string): string => {
 const transformClassData = (classes: TeacherClass[]): TransformedClass[] => {
   const now = new Date();
   
+  // Ensure classes is an array
+  if (!Array.isArray(classes)) {
+    console.warn('transformClassData: classes is not an array:', classes);
+    return [];
+  }
+  
   return classes
     .filter(classData => {
       const classDateTime = new Date(classData.class_date);
@@ -128,8 +134,23 @@ export const useCheckIn = () => {
     setClassesError(null);
     
     try {
-      const classes = await checkinService.getTeacherClasses();
-      console.log('✅ useCheckIn - Teacher classes fetched:', classes);
+      const response = await checkinService.getTeacherClasses();
+      console.log('✅ useCheckIn - Teacher classes fetched:', response);
+      
+      // Handle case where backend returns object instead of array
+      let classes: TeacherClass[];
+      if (Array.isArray(response)) {
+        classes = response;
+      } else if (response && typeof response === 'object') {
+        // If response is an object, try to extract classes array
+        const responseObj = response as any;
+        classes = Array.isArray(responseObj.data) ? responseObj.data : 
+                 Array.isArray(responseObj.classes) ? responseObj.classes :
+                 Array.isArray(responseObj.results) ? responseObj.results : [];
+      } else {
+        classes = [];
+      }
+      
       const transformedClasses = transformClassData(classes);
       setTeacherClasses(transformedClasses);
     } catch (err: any) {
