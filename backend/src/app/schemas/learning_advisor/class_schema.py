@@ -1,7 +1,5 @@
 from marshmallow import fields
-from marshmallow_sqlalchemy.fields import Nested
 from extensions import ma
-from .course_schema import CourseSchema
 
 class ClassSchema(ma.Schema):
     course_id = fields.String(required=True)
@@ -10,6 +8,5 @@ class ClassSchema(ma.Schema):
     teacher_id = fields.String(required=True)
     room_id = fields.String(required=True)
     class_date = fields.DateTime(required=True)
-    course = Nested(CourseSchema)
 
 class_schema = ClassSchema()

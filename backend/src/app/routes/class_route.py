@@ -116,19 +116,6 @@ def validate_class(class_id):
     return class_, None, None
 
 # General Features
-@class_bp.get("/")
-@role_required("Learning Advisor", "Manager")
-def get_all():
-    try:
-        classes = db.session.query(Class).all()
-        return jsonify(class_schema.dump(classes)), HTTPStatus.OK
-    
-    except Exception as e:
-        return jsonify({
-            "message": "Unexpected error occurred",
-            "error": str(e)
-        }), HTTPStatus.INTERNAL_SERVER_ERROR
-
 @class_bp.get("/search")
 @role_required("Learning Advisor", "Manager")
 def get_class():
@@ -149,6 +136,37 @@ def get_class():
         }), HTTPStatus.INTERNAL_SERVER_ERROR
 
 # Learning Advisor Features
+@class_bp.get("/learningadvisor/")
+@role_required("Learning Advisor")
+def la_get_all_classes_from_course():
+    try:
+        course_id = request.args.get("course_id")
+        course_date = request.args.get("course_date")
+        if not course_id or not course_date:
+            return jsonify({
+                "message": "Missing course ID or course date in query params"
+            }), HTTPStatus.BAD_REQUEST
+        
+        employee_id = get_jwt().get("employee_id")
+        course = db.session.query(Course).filter_by(
+            id=course_id,
+            created_date=course_date,
+            learning_advisor_id=employee_id
+        ).first()
+        if not course:
+            return jsonify({
+                "message": "Course not found"
+            }), HTTPStatus.NOT_FOUND
+            
+        classes = course.class_
+        return jsonify(class_schema.dump(classes, many=True)), HTTPStatus.OK
+    
+    except Exception as e:
+        return jsonify({
+            "message": "Unexpected error occurred",
+            "error": str(e)
+        }), HTTPStatus.INTERNAL_SERVER_ERROR
+        
 @class_bp.post("/learningadvisor/add")
 @role_required("Learning Advisor")
 def la_add_class():
@@ -350,7 +368,37 @@ def teacher_get_class():
     try:
         teacher_id = get_jwt().get("employee_id")
         classes = db.session.query(Class).filter_by(teacher_id=teacher_id).all()
-        return jsonify(class_schema.dump(classes)), HTTPStatus.OK
+        return jsonify(class_schema.dump(classes, many=True)), HTTPStatus.OK
+    
+    except Exception as e:
+        return jsonify({
+            "message": "Unexpected error occurred",
+            "error": str(e)
+        }), HTTPStatus.INTERNAL_SERVER_ERROR
+        
+# Manager Features
+@class_bp.get("/manager/")
+@role_required("manager")
+def manager_get_all_class_from_course():
+    try:
+        course_id = request.args.get("course_id")
+        course_date = request.args.get("course_date")
+        if not course_id or not course_date:
+            return jsonify({
+                "message": "Missing course ID or course date in query params"
+            }), HTTPStatus.BAD_REQUEST
+        
+        course = db.session.query(Course).filter_by(
+            id=course_id,
+            created_date=course_date,
+        ).first()
+        if not course:
+            return jsonify({
+                "message": "Course not found"
+            }), HTTPStatus.NOT_FOUND
+            
+        classes = course.class_
+        return jsonify(class_schema.dump(classes, many=True)), HTTPStatus.OK
     
     except Exception as e:
         return jsonify({

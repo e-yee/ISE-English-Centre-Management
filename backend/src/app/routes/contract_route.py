@@ -150,7 +150,7 @@ def la_add_contract():
 
 @contract_bp.get("/learningadvisor/")
 @role_required("Learning Advisor")
-def la_get_all_contract_from_course():
+def la_get_all_contracts_from_course():
     try:
         course_id = request.args.get("course_id")
         course_date = request.args.get("course_date")
@@ -165,7 +165,11 @@ def la_get_all_contract_from_course():
             created_date=course_date,
             learning_advisor_id=employee_id
         ).first()
-        
+        if not course:
+            return jsonify({
+                "message": "Course not found"
+            }), HTTPStatus.NOT_FOUND
+            
         contracts = course.contract
         return jsonify(contract_schema.dump(contracts, many=True)), HTTPStatus.OK
 
@@ -316,7 +320,7 @@ def la_delete_contract():
 # Manager Features
 @contract_bp.get("/manager/")
 @role_required("Manager")
-def manager_get_all():
+def manager_get_all_contracts_from_course():
     try:
         course_id = request.args.get("course_id")
         course_date = request.args.get("course_date")
@@ -329,7 +333,11 @@ def manager_get_all():
             id=course_id,
             created_date=course_date
         ).first()
-        
+        if not course:
+            return jsonify({
+                "message": "Course not found"
+            }), HTTPStatus.NOT_FOUND
+            
         contracts = course.contract
         return jsonify(contract_schema.dump(contracts, many=True)), HTTPStatus.OK
 
