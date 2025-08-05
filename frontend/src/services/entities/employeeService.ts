@@ -36,7 +36,7 @@ class EmployeeService extends ApiService {
   }
   
   async getAllEmployees(): Promise<Employee[]> {
-    return this.get<Employee[]>('/employee/');
+    return this.get<Employee[]>('/employee/manager/');
   }
 
   async getProfile(): Promise<ProfileData> {

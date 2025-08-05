@@ -18,11 +18,24 @@ import { format } from 'date-fns';
 
 interface AbsenceRequestFormProps {
   className?: string;
+  status?: 'pending' | 'approved' | 'rejected';
 }
 
-const AbsenceRequestForm: React.FC<AbsenceRequestFormProps> = ({ className }) => {
+const AbsenceRequestForm: React.FC<AbsenceRequestFormProps> = ({ className, status}) => {
   const [startDate, setStartDate] = useState<Date | undefined>();
   const [endDate, setEndDate] = useState<Date | undefined>();
+  const [absenceType, setAbsenceType] = useState<string>('');
+  const [notes, setNotes] = useState<string>('');
+
+  const isDisabled = status === 'pending';
+  const showClearButton = status === 'approved' || status === 'rejected';
+
+  const clearForm = () => {
+    setStartDate(undefined);
+    setEndDate(undefined);
+    setAbsenceType('');
+    setNotes('');
+  };
 
   return (
     <div className={cn('w-full max-w-4xl p-8 space-y-8 bg-white rounded-lg shadow-md', className)}>
@@ -31,17 +44,44 @@ const AbsenceRequestForm: React.FC<AbsenceRequestFormProps> = ({ className }) =>
           <Label htmlFor="absence-type" className="font-comfortaa font-bold text-lg">Type of Absence</Label>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="w-full justify-between mt-1 font-comfortaa font-bold text-xl">
-                Select a reason...
+              <Button 
+                variant="outline" 
+                className={cn(
+                  "w-full justify-between mt-1 font-comfortaa font-bold text-xl",
+                  isDisabled && "bg-gray-100 text-gray-500 cursor-not-allowed"
+                )}
+                disabled={isDisabled}
+              >
+                {absenceType || "Select a reason..."}
                 <span className="ml-2">▼</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuPortal>
               <DropdownMenuContent className="w-full" align="start">
-                <DropdownMenuItem className="font-comfortaa">Sick Leave</DropdownMenuItem>
-                <DropdownMenuItem className="font-comfortaa">Vacation</DropdownMenuItem>
-                <DropdownMenuItem className="font-comfortaa">Personal Day</DropdownMenuItem>
-                <DropdownMenuItem className="font-comfortaa">Other</DropdownMenuItem>
+                <DropdownMenuItem 
+                  className="font-comfortaa"
+                  onClick={() => setAbsenceType('Sick Leave')}
+                >
+                  Sick Leave
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  className="font-comfortaa"
+                  onClick={() => setAbsenceType('Vacation')}
+                >
+                  Vacation
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  className="font-comfortaa"
+                  onClick={() => setAbsenceType('Personal Day')}
+                >
+                  Personal Day
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  className="font-comfortaa"
+                  onClick={() => setAbsenceType('Other')}
+                >
+                  Other
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenuPortal>
           </DropdownMenu>
@@ -58,13 +98,17 @@ const AbsenceRequestForm: React.FC<AbsenceRequestFormProps> = ({ className }) =>
                     value={startDate ? format(startDate, 'dd/MM/yyyy') : ''}
                     placeholder="dd/mm/yyyy"
                     readOnly
-                    className="font-comfortaa font-medium text-xl"
+                    className={cn(
+                      "font-comfortaa font-medium text-xl",
+                      isDisabled && "bg-gray-100 text-gray-500 cursor-not-allowed"
+                    )}
+                    disabled={isDisabled}
                   />
                   <img src={calendarIcon} alt="Calendar Icon" className="absolute w-5 h-5 top-1/2 right-3 transform -translate-y-1/2 cursor-pointer" />
                 </div>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0">
-                <Calendar mode="single" selected={startDate} onSelect={setStartDate} initialFocus />
+                <Calendar mode="single" selected={startDate} onSelect={setStartDate} initialFocus disabled={isDisabled} />
               </PopoverContent>
             </Popover>
           </div>
@@ -78,13 +122,17 @@ const AbsenceRequestForm: React.FC<AbsenceRequestFormProps> = ({ className }) =>
                     value={endDate ? format(endDate, 'dd/MM/yyyy') : ''}
                     placeholder="dd/mm/yyyy"
                     readOnly
-                    className="font-comfortaa font-medium text-xl"
+                    className={cn(
+                      "font-comfortaa font-medium text-xl",
+                      isDisabled && "bg-gray-100 text-gray-500 cursor-not-allowed"
+                    )}
+                    disabled={isDisabled}
                   />
                   <img src={calendarIcon} alt="Calendar Icon" className="absolute w-5 h-5 top-1/2 right-3 transform -translate-y-1/2 cursor-pointer" />
                 </div>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0">
-                <Calendar mode="single" selected={endDate} onSelect={setEndDate} initialFocus />
+                <Calendar mode="single" selected={endDate} onSelect={setEndDate} initialFocus disabled={isDisabled} />
               </PopoverContent>
             </Popover>
           </div>
@@ -95,13 +143,34 @@ const AbsenceRequestForm: React.FC<AbsenceRequestFormProps> = ({ className }) =>
           <Textarea
             id="notes"
             placeholder="e.g., Ms. Jane Doe will cover my classes. All materials are on shared drive"
-            className="mt-1 font-comfortaa font-medium text-lg"
+            className={cn(
+              "mt-1 font-comfortaa font-medium text-lg",
+              isDisabled && "bg-gray-100 text-gray-500 cursor-not-allowed"
+            )}
+            disabled={isDisabled}
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
           />
         </div>
       </div>
 
-      <div className="flex justify-end">
-        <Button style={{ backgroundColor: '#945CD8', color: 'white' }} className="font-comfortaa font-semibold text-lg">SUBMIT</Button>
+      <div className="flex justify-end space-x-4">
+        {showClearButton && (
+          <Button 
+            variant="outline" 
+            onClick={clearForm}
+            className="font-comfortaa font-semibold text-lg"
+          >
+            CLEAR FORM
+          </Button>
+        )}
+        <Button 
+          style={{ backgroundColor: '#945CD8', color: 'white' }} 
+          className="font-comfortaa font-semibold text-lg"
+          disabled={isDisabled}
+        >
+          SUBMIT
+        </Button>
       </div>
     </div>
   );

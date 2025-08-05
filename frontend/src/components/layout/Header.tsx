@@ -21,9 +21,7 @@ const Header: React.FC<HeaderProps> = ({ isRegistered = false }) => {
     console.log("Header: Not in router context, navigation disabled");
   }
 
-  const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
-  };
+
 
   const handleHowToUseClick = () => {
     // Add your "How to use?" functionality here
