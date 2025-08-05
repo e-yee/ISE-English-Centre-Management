@@ -12,11 +12,9 @@ interface LeaveRequestListProps {
 const LeaveRequestList: React.FC<LeaveRequestListProps> = ({ requests, className }) => {
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'pending':
-        return 'bg-yellow-400 text-yellow-900';
-      case 'approved':
+      case 'Approved':
         return 'bg-green-500 text-white';
-      case 'rejected':
+      case 'Not Approved':
         return 'bg-red-500 text-white';
       default:
         return 'bg-gray-400 text-gray-900';
@@ -25,12 +23,10 @@ const LeaveRequestList: React.FC<LeaveRequestListProps> = ({ requests, className
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'pending':
-        return 'PENDING';
-      case 'approved':
+      case 'Approved':
         return 'APPROVED';
-      case 'rejected':
-        return 'REJECTED';
+      case 'Not Approved':
+        return 'NOT APPROVED';
       default:
         return 'UNKNOWN';
     }

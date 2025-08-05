@@ -17,6 +17,6 @@ export interface LeaveRequestDisplay {
   startDate: Date;
   endDate: Date;
   reason: string;
-  status: 'pending' | 'approved' | 'rejected'; // Frontend status mapping
+  status: 'Approved' | 'Not Approved'; // Use backend status format directly
   createdDate: Date;
 } 
