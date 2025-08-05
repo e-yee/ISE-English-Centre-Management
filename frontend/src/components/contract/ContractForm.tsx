@@ -11,25 +11,30 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { format } from 'date-fns';
-import { CalendarIcon, FileText } from 'lucide-react';
+import { CalendarIcon, FileText, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Contract, ContractFormData } from '@/types/contract';
+import { mockStudents } from '@/mockData/studentMock';
+import { mockEmployees } from '@/mockData/employeeMock';
+import { mockCourses } from '@/mockData/courseMock';
 
 const contractFormSchema = z.object({
-  contract_number: z.string().min(1, "Contract number is required").min(3, "Contract number must be at least 3 characters"),
-  student_name: z.string().min(1, "Student name is required").min(2, "Student name must be at least 2 characters"),
-  course_name: z.string().min(1, "Course name is required").min(3, "Course name must be at least 3 characters"),
+  student_id: z.string().min(1, "Student is required"),
+  employee_id: z.string().min(1, "Employee is required"),
+  course_id: z.string().min(1, "Course is required"),
+  course_date: z.date().refine((date) => {
+    return date <= new Date()
+  }, "Course date must be today or in the past"),
+  tuition_fee: z.string().refine((val) => {
+    const num = parseFloat(val)
+    return !isNaN(num) && num > 0
+  }, "Tuition fee must be greater than 0"),
   start_date: z.date().refine((date) => {
     return date >= new Date()
   }, "Start date must be today or in the future"),
   end_date: z.date(),
-  total_amount: z.string().refine((val) => {
-    const num = parseFloat(val)
-    return !isNaN(num) && num > 0
-  }, "Total amount must be greater than 0"),
-  payment_status: z.enum(['paid', 'partial', 'unpaid']),
-  contract_status: z.enum(['active', 'completed', 'cancelled']),
-  description: z.string().min(10, "Description must be at least 10 characters")
+  payment_status: z.enum(['In Progress', 'Paid']),
+  description: z.string().optional()
 }).refine((data) => data.end_date > data.start_date, {
   message: "End date must be after start date",
   path: ["end_date"],
@@ -47,39 +52,47 @@ const ContractForm: React.FC<ContractFormProps> = ({ open, onOpenChange, onSubmi
   const form = useForm<FormData>({
     resolver: zodResolver(contractFormSchema),
     defaultValues: {
-      contract_number: "",
-      student_name: "",
-      course_name: "",
+      student_id: "",
+      employee_id: "",
+      course_id: "",
+      course_date: new Date(),
+      tuition_fee: "",
       start_date: new Date(),
       end_date: new Date(),
-      total_amount: "",
-      payment_status: "unpaid",
-      contract_status: "active",
+      payment_status: "In Progress",
       description: ""
     }
   });
 
   const generateContractId = () => {
-    return `CONTRACT-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+    return `CON${Date.now().toString().slice(-6)}`;
   };
 
   const handleSubmit = (data: FormData) => {
     const newContract: Contract = {
       id: generateContractId(),
-      contract_number: data.contract_number,
-      student_name: data.student_name,
-      course_name: data.course_name,
+      student_id: data.student_id,
+      employee_id: data.employee_id,
+      course_id: data.course_id,
+      course_date: data.course_date!,
+      tuition_fee: parseInt(data.tuition_fee),
+      payment_status: data.payment_status,
       start_date: data.start_date!,
       end_date: data.end_date!,
-      total_amount: parseInt(data.total_amount),
-      payment_status: data.payment_status,
-      contract_status: data.contract_status,
-      created_date: new Date(),
       description: data.description
     };
     
     onSubmit(newContract);
     form.reset();
+  };
+
+  // Auto-fill tuition fee when course is selected
+  const handleCourseChange = (courseId: string) => {
+    const selectedCourse = mockCourses.find(course => course.id === courseId);
+    if (selectedCourse) {
+      form.setValue('tuition_fee', selectedCourse.fee.toString());
+    }
+    form.setValue('course_id', courseId);
   };
 
   return (
@@ -100,13 +113,27 @@ const ContractForm: React.FC<ContractFormProps> = ({ open, onOpenChange, onSubmi
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="contract_number"
+                name="student_id"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Contract Number *</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g., CTR-2024-001" {...field} />
-                    </FormControl>
+                    <FormLabel>Student *</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a student" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {mockStudents.map((student) => (
+                          <SelectItem key={student.id} value={student.id}>
+                            <div className="flex flex-col">
+                              <span className="font-medium">{student.fullname}</span>
+                              <span className="text-xs text-muted-foreground">{student.contact_info}</span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -114,13 +141,29 @@ const ContractForm: React.FC<ContractFormProps> = ({ open, onOpenChange, onSubmi
 
               <FormField
                 control={form.control}
-                name="student_name"
+                name="employee_id"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Student Name *</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g., John Smith" {...field} />
-                    </FormControl>
+                    <FormLabel>Employee *</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select an employee" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {mockEmployees
+                          .filter(emp => emp.role === 'Learning Advisor')
+                          .map((employee) => (
+                            <SelectItem key={employee.id} value={employee.id}>
+                              <div className="flex flex-col">
+                                <span className="font-medium">{employee.fullname}</span>
+                                <span className="text-xs text-muted-foreground">{employee.role}</span>
+                              </div>
+                            </SelectItem>
+                          ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -128,13 +171,84 @@ const ContractForm: React.FC<ContractFormProps> = ({ open, onOpenChange, onSubmi
 
               <FormField
                 control={form.control}
-                name="course_name"
+                name="course_id"
                 render={({ field }) => (
                   <FormItem className="md:col-span-2">
-                    <FormLabel>Course Name *</FormLabel>
+                    <FormLabel>Course *</FormLabel>
+                    <Select onValueChange={handleCourseChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a course" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {mockCourses.map((course) => (
+                          <SelectItem key={course.id} value={course.id}>
+                            <div className="flex flex-col">
+                              <span className="font-medium">{course.name}</span>
+                              <span className="text-xs text-muted-foreground">
+                                ${course.fee} • {course.duration} months • {course.schedule}
+                              </span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="course_date"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Course Date *</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "w-full pl-3 text-left font-normal",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            {field.value ? (
+                              format(field.value, "PPP")
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          disabled={(date) => date > new Date()}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="tuition_fee"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tuition Fee ($) *</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g., Introduction to React" {...field} />
+                      <Input type="number" placeholder="e.g., 299" {...field} />
                     </FormControl>
+                    <FormDescription>Amount will auto-fill when course is selected</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -222,21 +336,6 @@ const ContractForm: React.FC<ContractFormProps> = ({ open, onOpenChange, onSubmi
 
               <FormField
                 control={form.control}
-                name="total_amount"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Total Amount ($) *</FormLabel>
-                    <FormControl>
-                      <Input type="number" placeholder="e.g., 299" {...field} />
-                    </FormControl>
-                    <FormDescription>Amount must be greater than 0</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
                 name="payment_status"
                 render={({ field }) => (
                   <FormItem>
@@ -248,32 +347,8 @@ const ContractForm: React.FC<ContractFormProps> = ({ open, onOpenChange, onSubmi
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="paid">Paid</SelectItem>
-                        <SelectItem value="partial">Partial</SelectItem>
-                        <SelectItem value="unpaid">Unpaid</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="contract_status"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Contract Status *</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select contract status" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="active">Active</SelectItem>
-                        <SelectItem value="completed">Completed</SelectItem>
-                        <SelectItem value="cancelled">Cancelled</SelectItem>
+                        <SelectItem value="In Progress">In Progress</SelectItem>
+                        <SelectItem value="Paid">Paid</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -286,7 +361,7 @@ const ContractForm: React.FC<ContractFormProps> = ({ open, onOpenChange, onSubmi
                 name="description"
                 render={({ field }) => (
                   <FormItem className="md:col-span-2">
-                    <FormLabel>Description *</FormLabel>
+                    <FormLabel>Description (Optional)</FormLabel>
                     <FormControl>
                       <Textarea 
                         placeholder="Provide details about the contract, payment arrangements, or special notes..."
@@ -294,7 +369,6 @@ const ContractForm: React.FC<ContractFormProps> = ({ open, onOpenChange, onSubmi
                         {...field}
                       />
                     </FormControl>
-                    <FormDescription>Minimum 10 characters required</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}

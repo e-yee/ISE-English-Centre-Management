@@ -116,7 +116,7 @@ def request_reset_password():
         employee = db.session.query(Employee).filter_by(email=email).first()
         if not employee:
             return jsonify({
-                "message": "Employee not found"
+                "message": "Email not found"
             }), HTTPStatus.NOT_FOUND
         
         url_prefix = "localhost:5000/auth/reset"
@@ -157,7 +157,7 @@ def reset_password():
         employee = db.session.query(Employee).filter_by(email=email).first()
         if not employee:
             return jsonify({
-                "message": "Employee not found"
+                "message": "Email not found"
             }), HTTPStatus.BAD_REQUEST
         
         new_password = request.get_json().get("new_password")

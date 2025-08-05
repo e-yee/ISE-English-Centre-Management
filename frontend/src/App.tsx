@@ -7,10 +7,10 @@ import ExamplePage from './pages/ExamplePage';
 import DemoLayout from './components/demo/DemoLayout';
 import ScoreList from './components/scoring/ScoreList';
 import CoursePage from './pages/course/CoursePage';
-import ContractPage from './pages/contract/ContractPage';
+import ContractPageDemo from './components/demo/ContractPageDemo';
 
 // 🔧 EASY TOGGLE: Set to true for production routes, false for demo mode
-const USE_PRODUCTION_ROUTES = true;
+const USE_PRODUCTION_ROUTES = false;
 
 // Create a client
 const queryClient = new QueryClient({
@@ -39,9 +39,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <DemoLayout>
-          <ContractPage />
-        </DemoLayout>
+        <ContractPageDemo />
       </AuthProvider>
     </QueryClientProvider>
   );

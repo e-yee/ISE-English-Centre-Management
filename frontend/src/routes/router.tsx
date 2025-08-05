@@ -1,6 +1,7 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import ProtectedRoute from './ProtectedRoutes';
 import AuthPage from '../pages/auth/AuthPage';
+import ResetPasswordPage from '../pages/auth/ResetPasswordPage';
 import NotFoundPage from '../pages/NotFoundPage';
 import UnauthorizedPage from '../pages/UnauthorizedPage';
 import Homescreen from '../pages/homescreen/Homescreen';
@@ -32,8 +33,7 @@ export const router = createBrowserRouter([
     children: [
       { path: 'login', element: <AuthPage key="login" /> },
       { path: 'forget-password/email', element: <AuthPage key="forgot-email" /> },
-      { path: 'forget-password/verify', element: <AuthPage key="forgot-verify" /> },
-      { path: 'forget-password/new-password', element: <AuthPage key="forgot-new-password" /> },
+      { path: 'reset', element: <ResetPasswordPage /> },
     ],
   },
   {

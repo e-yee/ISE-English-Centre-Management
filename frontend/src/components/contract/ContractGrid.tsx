@@ -3,6 +3,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { FileText, ChevronDown, ChevronUp } from 'lucide-react';
 import { format } from 'date-fns';
 import type { Contract } from '@/types/contract';
+import { mockStudents } from '@/mockData/studentMock';
+import { mockEmployees } from '@/mockData/employeeMock';
+import { mockCourses } from '@/mockData/courseMock';
 
 interface ContractGridProps {
   contracts: Contract[];
@@ -21,30 +24,31 @@ const ContractGrid: React.FC<ContractGridProps> = ({ contracts }) => {
     setExpandedCards(newExpanded);
   };
 
-  const getStatusColor = (status: string) => {
+  const getPaymentStatusColor = (status: string) => {
     switch (status) {
-      case 'active':
+      case 'Paid':
         return 'text-green-600 bg-green-50';
-      case 'completed':
-        return 'text-blue-600 bg-blue-50';
-      case 'cancelled':
-        return 'text-red-600 bg-red-50';
+      case 'In Progress':
+        return 'text-yellow-600 bg-yellow-50';
       default:
         return 'text-gray-600 bg-gray-50';
     }
   };
 
-  const getPaymentStatusColor = (status: string) => {
-    switch (status) {
-      case 'paid':
-        return 'text-green-600 bg-green-50';
-      case 'partial':
-        return 'text-yellow-600 bg-yellow-50';
-      case 'unpaid':
-        return 'text-red-600 bg-red-50';
-      default:
-        return 'text-gray-600 bg-gray-50';
-    }
+  // Helper function to get display names
+  const getStudentName = (studentId: string) => {
+    const student = mockStudents.find(s => s.id === studentId);
+    return student ? student.fullname : studentId;
+  };
+
+  const getEmployeeName = (employeeId: string) => {
+    const employee = mockEmployees.find(e => e.id === employeeId);
+    return employee ? employee.fullname : employeeId;
+  };
+
+  const getCourseName = (courseId: string) => {
+    const course = mockCourses.find(c => c.id === courseId);
+    return course ? course.name : courseId;
   };
 
   if (contracts.length === 0) {
@@ -74,7 +78,9 @@ const ContractGrid: React.FC<ContractGridProps> = ({ contracts }) => {
             <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b">
               <div className="flex justify-between items-start">
                 <div>
-                  <CardTitle className="text-xl font-bold text-gray-800">{contract.contract_number}</CardTitle>
+                  <CardTitle className="text-xl font-bold text-gray-800">
+                    {contract.contract_number || `Contract ${contract.id}`}
+                  </CardTitle>
                   <CardDescription className="text-blue-600 font-medium">Contract ID: {contract.id}</CardDescription>
                 </div>
                 <button 
@@ -95,15 +101,15 @@ const ContractGrid: React.FC<ContractGridProps> = ({ contracts }) => {
             <CardContent className={`space-y-3 p-4 ${isExpanded ? 'max-h-96 overflow-y-auto' : ''}`}>
               <div className="flex justify-between items-center py-2 px-3 bg-blue-50 rounded-lg">
                 <span className="text-sm font-medium text-gray-700">Student:</span>
-                <span className="text-sm font-bold text-blue-600">{contract.student_name}</span>
+                <span className="text-sm font-bold text-blue-600">{getStudentName(contract.student_id)}</span>
               </div>
               <div className="flex justify-between items-center py-2 px-3 bg-green-50 rounded-lg">
                 <span className="text-sm font-medium text-gray-700">Course:</span>
-                <span className="text-sm font-bold text-green-600">{contract.course_name}</span>
+                <span className="text-sm font-bold text-green-600">{getCourseName(contract.course_id)}</span>
               </div>
               <div className="flex justify-between items-center py-2 px-3 bg-purple-50 rounded-lg">
-                <span className="text-sm font-medium text-gray-700">Amount:</span>
-                <span className="text-sm font-bold text-purple-600">${contract.total_amount}</span>
+                <span className="text-sm font-medium text-gray-700">Tuition Fee:</span>
+                <span className="text-sm font-bold text-purple-600">${contract.tuition_fee}</span>
               </div>
               <div className="flex justify-between items-center py-2 px-3 bg-orange-50 rounded-lg">
                 <span className="text-sm font-medium text-gray-700">Start Date:</span>
@@ -114,20 +120,18 @@ const ContractGrid: React.FC<ContractGridProps> = ({ contracts }) => {
                 <span className="text-sm font-bold text-indigo-600">{format(contract.end_date, "MMM dd, yyyy")}</span>
               </div>
               <div className="flex justify-between items-center py-2 px-3 bg-gray-50 rounded-lg">
-                <span className="text-sm font-medium text-gray-700">Created:</span>
-                <span className="text-sm font-bold text-gray-600">{format(contract.created_date, "MMM dd, yyyy")}</span>
+                <span className="text-sm font-medium text-gray-700">Course Date:</span>
+                <span className="text-sm font-bold text-gray-600">{format(contract.course_date, "MMM dd, yyyy")}</span>
               </div>
               <div className="flex justify-between items-center py-2 px-3 rounded-lg">
                 <span className="text-sm font-medium text-gray-700">Payment Status:</span>
                 <span className={`text-sm font-bold px-2 py-1 rounded ${getPaymentStatusColor(contract.payment_status)}`}>
-                  {contract.payment_status.charAt(0).toUpperCase() + contract.payment_status.slice(1)}
+                  {contract.payment_status}
                 </span>
               </div>
-              <div className="flex justify-between items-center py-2 px-3 rounded-lg">
-                <span className="text-sm font-medium text-gray-700">Contract Status:</span>
-                <span className={`text-sm font-bold px-2 py-1 rounded ${getStatusColor(contract.contract_status)}`}>
-                  {contract.contract_status.charAt(0).toUpperCase() + contract.contract_status.slice(1)}
-                </span>
+              <div className="flex justify-between items-center py-2 px-3 bg-teal-50 rounded-lg">
+                <span className="text-sm font-medium text-gray-700">Employee:</span>
+                <span className="text-sm font-bold text-teal-600">{getEmployeeName(contract.employee_id)}</span>
               </div>
               {contract.description && (
                 <div className="pt-3 border-t border-gray-200">

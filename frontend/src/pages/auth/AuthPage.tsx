@@ -15,13 +15,12 @@ const AuthPage: React.FC = () => {
   const {
     login,
     sendForgotPasswordEmail,
-    forgotPasswordVerify,
-    forgotPasswordReset,
     forgotPasswordEmail: storedEmail,
     isLoading,
     error,
     isAuthenticated, // Add this to get authentication status
-    user
+    user,
+    success
   } = useAuthFlow();
   
   // Redirect authenticated users to home page
@@ -102,30 +101,20 @@ const AuthPage: React.FC = () => {
   const handleForgotPasswordEmailSubmit = async (email: string) => {
     try {
       await sendForgotPasswordEmail(email);
-      navigate("/auth/forget-password/verify");
+      // Don't navigate - stay on same page to show success message
     } catch (error) {
-      console.error("Failed to send verification code:", error);
+      console.error("Failed to send reset email:", error);
     }
   };
 
   const handleForgotPasswordVerifySubmit = async (verificationCode: string) => {
-    try {
-      await forgotPasswordVerify(verificationCode);
-      navigate("/auth/forget-password/new-password");
-    } catch (error) {
-      console.error("Failed to verify code:", error);
-    }
+    // This method is no longer needed with the new flow
+    console.warn("Verification step removed in new password reset flow");
   };
 
   const handleForgotPasswordNewPasswordSubmit = async (newPassword: string) => {
-    try {
-      await forgotPasswordReset(newPassword);
-      // Show success message and redirect to login
-      alert("Password reset successful! Please log in with your new password.");
-      navigate("/auth/login");
-    } catch (error) {
-      console.error("Failed to reset password:", error);
-    }
+    // This method is no longer needed with the new flow
+    console.warn("New password step removed in new password reset flow");
   };
 
   // Render current form
@@ -147,25 +136,8 @@ const AuthPage: React.FC = () => {
             onSubmit={handleForgotPasswordEmailSubmit}
             initialEmail={storedEmail}
             isLoading={isLoading}
-          />
-        );
-
-      case "forgot-verify":
-        return (
-          <ForgotPasswordVerifyForm
-            onBackToLogin={handleBackToLogin}
-            onSubmit={handleForgotPasswordVerifySubmit}
-            email={storedEmail}
-            isLoading={isLoading}
-          />
-        );
-
-      case "forgot-new-password":
-        return (
-          <ForgotPasswordNewPasswordForm
-            onSubmit={handleForgotPasswordNewPasswordSubmit}
-            email={storedEmail}
-            isLoading={isLoading}
+            success={success}
+            error={error}
           />
         );
 

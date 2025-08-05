@@ -143,51 +143,30 @@ export const authService = {
   },
 
   /**
-   * Send verification code to email for password reset
+   * Request password reset by sending email
    */
-  async forgotPasswordEmail(email: string): Promise<ApiResponse> {
+  async requestPasswordReset(email: string): Promise<ApiResponse> {
     try {
-      const response: ApiResponse = await apiRequest('/forgot-password/email', {
+      const response: ApiResponse = await apiRequest('auth/request_reset', {
         method: 'POST',
         data: { email },
       });
 
       return response;
     } catch (error) {
-      console.error('Forgot password email failed:', error);
+      console.error('Password reset request failed:', error);
       throw error;
     }
   },
 
   /**
-   * Verify the code sent to email
+   * Reset password using token from email link
    */
-  async forgotPasswordVerify(email: string, verificationCode: string): Promise<ApiResponse> {
+  async resetPassword(token: string, newPassword: string): Promise<ApiResponse> {
     try {
-      const response: ApiResponse = await apiRequest('/forgot-password/verify', {
-        method: 'POST',
-        data: { email, verification_code: verificationCode },
-      });
-
-      return response;
-    } catch (error) {
-      console.error('Forgot password verification failed:', error);
-      throw error;
-    }
-  },
-
-  /**
-   * Reset password with new password
-   */
-  async forgotPasswordReset(email: string, verificationCode: string, newPassword: string): Promise<ApiResponse> {
-    try {
-      const response: ApiResponse = await apiRequest('/forgot-password/reset', {
-        method: 'POST',
-        data: {
-          email,
-          verification_code: verificationCode,
-          new_password: newPassword
-        },
+      const response: ApiResponse = await apiRequest(`auth/reset?token=${token}`, {
+        method: 'PUT',
+        data: { new_password: newPassword },
       });
 
       return response;

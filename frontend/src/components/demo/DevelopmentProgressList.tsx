@@ -1,137 +1,179 @@
 import React from 'react';
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Circle, Clock, AlertCircle, Play, Eye, ExternalLink } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { CheckCircle, Circle, Clock } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
-interface DevelopmentItem {
+interface ProgressItem {
   id: string;
-  name: string;
+  title: string;
   description: string;
-  status: 'completed' | 'in-progress' | 'pending' | 'blocked';
-  priority: 'high' | 'medium' | 'low';
-  category: string;
-  lastUpdated: string;
-  demoAvailable: boolean;
-  demoComponent?: React.ComponentType;
+  status: 'completed' | 'in-progress' | 'pending';
+  demoPath?: string;
+  component?: React.ComponentType;
 }
 
-interface DevelopmentProgressListProps {
-  items: DevelopmentItem[];
-  onViewDemo: (item: DevelopmentItem) => void;
-  onViewDetails: (item: DevelopmentItem) => void;
-}
+const progressItems: ProgressItem[] = [
+  {
+    id: 'auth',
+    title: 'Authentication System',
+    description: 'Login, registration, and password reset functionality',
+    status: 'completed',
+    demoPath: '/demo/auth'
+  },
+  {
+    id: 'homescreen',
+    title: 'Homescreen Dashboard',
+    description: 'Main dashboard with overview and quick actions',
+    status: 'completed',
+    demoPath: '/demo/homescreen'
+  },
+  {
+    id: 'attendance',
+    title: 'Attendance Management',
+    description: 'Student attendance tracking and reporting',
+    status: 'completed',
+    demoPath: '/demo/attendance'
+  },
+  {
+    id: 'class-information',
+    title: 'Class Information',
+    description: 'Detailed class view with student list and materials',
+    status: 'completed',
+    demoPath: '/demo/class-information'
+  },
+  {
+    id: 'class-screen',
+    title: 'Class Screen',
+    description: 'Active class session with real-time features',
+    status: 'completed',
+    demoPath: '/demo/class-screen'
+  },
+  {
+    id: 'contract',
+    title: 'Contract Management',
+    description: 'Contract creation, viewing, and management system',
+    status: 'completed',
+    demoPath: '/demo/contract'
+  },
+  {
+    id: 'course',
+    title: 'Course Management',
+    description: 'Course creation and management interface',
+    status: 'in-progress',
+    demoPath: '/demo/course'
+  },
+  {
+    id: 'timekeeping',
+    title: 'Timekeeping System',
+    description: 'Employee time tracking and check-in system',
+    status: 'in-progress',
+    demoPath: '/demo/timekeeping'
+  },
+  {
+    id: 'scoring',
+    title: 'Student Scoring',
+    description: 'Student evaluation and scoring system',
+    status: 'pending',
+    demoPath: '/demo/scoring'
+  },
+  {
+    id: 'colleagues',
+    title: 'Colleagues Management',
+    description: 'Employee directory and profile management',
+    status: 'pending',
+    demoPath: '/demo/colleagues'
+  },
+  {
+    id: 'absent-request',
+    title: 'Absent Request System',
+    description: 'Leave request and approval workflow',
+    status: 'pending',
+    demoPath: '/demo/absent-request'
+  },
+  {
+    id: 'materials',
+    title: 'Materials Management',
+    description: 'File upload and material organization system',
+    status: 'pending',
+    demoPath: '/demo/materials'
+  }
+];
 
-const getStatusIcon = (status: DevelopmentItem['status']) => {
+const getStatusIcon = (status: string) => {
   switch (status) {
     case 'completed':
-      return <CheckCircle className="w-5 h-5 text-green-500" />;
+      return <CheckCircle className="h-5 w-5 text-green-600" />;
     case 'in-progress':
-      return <Play className="w-5 h-5 text-blue-500" />;
+      return <Clock className="h-5 w-5 text-yellow-600" />;
     case 'pending':
-      return <Clock className="w-5 h-5 text-yellow-500" />;
-    case 'blocked':
-      return <AlertCircle className="w-5 h-5 text-red-500" />;
+      return <Circle className="h-5 w-5 text-gray-400" />;
     default:
-      return <Circle className="w-5 h-5 text-gray-400" />;
+      return <Circle className="h-5 w-5 text-gray-400" />;
   }
 };
 
-const getStatusBadge = (status: DevelopmentItem['status']) => {
-  const variants = {
-    completed: 'bg-green-100 text-green-800',
-    'in-progress': 'bg-blue-100 text-blue-800',
-    pending: 'bg-yellow-100 text-yellow-800',
-    blocked: 'bg-red-100 text-red-800'
-  };
-  
-  return (
-    <Badge className={variants[status]}>
-      {status.replace('-', ' ')}
-    </Badge>
-  );
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case 'completed':
+      return 'border-green-200 bg-green-50';
+    case 'in-progress':
+      return 'border-yellow-200 bg-yellow-50';
+    case 'pending':
+      return 'border-gray-200 bg-gray-50';
+    default:
+      return 'border-gray-200 bg-gray-50';
+  }
 };
 
-const getPriorityBadge = (priority: DevelopmentItem['priority']) => {
-  const variants = {
-    high: 'bg-red-100 text-red-800',
-    medium: 'bg-orange-100 text-orange-800',
-    low: 'bg-gray-100 text-gray-800'
-  };
-  
+const DevelopmentProgressList: React.FC = () => {
   return (
-    <Badge className={variants[priority]}>
-      {priority}
-    </Badge>
-  );
-};
-
-const DevelopmentProgressList: React.FC<DevelopmentProgressListProps> = ({ 
-  items, 
-  onViewDemo, 
-  onViewDetails 
-}) => {
-  return (
-    <div className="space-y-1">
-      <div className="grid grid-cols-12 gap-4 px-4 py-2 text-sm font-medium text-gray-500 border-b">
-        <div className="col-span-4">Component/Page</div>
-        <div className="col-span-2">Status</div>
-        <div className="col-span-2">Priority</div>
-        <div className="col-span-2">Category</div>
-        <div className="col-span-1">Updated</div>
-        <div className="col-span-1">Actions</div>
-      </div>
-      
-      {items.map((item) => (
-        <div
-          key={item.id}
-          className="grid grid-cols-12 gap-4 px-4 py-3 hover:bg-gray-50 rounded-lg border border-gray-100"
-        >
-          <div className="col-span-4 flex items-center gap-3">
-            {getStatusIcon(item.status)}
-            <div className="flex flex-col">
-              <span className="font-medium text-gray-900">{item.name}</span>
-              <span className="text-sm text-gray-500">{item.description}</span>
-            </div>
-          </div>
-          
-          <div className="col-span-2 flex items-center">
-            {getStatusBadge(item.status)}
-          </div>
-          
-          <div className="col-span-2 flex items-center">
-            {getPriorityBadge(item.priority)}
-          </div>
-          
-          <div className="col-span-2 flex items-center text-sm text-gray-600">
-            {item.category}
-          </div>
-          
-          <div className="col-span-1 flex items-center text-sm text-gray-500">
-            {item.lastUpdated}
-          </div>
-          
-          <div className="col-span-1 flex items-center gap-1">
-            {item.demoAvailable && (
-              <Button 
-                variant="ghost" 
-                size="sm"
-                onClick={() => onViewDemo(item)}
-                title="View Demo"
-              >
-                <Eye className="w-4 h-4" />
-              </Button>
-            )}
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={() => onViewDetails(item)}
-              title="View Details"
-            >
-              <ExternalLink className="w-4 h-4" />
-            </Button>
-          </div>
+    <div className="h-full bg-background p-6 overflow-y-auto">
+      <div className="max-w-6xl mx-auto space-y-6">
+        {/* Header */}
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-foreground mb-2">Development Progress</h1>
+          <p className="text-muted-foreground">Track the development status of all features</p>
         </div>
-      ))}
+
+        {/* Progress Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {progressItems.map((item) => (
+            <Card 
+              key={item.id}
+              className={`hover:shadow-lg transition-all duration-300 cursor-pointer ${getStatusColor(item.status)}`}
+            >
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg font-semibold">{item.title}</CardTitle>
+                  {getStatusIcon(item.status)}
+                </div>
+                <CardDescription className="text-sm">
+                  {item.description}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <div className="flex items-center justify-between">
+                  <span className={`text-xs font-medium px-2 py-1 rounded-full ${
+                    item.status === 'completed' ? 'bg-green-100 text-green-800' :
+                    item.status === 'in-progress' ? 'bg-yellow-100 text-yellow-800' :
+                    'bg-gray-100 text-gray-800'
+                  }`}>
+                    {item.status.replace('-', ' ')}
+                  </span>
+                  {item.demoPath && (
+                    <Link 
+                      to={item.demoPath}
+                      className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                    >
+                      View Demo →
+                    </Link>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };
