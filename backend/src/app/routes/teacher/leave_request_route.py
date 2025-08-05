@@ -254,8 +254,10 @@ def approve_leave_request(leave_request_id):
             return jsonify({
                 "message": "Leave request not found"
             }), HTTPStatus.NOT_FOUND
+        
         leave_request.status = "Approved"
         db.session.commit()
+
         return jsonify({
             "message": "Leave request approved successfully"
         }), HTTPStatus.OK
@@ -264,12 +266,14 @@ def approve_leave_request(leave_request_id):
         db.session.rollback()
         return jsonify({
             "message": "Database error", "error": str(ie.orig)
-        }), HTTPStatus.INTERNAL_SERVER_ERROR
+        }), HTTPStatus.BAD_REQUEST
+    
     except OperationalError as oe:
         db.session.rollback()
         return jsonify({
             "message": "Database connection error", "error": str(oe)
-        }), HTTPStatus.INTERNAL_SERVER_ERROR
+        }), HTTPStatus.BAD_REQUEST
+    
     except Exception as e:
         db.session.rollback()
         return jsonify({

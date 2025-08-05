@@ -1,0 +1,186 @@
+from flask import Blueprint, request, jsonify
+from flask_jwt_extended import get_jwt_identity
+from app.auth import role_required
+from marshmallow import ValidationError
+from ...http_status import HTTPStatus
+from sqlalchemy.exc import IntegrityError, OperationalError
+from ...schemas.teacher.issue_schema import issue_schema
+from ...models import Issue, Account, Student, Room
+from extensions import db
+import datetime
+
+issue_bp = Blueprint("issue_bp", __name__, url_prefix="/issue")
+def generate_id():
+    last_id = db.session.query(Issue.id).order_by(Issue.id.desc()).first()
+
+    if not last_id:
+        return "ISS001"
+    else:
+        prefix = last_id[:3]
+        last_number = int(last_id[3:]) + 1
+        return f"{prefix}{last_number:03}"
+    
+def get_student_issue(student_id):
+    student_issue = db.session.query(Issue).filter_by(student_id=student_id).first()
+    if not student_issue:
+        return None, jsonify({"message": "Student issue not found"}), HTTPStatus.NOT_FOUND
+
+    return student_issue, None, None
+
+def get_room_issue(room_id):
+    room_issue = db.session.query(Issue).filter_by(room_id=room_id).first()
+    if not room_issue:
+        return None, jsonify({"message": "Room issue not found"}), HTTPStatus.NOT_FOUND
+    
+    return room_issue, None, None
+
+def validate_issue(issue_id):
+    issue = db.session.query(Issue).filter_by(id=issue_id).first()
+    if not issue:
+        return None, jsonify({"message": "Issue not found"}), HTTPStatus.NOT_FOUND
+    
+    return issue, None, None
+
+def validate_teacher(teacher_id):
+    teacher = db.session.query(Account).filter_by(id=teacher_id, role='Teacher').first()
+
+    if not teacher:
+        return None, jsonify({"message": "Teacher not found"}), HTTPStatus.NOT_FOUND
+    
+    return teacher, None, None
+
+def validate_student(student_id):
+    student = db.session.query(Student).filter_by(id=student_id).first()
+
+    if not student:
+        return None, jsonify({"message": "Student not found"}), HTTPStatus.NOT_FOUND
+    
+    return student, None, None
+
+def validate_room(room_id):
+    room = db.session.query(Room).filter_by(id=room_id).first()
+
+    if not room:
+        return None, jsonify({"message": "Room not found"}), HTTPStatus.NOT_FOUND
+    
+    return room, None, None
+
+@issue_bp.get("/view")
+@role_required("Teacher", "Learning Advisor")
+def view_issues():
+    try:
+        issues = db.session.query(Issue).all()
+        if not issues:
+            return jsonify({"message": "No issues found"}), HTTPStatus.NOT_FOUND
+        
+        return jsonify(issue_schema.dump(issues)), HTTPStatus.OK
+    
+    except Exception as e:
+        return jsonify({
+            "message": "Unexpected error occurred", "error": str(e)
+        }), HTTPStatus.INTERNAL_SERVER_ERROR
+    
+@issue_bp.post("/create")
+@role_required("Teacher")
+def create_issue():
+    try:
+        if not request.is_json:
+            return jsonify({"message": "Missing or invalid JSON"}), HTTPStatus.BAD_REQUEST
+        
+        data = request.get_json()
+        validated = issue_schema.load(data)
+
+        identity = get_jwt_identity()
+        user = db.session.get(Account, identity)
+
+        if not user or not user.employee_id:
+            return jsonify({"message": "User not found or not an employee"}), HTTPStatus.NOT_FOUND
+
+        teacher_id, error_response, status = validate_teacher(user.employee_id)
+        if not teacher_id:
+            return error_response, status
+        
+        student_id, error_response, status = validate_student(validated["student_id"])
+        if not student_id and validated["issue_type"] == "Student Behavior":
+            return jsonify({"message": "Student ID is required for Student Behavior issues"}), HTTPStatus.BAD_REQUEST
+
+        room_id, error_response, status = validate_room(validated["room_id"])
+        if not room_id and validated["issue_type"] == "Technical":
+            return error_response, status
+        
+        issue = Issue(
+            id=generate_id(),
+            teacher_id=user.employee_id,
+            student_id=student_id,
+            room_id=room_id,
+            issue_type=validated["issue_type"],
+            issue_description=validated["issue_description"],
+            reported_date=validated.get("reported_date", datetime.date.today())
+        )
+
+        db.session.add(issue)
+        db.session.commit()
+
+        return jsonify(issue_schema.dump(issue)), HTTPStatus.CREATED
+
+    except ValidationError as ve:
+        return jsonify({
+            "message": "Invalid input", "error": ve.messages
+        }), HTTPStatus.BAD_REQUEST
+    except Exception as e:
+        return jsonify({
+            "message": "Unexpected error occurred", "error": str(e)
+        }), HTTPStatus.INTERNAL_SERVER_ERROR
+    except IntegrityError as ie:
+        return jsonify({
+            "message": "Database error", "error": str(ie.orig)
+        }), HTTPStatus.BAD_REQUEST
+    
+    except OperationalError as oe:
+        return jsonify({
+            "message": "Database operation error", "error": str(oe.orig)
+        }), HTTPStatus.BAD_REQUEST
+
+@issue_bp.put("/update/<string:issue_id>")
+@role_required("Teacher", "Learning Advisor")
+def update_issue(issue_id):
+    try:
+        issue, error_response, status = validate_issue(issue_id)
+        if not issue:
+            return error_response, status
+
+        if not request.is_json:
+            return jsonify({"message": "Missing or invalid JSON"}), HTTPStatus.BAD_REQUEST
+
+        issue = db.session.query(Issue).filter_by(id=issue_id).first()
+        if not issue:
+            return jsonify({"message": "Issue not found"}), HTTPStatus.NOT_FOUND
+        
+        issue.status = "Done"
+
+        db.session.commit()
+
+        return jsonify(issue_schema.dump(issue)), HTTPStatus.OK
+
+    except ValidationError as ve:
+        return jsonify({
+            "message": "Invalid input", "error": ve.messages
+        }), HTTPStatus.BAD_REQUEST
+    
+    except IntegrityError as ie:
+        db.session.rollback()
+        return jsonify({
+            "message": "Database error", "error": str(ie.orig)
+        }), HTTPStatus.BAD_REQUEST
+    
+    except OperationalError as oe:
+        db.session.rollback()
+        return jsonify({
+            "message": "Database operation error", "error": str(oe.orig)
+        }), HTTPStatus.BAD_REQUEST
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            "message": "Unexpected error occurred", "error": str(e)
+        }), HTTPStatus.INTERNAL_SERVER_ERROR

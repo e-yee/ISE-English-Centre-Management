@@ -10,6 +10,8 @@ from .homepage_route import homepage_bp
 from ..auth.auth import auth_bp
 from .account_route import account_bp
 from .employee_route import employee_bp
+from .teacher.issue_route import issue_bp
+from .teacher.leave_request_route import leave_request_bp
 
 def register_blueprints(app):
     all_blueprints = [
@@ -25,6 +27,8 @@ def register_blueprints(app):
         employee_bp, 
         homepage_bp,
         student_bp,
+        issue_bp,
+        leave_request_bp
     ]
     
     for bp in all_blueprints:

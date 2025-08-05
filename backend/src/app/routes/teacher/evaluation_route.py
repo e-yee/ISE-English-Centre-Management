@@ -5,7 +5,7 @@ from marshmallow import ValidationError
 from ...http_status import HTTPStatus
 from sqlalchemy.exc import IntegrityError, OperationalError
 from ...schemas.evaluation_schema import evaluation_schema
-from ...models import Evaluation, Account
+from ...models import Evaluation, Account, Student
 from extensions import db
 
 evaluation_bp = Blueprint("evaluation_bp", __name__, url_prefix="/evaluation")
@@ -56,7 +56,7 @@ def get_course_date():
     return course_date_str, None, None
 
 def validate_student(student_id):
-    student = db.session.query(Account).filter_by(id=student_id).first()
+    student = db.session.query(Student).filter_by(id=student_id).first()
     if not student:
         return None, jsonify({
             "message": "Student not found"
