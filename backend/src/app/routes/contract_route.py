@@ -43,8 +43,8 @@ def validate_student(student_id):
 def validate_course(course_id, course_date):
     employee_id = get_jwt().get("employee_id")
     course = db.session.query(Course).filter_by(
-        course_id=course_id, 
-        course_date=course_date,
+        id=course_id, 
+        created_date=course_date,
         learning_advisor_id=employee_id
     )
     if not course:
