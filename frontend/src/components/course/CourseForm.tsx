@@ -24,8 +24,8 @@ const courseFormSchema = z.object({
     return date > new Date()
   }, "Start date must be in the future"),
   schedule: z.string().regex(
-    /^(Mon|Tue|Wed|Thu|Fri|Sat|Sun)-(Mon|Tue|Wed|Thu|Fri|Sat|Sun),\s\d{2}:\d{2}-\d{2}:\d{2}$/,
-    "Schedule must be in format 'Day-Day, HH:MM-HH:MM' (e.g., 'Mon-Wed, 09:00-11:00')"
+    /^(Mon|Tue|Wed|Thu|Fri|Sat|Sun) - (Mon|Tue|Wed|Thu|Fri|Sat|Sun),\s\d{2}:\d{2} - \d{2}:\d{2}$/,
+    "Schedule must be in format 'Day - Day, HH:MM - HH:MM' (e.g., 'Mon - Wed, 09:00 - 11:00')"
   ),
   fee: z.string().refine((val) => {
     const num = parseFloat(val)
@@ -186,9 +186,9 @@ const CourseForm: React.FC<CourseFormProps> = ({ open, onOpenChange, onSubmit })
                   <FormItem>
                     <FormLabel>Schedule *</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g., Mon-Wed, 09:00-11:00" {...field} />
+                      <Input placeholder="e.g., Mon - Wed, 09:00 - 11:00" {...field} />
                     </FormControl>
-                    <FormDescription>Format: Day-Day, HH:MM-HH:MM</FormDescription>
+                    <FormDescription>Format: Day - Day, HH:MM - HH:MM</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}

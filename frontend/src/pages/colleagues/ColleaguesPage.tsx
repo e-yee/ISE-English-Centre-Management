@@ -18,13 +18,13 @@ const ColleaguesPage: React.FC<ColleaguesPageProps> = ({ className }) => {
 
   // Transform Employee data to match Colleague interface
   const colleagues: Colleague[] = (employees || []).map(employee => ({
-    id: employee.id,
+    id: employee.email, // Use email as unique identifier
     name: employee.name || employee.full_name,
     email: employee.email,
-    phone: employee.phone || employee.phone_number,
+    phone: employee.phone || employee.phone_number || '',
     avatar: '', // Let Avatar component generate colored avatars
     nickname: employee.nickname || '',
-    achievements: employee.achievements?.join(', ') || '',
+    achievements: Array.isArray(employee.achievements) ? employee.achievements.join(', ') : employee.achievements || '',
     philosophy: employee.philosophy || '',
     courses: employee.courses?.map((course, index) => ({
       id: `C${index + 1}`,

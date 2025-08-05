@@ -2,25 +2,24 @@ import { ApiService } from '../base/apiService';
 import { getUserRole, setUserRole } from '../../lib/utils';
 
 export interface Employee {
-  id: string;
-  name: string;
+  id?: string; // Backend schema missing this
+  name?: string; // Not in backend schema
   full_name: string;
   email: string;
   role: string;
-  phone: string;
-  phone_number: string;
-  teacher_status: string;
-  avatar?: string;
+  phone?: string; // Not in backend schema
   nickname?: string;
-  department?: string;
-  position?: string;
-  achievements?: string[];
   philosophy?: string;
-  courses?: string[];
+  achievements?: string;
+  phone_number?: string;
+  teacher_status?: string;
+  avatar?: string; // Not in backend schema
+  department?: string; // Not in backend schema
+  position?: string; // Not in backend schema
+  courses?: string[]; // Not in backend schema
 }
 
 export interface ProfileData {
-  id: string;
   full_name: string;
   email: string;
   nickname?: string | null;
