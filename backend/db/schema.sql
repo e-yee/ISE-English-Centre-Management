@@ -108,7 +108,7 @@ CREATE TABLE
 CREATE TABLE
     room (
         id VARCHAR(10),
-        room_name VARCHAR(200) NOT NULL,
+        name VARCHAR(200) NOT NULL,
         status VARCHAR(20) NOT NULL DEFAULT 'Free',
 
         PRIMARY KEY (id)
