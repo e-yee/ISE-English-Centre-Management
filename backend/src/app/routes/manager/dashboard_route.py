@@ -13,39 +13,20 @@ dashboard_bp = Blueprint("dashboard_bp", __name__, url_prefix="/dashboard")
 
 @dashboard_bp.get("/statistics")
 @role_required("Manager")
-def overall_statistics():
-    try:
-        if not request.is_json:
-            return jsonify({"message": "Missing or invalid JSON"}), HTTPStatus.BAD_REQUEST
-        
-        now = datetime.datetime.now().date()
+def overview_statistics():
+    pass
 
-        total_employees = db.session.query(Employee).count()
-        total_students = db.session.query(Contract).with_entities(func.distinct(Contract.student_id)).count()
-        total_revenue = db.session.query(func.sum(Contract.fee).filter(Contract.payment_status == "Paid")).scalar() or 0
-        total_courses = db.session.query(Course).filter(Course.end_date >= now).count()
+@dashboard_bp.get("/statistics/students")
+@role_required("Manager")
+def student_statistics():
+    pass
 
-        data = {
-            "total_employees": total_employees,
-            "total_students": total_students,
-            "total_courses": total_courses,
-            "total_revenue": total_revenue
-        }
+@dashboard_bp.get("/statistics/teachers")
+@role_required("Manager")
+def teacher_statistics():
+    pass
 
-        return jsonify(data), HTTPStatus.OK
-    except ValidationError as ve:
-        return jsonify({
-            "message": "Invalid input", 
-            "error": ve.messages
-        }), HTTPStatus.BAD_REQUEST
-    except IntegrityError as ie:
-        return jsonify({
-            "message": "Database error",
-            "error": str(ie.orig)
-        }), HTTPStatus.INTERNAL_SERVER_ERROR
-    except Exception as e:
-        return jsonify({
-            "message": "Unexpected error occurred",
-            "error": str(e)
-        }), HTTPStatus.INTERNAL_SERVER_ERROR
-    
+@dashboard_bp.get("/statistics/revenue")
+@role_required("Manager")
+def revenue_statistics():
+    pass

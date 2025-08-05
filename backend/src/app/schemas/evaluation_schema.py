@@ -13,4 +13,3 @@ class EvaluationSchema(ma.Schema):
     evaluation_date = fields.Date(required=True)
 
 evaluation_schema = EvaluationSchema()
-evaluations_schema = EvaluationSchema(many=True)

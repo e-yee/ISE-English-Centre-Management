@@ -11,4 +11,3 @@ class AttendanceSchema(ma.Schema):
     status = fields.String(required=True, validate=lambda x: x in ['Present', 'Absent'])
 
 attendance_schema = AttendanceSchema()
-attendance_schema_many = AttendanceSchema(many=True)
