@@ -15,26 +15,52 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import calendarIcon from '@/assets/class/calendar.svg';
 import { format } from 'date-fns';
+import { useCreateLeaveRequest } from '@/hooks/entities/useLeaveRequest';
+import type { LeaveRequest } from '@/types/leaveRequest';
 
 interface AbsenceRequestFormProps {
   className?: string;
   status?: 'pending' | 'approved' | 'rejected';
+  isPending?: boolean;
 }
 
-const AbsenceRequestForm: React.FC<AbsenceRequestFormProps> = ({ className, status}) => {
+const AbsenceRequestForm: React.FC<AbsenceRequestFormProps> = ({ className, status, isPending }) => {
   const [startDate, setStartDate] = useState<Date | undefined>();
   const [endDate, setEndDate] = useState<Date | undefined>();
   const [absenceType, setAbsenceType] = useState<string>('');
   const [notes, setNotes] = useState<string>('');
+  const [substituteId, setSubstituteId] = useState<string>('');
 
-  const isDisabled = status === 'pending';
-  const showClearButton = status === 'approved' || status === 'rejected';
+  const { createRequest, isLoading, error, success, clearMessages } = useCreateLeaveRequest();
+
+  const isDisabled = isPending || status === 'pending';
 
   const clearForm = () => {
     setStartDate(undefined);
     setEndDate(undefined);
     setAbsenceType('');
     setNotes('');
+    setSubstituteId('');
+    clearMessages();
+  };
+
+  const handleSubmit = async () => {
+    if (!startDate || !endDate || !absenceType || !notes || !substituteId) {
+      return;
+    }
+
+    const requestData: Omit<LeaveRequest, 'id' | 'status' | 'created_date'> = {
+      employee_id: 'current-user-id', // TODO: Get from auth context
+      substitute_id: substituteId,
+      start_date: startDate.toISOString().split('T')[0],
+      end_date: endDate.toISOString().split('T')[0],
+      reason: `${absenceType}: ${notes}`
+    };
+
+    const result = await createRequest(requestData);
+    if (result) {
+      clearForm();
+    }
   };
 
   return (
@@ -139,6 +165,21 @@ const AbsenceRequestForm: React.FC<AbsenceRequestFormProps> = ({ className, stat
         </div>
 
         <div>
+          <Label htmlFor="substitute" className="font-comfortaa font-bold text-lg">Substitute Teacher ID</Label>
+          <Input
+            id="substitute"
+            placeholder="Enter substitute teacher ID"
+            className={cn(
+              "mt-1 font-comfortaa font-medium text-xl",
+              isDisabled && "bg-gray-100 text-gray-500 cursor-not-allowed"
+            )}
+            disabled={isDisabled}
+            value={substituteId}
+            onChange={(e) => setSubstituteId(e.target.value)}
+          />
+        </div>
+
+        <div>
           <Label htmlFor="notes" className="font-comfortaa font-bold text-lg">Substitution Plan & Note</Label>
           <Textarea
             id="notes"
@@ -152,24 +193,35 @@ const AbsenceRequestForm: React.FC<AbsenceRequestFormProps> = ({ className, stat
             onChange={(e) => setNotes(e.target.value)}
           />
         </div>
+
+        {/* Error and Success Messages */}
+        {error && (
+          <div className="text-red-500 font-comfortaa text-sm">
+            {error}
+          </div>
+        )}
+        {success && (
+          <div className="text-green-500 font-comfortaa text-sm">
+            {success}
+          </div>
+        )}
       </div>
 
       <div className="flex justify-end space-x-4">
-        {showClearButton && (
-          <Button 
-            variant="outline" 
-            onClick={clearForm}
-            className="font-comfortaa font-semibold text-lg"
-          >
-            CLEAR FORM
-          </Button>
-        )}
+        <Button 
+          variant="outline" 
+          onClick={clearForm}
+          className="font-comfortaa font-semibold text-lg"
+        >
+          CLEAR FORM
+        </Button>
         <Button 
           style={{ backgroundColor: '#945CD8', color: 'white' }} 
           className="font-comfortaa font-semibold text-lg"
-          disabled={isDisabled}
+          disabled={isDisabled || isLoading}
+          onClick={handleSubmit}
         >
-          SUBMIT
+          {isLoading ? 'SUBMITTING...' : 'SUBMIT'}
         </Button>
       </div>
     </div>

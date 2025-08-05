@@ -10,9 +10,9 @@ from extensions import db
 
 leave_request_bp = Blueprint("leave_request_bp", __name__, url_prefix="/leave_request")
 
-def generate_id(teacher_id, start_date, end_date):
+def generate_id(employee_id, start_date, end_date):
     last_request = db.session.query(LeaveRequest).filter_by(
-        teacher_id=teacher_id,
+        employee_id=employee_id,
         start_date=start_date,
         end_date=end_date
     ).order_by(LeaveRequest.id.desc()).first()
@@ -25,12 +25,12 @@ def generate_id(teacher_id, start_date, end_date):
 
         return f"{prefix}{next_number:03}"
     
-def get_teacher_id():
-    id = request.args.get("teacher_id")
+def get_employee_id():
+    id = request.args.get("employee_id")
 
     if not id:
         return None, jsonify({
-            "message": "Missing teacher ID in query params"
+            "message": "Missing employee ID in query params"
         }), HTTPStatus.BAD_REQUEST
     
     return id, None, None
@@ -66,7 +66,7 @@ def validate_employee(employee_id):
 def validate_substitute(employee_id, substitute_id):
     if employee_id == substitute_id:
         return jsonify({
-            "message": "Substitute cannot be the same as the requesting teacher"
+            "message": "Substitute cannot be the same as the requesting employee"
         }), HTTPStatus.BAD_REQUEST
     
     substitute = db.session.query(Employee).filter_by(id=substitute_id).first()
@@ -84,7 +84,7 @@ def validate_substitute(employee_id, substitute_id):
     
     if substitute.role != employee.role:
         return jsonify({
-            "message": "Substitute must have the same role as the requesting teacher"
+            "message": "Substitute must have the same role as the requesting employee"
         }), HTTPStatus.BAD_REQUEST
     
     return substitute, None, None
@@ -121,17 +121,17 @@ def add_request():
                 "message": "Unauthorized or employee profile missing"
             }), HTTPStatus.FORBIDDEN
         
-        result, response, status = validate_employee(validated["teacher_id"])
+        result, response, status = validate_employee(validated["employee_id"])
         if not result:
             return response, status
 
-        result, response, status = validate_substitute(validated["teacher_id"], validated["substitute_id"])
+        result, response, status = validate_substitute(validated["employee_id"], validated["substitute_id"])
         if not result:
             return response, status
         
         leave_request = LeaveRequest(
-            id=generate_id(validated["teacher_id"], validated["start_date"], validated["end_date"]),
-            teacher_id=validated["teacher_id"],
+            id=generate_id(validated["employee_id"], validated["start_date"], validated["end_date"]),
+            employee_id=validated["employee_id"],
             substitute_id=validated["substitute_id"],
             start_date=validated["start_date"],
             end_date=validated["end_date"],
@@ -179,7 +179,7 @@ def update_request():
         updated = leave_request_schema.load(data)
 
         request_id = updated.get("id", leave_request.id)
-        teacher_id = updated.get("teacher_id", leave_request.teacher_id)
+        employee_id = updated.get("employee_id", leave_request.employee_id)
         substitute_id = updated.get("substitute_id", leave_request.substitute_id)
         start_date = updated.get("start_date", leave_request.start_date)
         end_date = updated.get("end_date", leave_request.end_date)
@@ -190,13 +190,13 @@ def update_request():
             if not result:
                 return response, status
             
-        if teacher_id != leave_request.teacher_id:
-            result, response, status = validate_employee(teacher_id)
+        if employee_id != leave_request.employee_id:
+            result, response, status = validate_employee(employee_id)
             if not result:
                 return response, status
             
         if substitute_id != leave_request.substitute_id:
-            result, response, status = validate_substitute(teacher_id, substitute_id)
+            result, response, status = validate_substitute(employee_id, substitute_id)
             if not result:
                 return response, status
             
@@ -237,7 +237,7 @@ def update_request():
 def get_personal_leave_requests():
     try:
         id = get_jwt().get("employee_id")
-        leave_requests = db.session.query(LeaveRequest).filter_by(teacher_id=id).all()
+        leave_requests = db.session.query(LeaveRequest).filter_by(employee_id=id).all()
         return jsonify(leave_request_schema.dump(leave_requests)), HTTPStatus.OK
     except Exception as e:
         return jsonify({
@@ -254,10 +254,21 @@ def approve_leave_request(leave_request_id):
             return jsonify({
                 "message": "Leave request not found"
             }), HTTPStatus.NOT_FOUND
-        leave_request.status = "Approved"
+        
+        # Get the status from request body
+        data = request.get_json()
+        status = data.get("status", "Approved")
+        
+        if status not in ["Approved", "Not Approved"]:
+            return jsonify({
+                "message": "Invalid status. Must be 'Approved' or 'Not Approved'"
+            }), HTTPStatus.BAD_REQUEST
+        
+        leave_request.status = status
         db.session.commit()
+        
         return jsonify({
-            "message": "Leave request approved successfully"
+            "message": f"Leave request {status.lower()} successfully"
         }), HTTPStatus.OK
     
     except IntegrityError as ie:
