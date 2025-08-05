@@ -26,19 +26,25 @@ export interface TeacherClass {
 
 class CheckinService extends ApiService {
   async checkIn(employeeId: string): Promise<CheckInResponse> {
-    const id = Date.now().toString();
-    const now = new Date().toISOString();
+    // Generate shorter ID that fits VARCHAR(10) constraint
+    const id = Math.random().toString(36).substring(2, 12);
+    
+    // Format datetime in ISO 8601 format with timezone for marshmallow compatibility
+    const now = new Date();
+    const formattedDateTime = now.toISOString(); // Include timezone information
+    
     const data: CheckInRequest = {
       employee_id: employeeId,
       id,
-      checkin_time: now,
-      checkout_time: now, // Send same time since it's required but will be overridden
+      checkin_time: formattedDateTime,
+      checkout_time: formattedDateTime, // Send same time since it's required but will be overridden
       status: 'Pending'
     };
     
     console.log('🔍 CheckInService - Sending check-in request:', data);
     console.log('🔍 CheckInService - Employee ID:', employeeId);
     console.log('🔍 CheckInService - Generated ID:', id);
+    console.log('🔍 CheckInService - Formatted datetime:', formattedDateTime);
     
     try {
       const result = await this.post<CheckInResponse>('/checkin/in', data);

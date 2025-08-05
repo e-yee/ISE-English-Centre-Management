@@ -40,15 +40,18 @@ const CheckInPage: React.FC<CheckInPageProps> = ({ className }) => {
   // Get current time once when component mounts
   const currentTime = getCurrentTime();
 
+  // Determine if user is manager or learning advisor
+  const isManagerOrAdvisor = user?.role === 'Manager' || user?.role === 'Learning Advisor';
+
   console.log('🔍 CheckInPage - Current user:', user);
 
-  // Fetch teacher classes when component mounts
+  // Fetch teacher classes when component mounts (only for teachers)
   useEffect(() => {
-    if (user?.id) {
+    if (user?.id && !isManagerOrAdvisor) {
       console.log('🔍 CheckInPage - Fetching teacher classes for user:', user.id);
       fetchTeacherClasses();
     }
-  }, [user?.id, fetchTeacherClasses]);
+  }, [user?.id, fetchTeacherClasses, isManagerOrAdvisor]);
 
   const handleCheckIn = async () => {
     console.log('🔍 CheckInPage - Check-in button clicked');
@@ -120,9 +123,9 @@ const CheckInPage: React.FC<CheckInPageProps> = ({ className }) => {
           {/* Upcoming Classes Panel - Aligns with stats top and check-in bottom */}
           <div className="flex-1 min-h-0 max-h-[calc(100vh-200px)]">
             <UpcomingClassesPanel 
-              classes={teacherClasses} 
-              isLoading={isLoadingClasses}
-              error={classesError}
+              classes={isManagerOrAdvisor ? [] : teacherClasses} 
+              isLoading={isManagerOrAdvisor ? false : isLoadingClasses}
+              error={isManagerOrAdvisor ? undefined : classesError}
             />
           </div>
         </div>
