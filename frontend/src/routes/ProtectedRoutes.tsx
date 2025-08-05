@@ -47,7 +47,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles }) => {
   if (isLoading) {
     console.log('ProtectedRoute: Showing loading state');
     return (
-      <div className="h-screen w-screen flex items-center justify-center bg-gray-50">
+      <div className="h-screen w-screen flex items-center justify-center bg-gray-50" tabIndex={-1}>
         <LoadingState message="Checking authentication..." />
       </div>
     );
@@ -60,6 +60,12 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles }) => {
       isAuthenticated,
       user
     });
+    
+    // Clear any lingering focus before redirect
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+    
     return <Navigate to="/auth/login" replace />;
   }
 

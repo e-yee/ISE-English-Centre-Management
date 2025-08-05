@@ -30,10 +30,10 @@ export const router = createBrowserRouter([
   {
     path: '/auth',
     children: [
-      { path: 'login', element: <AuthPage /> },
-      { path: 'forget-password/email', element: <AuthPage /> },
-      { path: 'forget-password/verify', element: <AuthPage /> },
-      { path: 'forget-password/new-password', element: <AuthPage /> },
+      { path: 'login', element: <AuthPage key="login" /> },
+      { path: 'forget-password/email', element: <AuthPage key="forgot-email" /> },
+      { path: 'forget-password/verify', element: <AuthPage key="forgot-verify" /> },
+      { path: 'forget-password/new-password', element: <AuthPage key="forgot-new-password" /> },
     ],
   },
   {

@@ -88,7 +88,10 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
     case 'SET_AUTHENTICATED':
       return { ...state, isAuthenticated: action.payload };
     case 'RESET_AUTH_STATE':
-      return initialState;
+      return {
+        ...initialState,
+        isLoading: false, // Ensure loading is false after reset
+      };
     default:
       return state;
   }
@@ -264,11 +267,35 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     dispatch({ type: 'SET_LOADING', payload: true });
     
     try {
+      // Clear auth data first
       await authService.logout();
+      
+      // Reset state before navigation to prevent race conditions
+      dispatch({ type: 'RESET_AUTH_STATE' });
+      
+      // Small delay to ensure state is properly reset before navigation
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Clear any lingering focus and navigate
+      if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
+      
+      // Force focus to body to prevent focus issues
+      document.body.focus();
+      
+      navigateTo('/auth/login');
     } catch (error) {
       console.error('Logout error:', error);
-    } finally {
+      // Even if API call fails, clear local state
       dispatch({ type: 'RESET_AUTH_STATE' });
+      
+      // Clear focus and navigate
+      if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
+      document.body.focus();
+      
       navigateTo('/auth/login');
     }
   };

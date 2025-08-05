@@ -128,6 +128,17 @@ export const authService = {
       // Always clear local auth data
       clearAuthData();
       clearUserRole(); // Clear role too
+      
+      // Additional cleanup to ensure all auth-related data is cleared
+      localStorage.removeItem('user');
+      localStorage.removeItem('userRole');
+      sessionStorage.clear(); // Clear any session data
+      
+      // Clear any potential focus issues
+      if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
+      document.body.focus();
     }
   },
 

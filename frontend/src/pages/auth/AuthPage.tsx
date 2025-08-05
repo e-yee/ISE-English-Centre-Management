@@ -26,11 +26,29 @@ const AuthPage: React.FC = () => {
   
   // Redirect authenticated users to home page
   useEffect(() => {
-    if (isAuthenticated && user) {
+    // Only redirect if user is authenticated and we're not in the middle of a logout process
+    if (isAuthenticated && user && !isLoading) {
       console.log('AuthPage: User already authenticated, redirecting to home');
       navigate('/home');
     }
-  }, [isAuthenticated, user, navigate]);
+  }, [isAuthenticated, user, isLoading, navigate]);
+
+  // Cleanup effect to ensure proper focus management after logout
+  useEffect(() => {
+    // Clear any lingering focus when AuthPage mounts
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+    
+    // Force focus to body to prevent focus issues
+    document.body.focus();
+    
+    // Remove any potential focus traps
+    const activeElement = document.activeElement;
+    if (activeElement && activeElement !== document.body && activeElement instanceof HTMLElement) {
+      activeElement.blur();
+    }
+  }, []);
 
   // Determine current form based on route
   const getCurrentForm = () => {
