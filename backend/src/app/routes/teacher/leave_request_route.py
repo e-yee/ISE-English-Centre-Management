@@ -9,7 +9,7 @@ from ...models import LeaveRequest, Account
 from extensions import db
 
 leave_request_bp = Blueprint("leave_request_bp", __name__, url_prefix="/leave_request")
-@leave_request_bp.post("/")
+@leave_request_bp.post("/create")
 @role_required("Teacher")
 def create_request():
     if not request.is_json:
