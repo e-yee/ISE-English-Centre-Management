@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils';
 import AbsenceRequestForm from '@/components/absent-request/AbsenceRequestForm';
 import LeaveRequestList from '@/components/absent-request/LeaveRequestList';
 import { useLeaveRequests, useApproveLeaveRequest } from '@/hooks/entities/useLeaveRequest';
+import { useEmployees } from '@/hooks/entities/useEmployees';
 import absentRequestIcon from '@/assets/sidebar/absent-request.svg';
 import { getUserRole } from '@/lib/utils';
 import type { LeaveRequest, LeaveRequestDisplay } from '@/types/leaveRequest';
@@ -16,14 +17,25 @@ interface AbsentRequestPageProps {
 const AbsentRequestPage: React.FC<AbsentRequestPageProps> = ({ className }) => {
   const { data: requests, isLoading, error } = useLeaveRequests();
   const { approveRequest, isLoading: isApproving, error: approvalError, success: approvalSuccess } = useApproveLeaveRequest();
+  const { data: employees, isLoading: employeesLoading } = useEmployees();
   const userRole = getUserRole();
+
+  // Helper function to get employee name by ID
+  const getEmployeeNameById = (employeeId: string): string => {
+    if (!employees || employeesLoading) {
+      return `Employee-${employeeId}`;
+    }
+    
+    const employee = employees.find(emp => emp.id === employeeId);
+    return employee ? `${employee.full_name}-${employeeId}` : `Employee-${employeeId}`;
+  };
 
   // Transform backend data to frontend display format
   const transformToDisplayFormat = (requests: LeaveRequest[]): LeaveRequestDisplay[] => {
     return requests.map(req => ({
-      id: req.id,
-      employeeName: 'Employee', // TODO: Get from employee service
-      substituteName: 'Substitute', // TODO: Get from employee service
+      id: req.employee_id, // Changed to use employee_id instead of req.id
+      employeeName: getEmployeeNameById(req.employee_id),
+      substituteName: getEmployeeNameById(req.substitute_id),
       startDate: new Date(req.start_date),
       endDate: new Date(req.end_date),
       reason: req.reason,

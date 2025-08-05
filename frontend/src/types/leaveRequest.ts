@@ -11,9 +11,9 @@ export interface LeaveRequest {
 
 // Frontend display interface for easier handling
 export interface LeaveRequestDisplay {
-  id: string;
-  employeeName: string;
-  substituteName: string;
+  id: string; // Now represents employee_id instead of leave request id
+  employeeName: string; // Format: "Name-id" (e.g., "John Doe-EM001")
+  substituteName: string; // Format: "Name-id" (e.g., "Jane Smith-EM002")
   startDate: Date;
   endDate: Date;
   reason: string;

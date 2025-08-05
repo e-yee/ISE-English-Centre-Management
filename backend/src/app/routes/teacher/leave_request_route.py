@@ -65,7 +65,7 @@ def validate_employee(employee_id):
 
 def validate_substitute(employee_id, substitute_id):
     if employee_id == substitute_id:
-        return jsonify({
+        return None, jsonify({
             "message": "Substitute cannot be the same as the requesting employee"
         }), HTTPStatus.BAD_REQUEST
     
@@ -73,17 +73,17 @@ def validate_substitute(employee_id, substitute_id):
     employee = db.session.query(Employee).filter_by(id=employee_id).first()
 
     if not employee:
-        return jsonify({
+        return None, jsonify({
             "message": "Employee not found"
         }), HTTPStatus.NOT_FOUND
 
     if not substitute:
-        return jsonify({
+        return None, jsonify({
             "message": "Substitute employee not found"
         }), HTTPStatus.NOT_FOUND
     
     if substitute.role != employee.role:
-        return jsonify({
+        return None, jsonify({
             "message": "Substitute must have the same role as the requesting employee"
         }), HTTPStatus.BAD_REQUEST
     
@@ -120,6 +120,7 @@ def add_request():
             return jsonify({
                 "message": "Unauthorized or employee profile missing"
             }), HTTPStatus.FORBIDDEN
+
         
         result, response, status = validate_employee(validated["employee_id"])
         if not result:

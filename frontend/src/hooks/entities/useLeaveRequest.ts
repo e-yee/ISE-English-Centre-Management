@@ -53,7 +53,7 @@ export function useCreateLeaveRequest() {
   const [success, setSuccess] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
-  const createRequest = async (requestData: Omit<LeaveRequest, 'id' | 'status' | 'created_date'>): Promise<LeaveRequest | null> => {
+  const createRequest = async (requestData: Omit<LeaveRequest, 'id' | 'status' | 'created_date' | 'employee_id'>): Promise<LeaveRequest | null> => {
     console.log('🔍 Creating leave request:', requestData);
     setIsLoading(true);
     setError(null);
@@ -67,6 +67,7 @@ export function useCreateLeaveRequest() {
         const result = await leaveRequestService.createRequest(requestData);
         console.log('✅ Leave request created successfully:', result);
         setSuccess('Leave request created successfully');
+        setIsLoading(false);
         
         // Invalidate and refetch leave requests
         queryClient.invalidateQueries({ queryKey: ['leaveRequests'] });
@@ -79,6 +80,7 @@ export function useCreateLeaveRequest() {
         if (retryCount >= maxRetries) {
           const errorMessage = err.response?.data?.message || err.message || 'Failed to create leave request';
           setError(errorMessage);
+          setIsLoading(false);
           return null;
         }
         
@@ -87,6 +89,7 @@ export function useCreateLeaveRequest() {
       }
     }
     
+    setIsLoading(false);
     return null;
   };
 
@@ -125,6 +128,7 @@ export function useApproveLeaveRequest() {
         const result = await leaveRequestService.approveRequest(id, status);
         console.log('✅ Leave request approval successful:', result);
         setSuccess(`Leave request ${status.toLowerCase()} successfully`);
+        setIsLoading(false);
         
         // Invalidate and refetch leave requests
         queryClient.invalidateQueries({ queryKey: ['leaveRequests'] });
@@ -137,6 +141,7 @@ export function useApproveLeaveRequest() {
         if (retryCount >= maxRetries) {
           const errorMessage = err.response?.data?.message || err.message || 'Failed to approve leave request';
           setError(errorMessage);
+          setIsLoading(false);
           return null;
         }
         
@@ -145,6 +150,7 @@ export function useApproveLeaveRequest() {
       }
     }
     
+    setIsLoading(false);
     return null;
   };
 

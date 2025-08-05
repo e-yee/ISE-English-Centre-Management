@@ -1,5 +1,5 @@
 import { ApiService } from '../base/apiService';
-import { getUserRole } from '../../lib/utils';
+import { getUserRole, getEmployeeIdFromToken } from '../../lib/utils';
 import type{ LeaveRequest } from '../../types/leaveRequest';
 
 class LeaveRequestService extends ApiService {
@@ -14,8 +14,20 @@ class LeaveRequestService extends ApiService {
   }
 
   // For Teacher/Learning Advisor - create new request
-  async createRequest(requestData: Omit<LeaveRequest, 'id' | 'status' | 'created_date'>): Promise<LeaveRequest> {
-    return this.post<LeaveRequest>('/leave_request/create', requestData);
+  async createRequest(requestData: Omit<LeaveRequest, 'id' | 'status' | 'created_date' | 'employee_id'>): Promise<LeaveRequest> {
+    // Get employee_id from JWT token
+    const employeeId = getEmployeeIdFromToken();
+    if (!employeeId) {
+      throw new Error('Employee ID not found in token');
+    }
+    
+    // Add employee_id to the request data
+    const requestWithEmployeeId = {
+      ...requestData,
+      employee_id: employeeId
+    };
+    
+    return this.post<LeaveRequest>('/leave_request/create', requestWithEmployeeId);
   }
 
   // For Manager - approve/reject request
