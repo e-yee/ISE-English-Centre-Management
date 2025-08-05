@@ -13,6 +13,35 @@ from ..http_status import HTTPStatus
 course_bp = Blueprint("course_bp", __name__, url_prefix="/course")
 
 # Helper Functions
+def generate_id(course_name):
+    prefix_map = {
+        "CEFR A1": "ENG001",
+        "CEFR A2": "ENG002",
+        "CEFR B1": "ENG003",
+        "CEFR B2": "ENG004",
+        "CEFR C1": "ENG005",
+        "CEFR C2": "ENG006",
+        "IELTS Foundation": "ENG101",
+        "IELTS Pre-Intermediate": "ENG102",
+        "IELTS Intermediate": "ENG103",
+        "IELTS Upper-Intermediate": "ENG104",
+        "IELTS Advanced": "ENG105",
+        "TOEIC Foundation": "ENG201",
+        "TOEIC Pre-Intermediate": "ENG202",
+        "TOEIC Intermediate": "ENG203",
+        "TOEIC Upper-Intermediate": "ENG204",
+        "TOEIC Advanced": "ENG205",
+        "6th Grade Math": "MTH001",
+        "7th Grade Math": "MTH002",
+        "8th Grade Math": "MTH003",
+        "9th Grade Math": "MTH004",
+        "10th Grade Math": "MTH101",
+        "11th Grade Math": "MTH102",
+        "12th Grade Math": "MTH103",
+    }
+    
+    return prefix_map[course_name]
+
 def get_course_id_date():
     course_id = request.args.get("id")
     
@@ -34,6 +63,20 @@ def get_course_id_date():
         }), HTTPStatus.BAD_REQUEST
         
     return course_id, datetime.strptime(course_date, "%Y-%m-%d"), None, None
+
+def validate_name(name):
+    name_map = {
+        "CEFR A1", "CEFR A2", "CEFR B1", "CEFR B2", "CEFR C1", "CEFR C2",
+        "IELTS Foundation", "IELTS Pre-Intermediate", "IELTS Intermediate", "IELTS Upper-Intermediate", "IELTS Advanced",
+        "TOEIC Foundation", "TOEIC Pre-Intermediate", "TOEIC Intermediate", "TOEIC Upper-Intermediate", "TOEIC Advanced",
+    }
+    
+    if name not in name_map:
+        return None, jsonify({
+            "message": "Invalid course name"
+        }), HTTPStatus.BAD_REQUEST
+    
+    return name, None, None
 
 def validate_duration(duration):
     if duration < 0:
@@ -117,6 +160,10 @@ def la_add_course():
         json_data = request.get_json()
         validated = course_schema.load(json_data)
         
+        name, response, status = validate_name(validated["name"])
+        if not name:
+            return response, status
+        
         duration, response, status = validate_duration(validated["duration"])
         if not duration:
             return response, status
@@ -139,7 +186,8 @@ def la_add_course():
         
         employee_id = get_jwt().get("employee_id")
         course = Course(
-            name=validated["name"],
+            id=generate_id(name),
+            name=name,
             duration=duration,
             start_date=start_date,
             schedule=schedule,

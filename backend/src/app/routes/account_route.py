@@ -1,5 +1,4 @@
 from flask import Blueprint, request, jsonify
-from sqlalchemy import cast, Integer, desc
 from marshmallow import ValidationError
 from sqlalchemy.exc import IntegrityError, OperationalError
 from extensions import db, pwd_context
@@ -10,14 +9,13 @@ from ..http_status import HTTPStatus
 account_bp = Blueprint("account_bp", __name__, url_prefix="/account")
 
 # Helper Functions
-def generate_next_id():
-    last_account = db.session.query(Account).order_by(
-        cast(Account.id[3:], Integer).desc()
-    ).first()
+def generate_id():
+    last_account = db.session.query(Account).order_by(Account.id.desc()).first()
     
     if not last_account:
         return "ACC001"
     else:
+        print(last_account.id)
         prefix = last_account.id[:3]
         num = int(last_account.id[3:]) + 1
         
@@ -35,7 +33,7 @@ def add_account():
         validated = account_schema.load(json_data)
         
         account = Account(
-            id=generate_next_id(),
+            id=generate_id(),
             employee_id=validated["employee_id"],
             username=validated["username"],
             password_hash=pwd_context.hash(validated["password"])

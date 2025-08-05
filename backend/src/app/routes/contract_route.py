@@ -11,6 +11,17 @@ from ..schemas.learning_advisor.contract_schema import contract_schema
 contract_bp = Blueprint("contract_bp", __name__, url_prefix="/contract")
 
 # Helper Function
+def generate_id():
+    last_contract = db.session.query(Contract).order_by(Contract.id.desc()).first()
+    
+    if not last_contract:
+        return "CON001"
+    else:
+        prefix = last_contract.id[:3]
+        num = int(last_contract.id[3:]) + 1
+        
+        return f"{prefix}{num:03}"
+    
 def get_contract_id():
     id = request.args.get("id")
     if not id:
@@ -96,6 +107,7 @@ def la_add_contract():
         
         employee_id = get_jwt().get("employee_id")
         contract = Contract(
+            id=generate_id(),
             student_id=validated["student_id"],
             employee_id=employee_id,
             course_id=validated["course_id"],

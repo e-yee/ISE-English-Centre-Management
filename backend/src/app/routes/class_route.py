@@ -6,12 +6,27 @@ from sqlalchemy.exc import IntegrityError, OperationalError
 from extensions import db
 from ..auth import role_required
 from ..http_status import HTTPStatus
-from ..models import Class, Course, Contract, Employee, Room
+from ..models import Class, Course, Employee, Room
 from ..schemas.learning_advisor.class_schema import class_schema
 
 class_bp = Blueprint("class_bp", __name__, url_prefix="/class")
 
 # Helper Function
+def generate_id(course_id, course_date, term):
+    last_class = db.session.query(Class).filter_by(
+        course_id=course_id,
+        course_date=course_date,
+        term=term
+    ).order_by(Class.id.desc()).first()
+    
+    if not last_class:
+        return "CLS001"
+    else:
+        prefix = last_class.id[:3]
+        num = int(last_class.id[3:]) + 1
+        
+        return f"{prefix}{num:03}"
+
 def get_class_id():
     id = request.args.get("id")
     
@@ -163,7 +178,7 @@ def la_add_class():
             return response, status 
 
         class_ = Class(
-            id=validated["id"],
+            id=generate_id(validated["course_id"], validated["course_date"], validated["term"]),
             course_id=validated["course_id"],
             course_date=validated["course_date"],
             term=validated["term"],

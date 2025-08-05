@@ -11,6 +11,28 @@ from ..http_status import HTTPStatus
 student_bp = Blueprint("student_bp", __name__, url_prefix="/student")
 
 # Helper Functions
+def generate_student_id():
+    last_student = db.session.query(Student).order_by(Student.id.desc()).first()
+    
+    if not last_student:
+        return "STU001"
+    else:
+        prefix = last_student.id[:3]
+        num = int(last_student.id[3:]) + 1
+        
+        return f"{prefix}{num:03}"
+    
+def generate_enrolment_id():
+    last_enrolment = db.session.query(Enrolment).order_by(Enrolment.id.desc()).first()
+    
+    if not last_enrolment:
+        return "ENR001"
+    else:
+        prefix = last_enrolment.id[:3]
+        num = int(last_enrolment.id[3:]) + 1
+        
+        return f"{prefix}{num:03}"
+
 def get_student_id():
     id = request.args.get("id")
     if not id:
@@ -147,6 +169,7 @@ def la_add_student():
         validated = student_schema.load(json_data)
         
         student = Student(
+            id=generate_student_id(),
             fullname=validated["fullname"],
             contact_info=validated["contact_info"],
             date_of_birth=validated["date_of_birth"]
@@ -301,6 +324,7 @@ def la_add_enrolment():
             return response, status
         
         enrolment = Enrolment(
+            id=generate_enrolment_id(),
             contract_id=validated["contract_id"],
             student_id=validated["student_id"],
             course_id=validated["course_id"],

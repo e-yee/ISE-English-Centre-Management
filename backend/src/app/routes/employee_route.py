@@ -1,7 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import get_jwt
 from marshmallow import ValidationError
-from sqlalchemy import cast, Integer, func
 from sqlalchemy.exc import IntegrityError, OperationalError
 from extensions import db
 from ..auth import role_required
@@ -12,10 +11,8 @@ from ..schemas.employee_schema import employee_schema, employee_schema
 employee_bp = Blueprint("employee_bp", __name__,  url_prefix="/employee")
 
 # Helper Functions
-def generate_next_id():
-    last_employee = db.session.query(Employee).order_by(
-        cast(func.substring(Employee.id, 2), Integer).desc()
-    ).first()
+def generate_id():
+    last_employee = db.session.query(Employee).order_by(Employee.id.desc()).first()
     
     if not last_employee:
         return "EM001"
@@ -119,7 +116,7 @@ def manager_add_employee():
             }), HTTPStatus.FORBIDDEN
         
         employee = Employee(
-            id=generate_next_id(),
+            id=generate_id(),
             full_name=validated["full_name"],
             email=validated["email"],
             nickname=validated["nickname"],
@@ -274,7 +271,7 @@ def admin_add_employee():
         validated = employee_schema.load(json_data)
     
         employee = Employee(
-            id=generate_next_id(),
+            id=generate_id(),
             full_name=validated["full_name"],
             email=validated["email"],
             nickname=validated["nickname"],

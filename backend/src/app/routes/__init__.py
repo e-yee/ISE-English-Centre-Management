@@ -1,12 +1,13 @@
 from .teacher.attendance_route import attendance_bp
 from .teacher.evaluation_route import evaluation_bp
 from .contract_route import contract_bp
+from .course_route import course_bp
 from .student_route import student_bp
 from .class_route import class_bp
 from .manager.dashboard_route import dashboard_bp
 from .checkin_route import checkin_bp
 from .homepage_route import homepage_bp
-from app.auth.auth import auth_bp
+from ..auth.auth import auth_bp
 from .account_route import account_bp
 from .employee_route import employee_bp
 
@@ -16,13 +17,14 @@ def register_blueprints(app):
         auth_bp, 
         account_bp,
         contract_bp, 
+        course_bp,
+        class_bp,
         checkin_bp, 
         dashboard_bp, 
         evaluation_bp,
         employee_bp, 
         homepage_bp,
         student_bp,
-        class_bp
     ]
     
     for bp in all_blueprints:
