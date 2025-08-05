@@ -69,6 +69,7 @@ def validate_name(name):
         "CEFR A1", "CEFR A2", "CEFR B1", "CEFR B2", "CEFR C1", "CEFR C2",
         "IELTS Foundation", "IELTS Pre-Intermediate", "IELTS Intermediate", "IELTS Upper-Intermediate", "IELTS Advanced",
         "TOEIC Foundation", "TOEIC Pre-Intermediate", "TOEIC Intermediate", "TOEIC Upper-Intermediate", "TOEIC Advanced",
+        "6th Grade Math", "7th Grade Math", "8th Grade Math", "9th Grade Math", "10th Grade Math", "11th Grade Math", "12th Grade Math"
     }
     
     if name not in name_map:
@@ -86,12 +87,10 @@ def validate_duration(duration):
     
     return duration, None, None
 
-def validate_start_date(date):
-    curdate = datetime.now()
-    
-    if date < curdate:
+def validate_start_date(date, created_date):
+    if date < created_date:
         return None, jsonify({
-            "message": "Date data must be larger than current date"
+            "message": "Date data must be larger than created date"
         }), HTTPStatus.BAD_REQUEST
         
     return date, None, None
@@ -139,10 +138,12 @@ def validate_fee(fee):
     
     return fee, None, None
 
-def validate_created_date(date, start_date):
-    if date < start_date:
+def validate_created_date(date):
+    milestones = datetime.strptime("2025-01-01", "%Y-%m-%d")
+    
+    if date < milestones.date():
         return None, jsonify({
-            "message": "Date data must be larger than start date"
+            "message": "Date data must be larger than 2025-01-01"
         }), HTTPStatus.BAD_REQUEST
     
     return date, None, None
@@ -168,10 +169,6 @@ def la_add_course():
         if not duration:
             return response, status
 
-        start_date, response, status = validate_start_date(validated["start_date"])
-        if not start_date:
-            return response, status
-
         schedule, response, status = validate_schedule(validated["schedule"])
         if not schedule:
             return response, status
@@ -180,8 +177,12 @@ def la_add_course():
         if not fee:
             return response, status
         
-        created_date, response, status = validate_created_date(validated["created_date"], start_date)
+        created_date, response, status = validate_created_date(validated["created_date"])
         if not created_date:
+            return response, status
+        
+        start_date, response, status = validate_start_date(validated["start_date"], created_date)
+        if not start_date:
             return response, status
         
         employee_id = get_jwt().get("employee_id")

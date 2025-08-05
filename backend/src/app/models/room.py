@@ -13,7 +13,7 @@ class Room(db.Model):
     )
 
     id: Mapped[str] = mapped_column(String(10), primary_key=True)
-    room_name: Mapped[str] = mapped_column(String(200), nullable=False)
+    name: Mapped[str] = mapped_column(String(200), nullable=False)
     status: Mapped[str] = mapped_column(String(20), nullable=False, server_default=text("'Free'"))
 
     issue: Mapped[List['Issue']] = relationship('Issue', back_populates='room')
