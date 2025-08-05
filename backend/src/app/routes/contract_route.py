@@ -46,7 +46,7 @@ def validate_course(course_id, course_date):
         id=course_id, 
         created_date=course_date,
         learning_advisor_id=employee_id
-    )
+    ).first()
     if not course:
         return None, jsonify({
             "message": "Course not found"
@@ -93,12 +93,12 @@ def la_add_contract():
         json_data = request.get_json()
         validated = contract_schema.load(json_data)
         
-        result, response, status = validate_student(validated["student_id"])
-        if not result:
+        student, response, status = validate_student(validated["student_id"])
+        if not student:
             return response, status
 
-        result, response, status = validate_course(validated["course_id"], validated["course_date"])
-        if not result:
+        course, response, status = validate_course(validated["course_id"], validated["course_date"])
+        if not course:
             return response, status
         
         result, response, status = check_existed_contract(validated["student_id"], validated["course_id"], validated["course_date"])
@@ -108,13 +108,13 @@ def la_add_contract():
         employee_id = get_jwt().get("employee_id")
         contract = Contract(
             id=generate_id(),
-            student_id=validated["student_id"],
+            student_id=student.id,
             employee_id=employee_id,
-            course_id=validated["course_id"],
-            course_date=validated["course_date"],
-            tuition_fee=validated["tuition_fee"],
-            start_date=validated["start_date"],
-            end_date=validated["end_date"]
+            course_id=course.id,
+            course_date=course.created_date,
+            tuition_fee=course.fee,
+            start_date=course.start_date,
+            end_date=course.end_date
         )
         
         db.session.add(contract)
@@ -150,10 +150,23 @@ def la_add_contract():
 
 @contract_bp.get("/learningadvisor/")
 @role_required("Learning Advisor")
-def la_get_all():
+def la_get_all_contract_from_course():
     try:
+        course_id = request.args.get("course_id")
+        course_date = request.args.get("course_date")
+        if not course_id or not course_date:
+            return jsonify({
+                "message": "Missing course ID or course date in query params"
+            }), HTTPStatus.BAD_REQUEST
+            
         employee_id = get_jwt().get("employee_id")
-        contracts = db.session.query(Contract).filter_by(employee_id=employee_id).all()
+        course = db.session.query(Course).filter_by(
+            id=course_id,
+            created_date=course_date,
+            learning_advisor_id=employee_id
+        ).first()
+        
+        contracts = course.contract
         return jsonify(contract_schema.dump(contracts, many=True)), HTTPStatus.OK
 
     except Exception as e:
@@ -217,6 +230,10 @@ def la_update_contract():
             result, response, status = validate_course(course_id, course_date)
             if not result:
                 return response, status
+            
+            setattr(contract, "start_date", result.start_date)
+            setattr(contract, "end_date", result.end_date)
+            setattr(contract, "tuition_fee", result.fee)
 
         result, response, status = check_existed_contract(student_id, course_id, course_date)
         if not result:
@@ -301,7 +318,19 @@ def la_delete_contract():
 @role_required("Manager")
 def manager_get_all():
     try:
-        contracts = db.session.query(Contract).all()
+        course_id = request.args.get("course_id")
+        course_date = request.args.get("course_date")
+        if not course_id or not course_date:
+            return jsonify({
+                "message": "Missing course ID or course date in query params"
+            }), HTTPStatus.BAD_REQUEST
+            
+        course = db.session.query(Course).filter_by(
+            id=course_id,
+            created_date=course_date
+        ).first()
+        
+        contracts = course.contract
         return jsonify(contract_schema.dump(contracts, many=True)), HTTPStatus.OK
 
     except Exception as e:
