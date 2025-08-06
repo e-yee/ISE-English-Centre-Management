@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate } from 'react-router-dom';
+import { createBrowserRouter } from 'react-router-dom';
 import ProtectedRoute from './ProtectedRoutes';
 import AuthPage from '../pages/auth/AuthPage';
 import ResetPasswordPage from '../pages/auth/ResetPasswordPage';
@@ -22,6 +22,8 @@ import AddMaterialsPage from '../pages/materials/AddMaterialsPage';
 import ClassReportPage from '../pages/class-report/ClassReportPage';
 import ScoringPage from '../pages/scoring/ScoringPage';
 import CoursePage from '../pages/course/CoursePage';
+import CourseClassesPage from '../pages/course/CourseClassesPage';
+import ContractPage from '../pages/contract/ContractPage';
 import IssuesPage from '../pages/issues/IssuesPage';
 
 export const router = createBrowserRouter([
@@ -61,22 +63,10 @@ export const router = createBrowserRouter([
           { path: 'report', element: <ClassReportPage /> },
           { path: 'scoring/:classId', element: <ScoringPage /> },
           { path: 'issues', element: <IssuesPage /> },
-          
-          // Fallback redirect for authenticated users at the root
-          { path: '/', element: <Navigate to="/home" replace /> },
-        ],
-      },
-    ],
-  },
-  {
-    // Learning Advisor specific routes
-    element: <ProtectedRoute allowedRoles={['Learning Advisor']} />,
-    children: [
-      {
-        path: '/',
-        element: <AppLayout />,
-        children: [
-          { path: 'courses', element: <CoursePage /> },
+          // --- Manager/Learning Advisor Routes ---
+          { path: 'dashboard', element: <CoursePage /> },
+          { path: 'course-classes/:courseId/:courseDate', element: <CourseClassesPage /> },
+          { path: 'contracts/:courseId', element: <ContractPage /> },
         ],
       },
     ],

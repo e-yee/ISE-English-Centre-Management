@@ -11,6 +11,19 @@ export function useClasses() {
   );
 }
 
+export function useClassesByCourse(courseId: string, courseDate: string) {
+  return useDataFetching(
+    ['classes', 'course', courseId, courseDate],
+    () => {
+      console.log('fetching classes for course:', courseId, courseDate);
+      return classService.getAllClassesByCourse(courseId, courseDate);
+    },
+    {
+      enabled: !!courseId && !!courseDate
+    }
+  );
+}
+
 export function useTeacherClasses() {
   return useDataFetching(
     ['classes', 'teacher'],

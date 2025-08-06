@@ -21,6 +21,18 @@ class ClassService extends ApiService {
     return this.get<Class[]>('/class/teacher/');
   }
 
+  async getAllClassesByCourse(courseId: string, courseDate: string): Promise<Class[]> {
+    const userRole = getUserRole();
+    
+    if (userRole === 'Learning Advisor') {
+      return this.get<Class[]>(`/class/learningadvisor/?course_id=${courseId}&course_date=${courseDate}`);
+    } else if (userRole === 'Manager') {
+      return this.get<Class[]>(`/class/manager/?course_id=${courseId}&course_date=${courseDate}`);
+    }
+    
+    throw new Error('Unauthorized access to classes');
+  }
+
   async getClassesByRole(): Promise<Class[]> {
     console.log('🔍 getClassesByRole called');
     

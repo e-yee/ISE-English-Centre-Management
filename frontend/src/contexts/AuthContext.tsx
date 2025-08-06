@@ -104,11 +104,10 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
 const getDefaultRouteForRole = (role: string): string => {
   switch (role) {
     case 'Manager':
-      return '/home'; // Manager dashboard
+    case 'Learning Advisor':
+      return '/dashboard'; // Staff dashboard
     case 'Teacher':
       return '/home'; // Teacher's main page
-    case 'Learning Advisor':
-      return '/home'; // Learning adviser's main page
     default:
       return '/home';
   }
@@ -214,7 +213,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.log('Login successful for user:', credentials.username);
 
       // Get role and employee ID from JWT token
-      const role = getUserRole();
+      const role = authService.extractRoleFromToken();
       const employeeId = getEmployeeIdFromToken();
       const userId = getUserIdFromToken();
       

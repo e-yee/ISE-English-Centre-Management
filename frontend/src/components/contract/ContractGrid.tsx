@@ -1,17 +1,23 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { FileText, ChevronDown, ChevronUp } from 'lucide-react';
+import { FileText, Loader2, Edit } from 'lucide-react';
 import { format } from 'date-fns';
 import type { Contract } from '@/types/contract';
 import { mockStudents } from '@/mockData/studentMock';
-import { mockEmployees } from '@/mockData/employeeMock';
-import { mockCourses } from '@/mockData/courseMock';
 
 interface ContractGridProps {
   contracts: Contract[];
+  isLoading?: boolean;
+  onContractUpdated?: () => void;
+  onEditContract?: (contract: Contract) => void;
 }
 
-const ContractGrid: React.FC<ContractGridProps> = ({ contracts }) => {
+const ContractGrid: React.FC<ContractGridProps> = ({ 
+  contracts, 
+  isLoading = false,
+  onContractUpdated,
+  onEditContract
+}) => {
   const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
 
   const toggleCardExpansion = (contractId: string) => {
@@ -22,6 +28,13 @@ const ContractGrid: React.FC<ContractGridProps> = ({ contracts }) => {
       newExpanded.add(contractId);
     }
     setExpandedCards(newExpanded);
+  };
+
+  const handleEditContract = (e: React.MouseEvent, contract: Contract) => {
+    e.stopPropagation();
+    if (onEditContract) {
+      onEditContract(contract);
+    }
   };
 
   const getPaymentStatusColor = (status: string) => {
@@ -41,15 +54,33 @@ const ContractGrid: React.FC<ContractGridProps> = ({ contracts }) => {
     return student ? student.fullname : studentId;
   };
 
-  const getEmployeeName = (employeeId: string) => {
-    const employee = mockEmployees.find(e => e.id === employeeId);
-    return employee ? employee.fullname : employeeId;
+  const getCourseName = (courseId: string) => {
+    // Use the course ID directly since we're getting real data from backend
+    return courseId;
   };
 
-  const getCourseName = (courseId: string) => {
-    const course = mockCourses.find(c => c.id === courseId);
-    return course ? course.name : courseId;
+  // Helper function to safely format dates
+  const formatDate = (dateValue: Date | string) => {
+    try {
+      const date = typeof dateValue === 'string' ? new Date(dateValue) : dateValue;
+      if (isNaN(date.getTime())) {
+        return 'Invalid Date';
+      }
+      return format(date, "MMM dd, yyyy");
+    } catch (error) {
+      console.error('Error formatting date:', dateValue, error);
+      return 'Invalid Date';
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <span className="ml-2 text-muted-foreground">Loading contracts...</span>
+      </div>
+    );
+  }
 
   if (contracts.length === 0) {
     return (
@@ -67,11 +98,11 @@ const ContractGrid: React.FC<ContractGridProps> = ({ contracts }) => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {contracts.map((contract) => {
+      {contracts.map((contract, index) => {
         const isExpanded = expandedCards.has(contract.id);
         return (
           <Card 
-            key={contract.id} 
+            key={contract.id || `contract-${index}`} 
             className="hover:shadow-xl transition-all duration-300 border-2 hover:border-blue-200 bg-gradient-to-br from-white to-gray-50 cursor-pointer"
             onClick={() => toggleCardExpansion(contract.id)}
           >
@@ -79,23 +110,23 @@ const ContractGrid: React.FC<ContractGridProps> = ({ contracts }) => {
               <div className="flex justify-between items-start">
                 <div>
                   <CardTitle className="text-xl font-bold text-gray-800">
-                    {contract.contract_number || `Contract ${contract.id}`}
+                    Contract {contract.id || 'N/A'}
                   </CardTitle>
-                  <CardDescription className="text-blue-600 font-medium">Contract ID: {contract.id}</CardDescription>
+                  <CardDescription className="text-blue-600 font-medium">
+                    Student ID: {contract.student_id || 'N/A'}
+                  </CardDescription>
                 </div>
-                <button 
-                  className="p-1 hover:bg-blue-100 rounded transition-colors"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleCardExpansion(contract.id);
-                  }}
-                >
-                  {isExpanded ? (
-                    <ChevronUp className="h-4 w-4 text-blue-600" />
-                  ) : (
-                    <ChevronDown className="h-4 w-4 text-blue-600" />
+                <div className="flex items-center gap-2">
+                  {onEditContract && (
+                    <button 
+                      className="p-1 hover:bg-blue-100 rounded transition-colors"
+                      onClick={(e) => handleEditContract(e, contract)}
+                      title="Edit Contract"
+                    >
+                      <Edit className="h-4 w-4 text-blue-600" />
+                    </button>
                   )}
-                </button>
+                </div>
               </div>
             </CardHeader>
             <CardContent className={`space-y-3 p-4 ${isExpanded ? 'max-h-96 overflow-y-auto' : ''}`}>
@@ -111,27 +142,15 @@ const ContractGrid: React.FC<ContractGridProps> = ({ contracts }) => {
                 <span className="text-sm font-medium text-gray-700">Tuition Fee:</span>
                 <span className="text-sm font-bold text-purple-600">${contract.tuition_fee}</span>
               </div>
-              <div className="flex justify-between items-center py-2 px-3 bg-orange-50 rounded-lg">
-                <span className="text-sm font-medium text-gray-700">Start Date:</span>
-                <span className="text-sm font-bold text-orange-600">{format(contract.start_date, "MMM dd, yyyy")}</span>
-              </div>
-              <div className="flex justify-between items-center py-2 px-3 bg-indigo-50 rounded-lg">
-                <span className="text-sm font-medium text-gray-700">End Date:</span>
-                <span className="text-sm font-bold text-indigo-600">{format(contract.end_date, "MMM dd, yyyy")}</span>
-              </div>
               <div className="flex justify-between items-center py-2 px-3 bg-gray-50 rounded-lg">
                 <span className="text-sm font-medium text-gray-700">Course Date:</span>
-                <span className="text-sm font-bold text-gray-600">{format(contract.course_date, "MMM dd, yyyy")}</span>
+                <span className="text-sm font-bold text-gray-600">{formatDate(contract.course_date)}</span>
               </div>
               <div className="flex justify-between items-center py-2 px-3 rounded-lg">
                 <span className="text-sm font-medium text-gray-700">Payment Status:</span>
                 <span className={`text-sm font-bold px-2 py-1 rounded ${getPaymentStatusColor(contract.payment_status)}`}>
                   {contract.payment_status}
                 </span>
-              </div>
-              <div className="flex justify-between items-center py-2 px-3 bg-teal-50 rounded-lg">
-                <span className="text-sm font-medium text-gray-700">Employee:</span>
-                <span className="text-sm font-bold text-teal-600">{getEmployeeName(contract.employee_id)}</span>
               </div>
               {contract.description && (
                 <div className="pt-3 border-t border-gray-200">

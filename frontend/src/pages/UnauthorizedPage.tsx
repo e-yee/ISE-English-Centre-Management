@@ -1,9 +1,19 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { getUserRole } from '@/lib/utils';
 
 const UnauthorizedPage: React.FC = () => {
   const navigate = useNavigate();
+
+  const handleGoHome = () => {
+    const role = getUserRole();
+    if (role === 'Manager' || role === 'Learning Advisor') {
+      navigate('/dashboard');
+    } else {
+      navigate('/home');
+    }
+  };
 
   return (
     <section className="bg-white font-serif min-h-screen flex items-center justify-center">
@@ -29,7 +39,7 @@ const UnauthorizedPage: React.FC = () => {
 
               <Button
                 variant="default"
-                onClick={() => navigate('/home')}
+                onClick={handleGoHome}
                 className="my-5 bg-green-600 hover:bg-green-700"
               >
                 Go to Home

@@ -3,7 +3,6 @@ import { getUserRole } from '../../lib/utils';
 import type { Course } from '../../types/course';
 
 export interface CreateCourseData {
-  id: string;
   name: string;
   duration: number;
   start_date: string; // ISO date string
@@ -17,6 +16,14 @@ export interface CreateCourseData {
 class CourseService extends ApiService {
   async getAllCourses(): Promise<Course[]> {
     return this.get<Course[]>('/course/learningadvisor/');
+  }
+  
+  async getAllCoursesForManager(): Promise<Course[]> {
+    return this.get<Course[]>('/course/manager/');
+  }
+  
+  async getCourseForManager(courseId: string, courseDate: string): Promise<Course> {
+    return this.get<Course>(`/course/manager/search?id=${courseId}&course_date=${courseDate}`);
   }
   
   async createCourse(courseData: CreateCourseData): Promise<Course> {
@@ -42,6 +49,9 @@ class CourseService extends ApiService {
       case 'Learning Advisor':
         console.log('🔍 Calling getAllCourses');
         return this.getAllCourses();
+      case 'Manager':
+        console.log('🔍 Calling getAllCoursesForManager');
+        return this.getAllCoursesForManager();
       default:
         console.log('⚠️ Falling to default, role not matched');
         return [];

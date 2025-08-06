@@ -4,6 +4,7 @@ from marshmallow_sqlalchemy.fields import Nested
 from .student_schema import StudentSchema
 
 class ContractSchema(ma.Schema):
+    id = fields.String(dump_only=True)
     student_id = fields.String(required=True)
     course_id = fields.String(required=True)
     course_date = fields.Date(required=True)
