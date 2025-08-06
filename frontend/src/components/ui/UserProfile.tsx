@@ -60,7 +60,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
       <button
         onClick={toggleDropdown}
         className={cn(
-          "flex items-center justify-center rounded-full",
+          "flex items-center justify-center rounded-full cursor-pointer",
           "hover:scale-105 transition-transform duration-300 ease-out",
           "focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
         )}
@@ -94,7 +94,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
                 disabled={isLoading && item.id === "logout"}
                 className={cn(
                   "w-full my-1 px-8 py-2 text-left h-fit",
-                  "font-comfortaa text-[13px] font-normal text-gray-500",
+                  "font-comfortaa text-[13px] font-normal text-black-500",
                   "transition-all duration-200 ease-out",
                   "hover:bg-[#D9D9D9] hover:cursor-pointer",
                   "focus:outline-none focus:bg-[#D9D9D9]",
