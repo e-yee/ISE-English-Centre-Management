@@ -23,7 +23,7 @@ ALTER TABLE leave_request ADD CONSTRAINT CHK_leave_request_date CHECK (
 );
 
 ALTER TABLE leave_request ADD CONSTRAINT CHK_leave_request_status CHECK (
-    status IN ('Approved', 'Not Approved')
+    status IN ('Approved', 'Not Approved', 'Pending')
 );
         
 ALTER TABLE leave_request ADD CONSTRAINT CHK_leave_request_substitute__id CHECK (
