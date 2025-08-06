@@ -47,9 +47,6 @@ const MainSidebar: React.FC<SidebarProps> = ({ className }) => {
     console.log("Sidebar: Not in router context, navigation disabled");
   }
 
-  // Get user role for conditional rendering
-  const userRole = getUserRole();
-
   // Base menu items that all roles can see
   const baseMenuItems: SidebarItem[] = [
     {
@@ -93,16 +90,6 @@ const MainSidebar: React.FC<SidebarProps> = ({ className }) => {
   // Role-specific menu items
   const roleSpecificItems: SidebarItem[] = [];
   
-  // Add courses option for Learning Advisor role
-  if (userRole === 'Learning Advisor') {
-    roleSpecificItems.push({
-      id: "courses",
-      title: "Courses",
-      icon: "/src/assets/sidebar/add-course.svg",
-      url: "#",
-    });
-  }
-
   // Combine base items with role-specific items
   const menuItems = [...baseMenuItems, ...roleSpecificItems];
 
@@ -111,10 +98,19 @@ const MainSidebar: React.FC<SidebarProps> = ({ className }) => {
 
     // Handle navigation based on item clicked
     if (itemId === "dashboard") {
+      const role = getUserRole();
       if (navigate) {
-        navigate("/home");
+        if (role === "Manager" || role === "Learning Advisor") {
+          navigate("/dashboard");
+        } else {
+          navigate("/home");
+        }
       } else {
-        console.log("Navigation to /home (demo mode - navigation disabled)");
+        if (role === "Manager" || role === "Learning Advisor") {
+          console.log("Navigation to /dashboard (demo mode - navigation disabled)");
+        } else {
+          console.log("Navigation to /home (demo mode - navigation disabled)");
+        }
       }
     } else if (itemId === "absence-request") {
       if (navigate) {

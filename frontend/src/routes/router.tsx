@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate } from 'react-router-dom';
+import { createBrowserRouter } from 'react-router-dom';
 import ProtectedRoute from './ProtectedRoutes';
 import AuthPage from '../pages/auth/AuthPage';
 import ResetPasswordPage from '../pages/auth/ResetPasswordPage';
@@ -61,22 +61,18 @@ export const router = createBrowserRouter([
           { path: 'report', element: <ClassReportPage /> },
           { path: 'scoring/:classId', element: <ScoringPage /> },
           { path: 'issues', element: <IssuesPage /> },
-          
-          // Fallback redirect for authenticated users at the root
-          { path: '/', element: <Navigate to="/home" replace /> },
         ],
       },
     ],
   },
   {
-    // Learning Advisor specific routes
-    element: <ProtectedRoute allowedRoles={['Learning Advisor']} />,
+    element: <ProtectedRoute allowedRoles={['Manager', 'Learning Advisor']} />,
     children: [
       {
         path: '/',
         element: <AppLayout />,
         children: [
-          { path: 'courses', element: <CoursePage /> },
+          { path: 'dashboard', element: <CoursePage /> },
         ],
       },
     ],

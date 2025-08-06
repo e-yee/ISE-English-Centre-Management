@@ -25,10 +25,12 @@ const AuthPage: React.FC = () => {
   
   // Redirect authenticated users to home page
   useEffect(() => {
-    // Only redirect if user is authenticated and we're not in the middle of a logout process
     if (isAuthenticated && user && !isLoading) {
-      console.log('AuthPage: User already authenticated, redirecting to home');
-      navigate('/home');
+      if (user.role === 'Manager' || user.role === 'Learning Advisor') {
+        navigate('/dashboard');
+      } else {
+        navigate('/home');
+      }
     }
   }, [isAuthenticated, user, isLoading, navigate]);
 
