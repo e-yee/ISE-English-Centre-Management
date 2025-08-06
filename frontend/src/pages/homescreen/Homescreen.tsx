@@ -1,10 +1,11 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import ClassList from "@/components/class/ClassList";
 import { SearchInput } from "@/components/ui/SearchInput";
 import { Button } from "@/components/ui/button";
 import { useClasses } from "@/hooks/entities/useClasses";
-import type { ClassData } from "@/mockData/classListMock";
+import type { ClassData, BackendClassData } from "@/types/class";
 import type { Class } from "@/services/entities/classService";
 
 interface HomescreenPageProps {
@@ -39,30 +40,23 @@ const transformClassToClassData = (classItem: Class): ClassData => {
   
   return {
     id: classItem.id,
-    className: `${classItem.term}.Class ${classItem.id}`,
-    room: classItem.room_id,
+    className: `Class ${classItem.id}`,
+    courseId: classItem.course_id,
+    room: classItem.room?.name || classItem.room_id || 'Unknown Room',
     time: classDate.toTimeString().split(' ')[0],
-    startDate: classDate.toLocaleDateString('en-GB'),
-    endDate: new Date(classDate.getTime() + 60 * 24 * 60 * 60 * 1000).toLocaleDateString('en-GB'), // +60 days
     status,
-    statusColor,
-    progress: Math.floor(Math.random() * 100) // Random progress for now
+    statusColor
   };
 };
 
 const HomescreenPage: React.FC<HomescreenPageProps> = ({ className }) => {
+  const navigate = useNavigate();
   const [selectedStatus, setSelectedStatus] = useState("ALL");
   const { data: classes, isLoading, error } = useClasses();
-  
-  console.log('🔍 Classes data type:', typeof classes);
-  console.log('🔍 Classes data:', classes);
-  console.log('🔍 Is loading:', isLoading);
-  console.log('🔍 Error:', error);
 
   // Transform backend data to frontend format with proper type checking
   const transformedClasses: ClassData[] = React.useMemo(() => {
     if (!classes || !Array.isArray(classes)) {
-      console.log('⚠️ Classes is not an array:', classes);
       return [];
     }
     
@@ -73,8 +67,6 @@ const HomescreenPage: React.FC<HomescreenPageProps> = ({ className }) => {
       return [];
     }
   }, [classes]);
-  
-  console.log('🔍 Transformed classes:', transformedClasses);
 
   // Status options for horizontal buttons
   const statusOptions = [
@@ -93,6 +85,12 @@ const HomescreenPage: React.FC<HomescreenPageProps> = ({ className }) => {
   const handleStatusSelect = (status: string) => {
     setSelectedStatus(status);
     console.log("Selected status:", status);
+  };
+
+  const handleClassClick = (classData: ClassData) => {
+    console.log("Class clicked:", classData);
+    // Navigate to class detail page
+    navigate(`/class/${classData.id}`);
   };
 
   // Show loading state
@@ -164,7 +162,11 @@ const HomescreenPage: React.FC<HomescreenPageProps> = ({ className }) => {
       {/* Class List Container - Full width and height */}
       <div className="flex-1 overflow-hidden">
         {transformedClasses.length > 0 ? (
-          <ClassList classes={transformedClasses} maxClasses={8} />
+          <ClassList 
+            classes={transformedClasses} 
+            maxClasses={8} 
+            onClassClick={handleClassClick}
+          />
         ) : (
           <div className="flex items-center justify-center h-full">
             <div className="text-center">

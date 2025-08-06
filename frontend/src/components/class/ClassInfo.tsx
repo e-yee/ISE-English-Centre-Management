@@ -1,9 +1,8 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-import type { ClassData } from '@/mockData/classListMock';
+import type { ClassData } from '@/types/class';
 import { Card, CardContent } from '@/components/ui/card';
 import AvatarIcon from '@/assets/class/user.svg';
-import CalendarIcon from '@/assets/class/calendar.svg';
 import ClockIcon from '@/assets/class/clock.svg';
 import MapPinIcon from '@/assets/class/map-pin.svg';
 
@@ -15,11 +14,30 @@ interface ClassInfoProps {
 }
 
 const ClassInfo: React.FC<ClassInfoProps> = ({ classData, studentCount, className, isExpanded = false }) => {
+  // Helper function to parse student count
+  const parseStudentCount = (countString: string) => {
+    const [current, max] = countString.split('/').map(Number);
+    return {
+      current: current || 0,
+      max: max || 50,
+      percentage: max > 0 ? Math.round((current / max) * 100) : 0
+    };
+  };
+
+  // Helper function to get capacity status
+  const getCapacityStatus = (current: number, max: number) => {
+    const percentage = (current / max) * 100;
+    if (percentage >= 90) return 'full';
+    if (percentage >= 75) return 'near-full';
+    if (percentage >= 50) return 'moderate';
+    return 'available';
+  };
+
+  const { current, max, percentage } = parseStudentCount(studentCount);
+  const capacityStatus = getCapacityStatus(current, max);
+
   // If expanded view is requested, render the glassmorphism card layout
   if (isExpanded) {
-    // Get progress value from classData, fallback to 60 if not provided
-    const progressValue = classData.progress || 60;
-
     return (
       <Card className={cn(
         "class-information-card w-full",
@@ -57,7 +75,7 @@ const ClassInfo: React.FC<ClassInfoProps> = ({ classData, studentCount, classNam
                       color: 'rgba(0, 0, 0, 0.6)'
                     }}
                   >
-                    {studentCount.split('/')[0]}
+                    {current}
                   </span>
                 </div>
               </div>
@@ -65,22 +83,8 @@ const ClassInfo: React.FC<ClassInfoProps> = ({ classData, studentCount, classNam
 
             {/* Details Section - Following Figma layout with vertical alignment */}
             <div className="flex gap-12">
-              {/* Left Column - Start Date and Room */}
+              {/* Left Column - Room */}
               <div className="space-y-4">
-                {/* Start Date */}
-                <div className="flex items-center gap-2">
-                  <img src={CalendarIcon} alt="Start Date" className="w-5 h-5" style={{ stroke: 'rgba(30, 30, 30, 0.5)', strokeWidth: '2px' }} />
-                  <span
-                    className="font-comfortaa font-normal leading-[1.4em]"
-                    style={{
-                      fontSize: '19px',
-                      color: 'rgba(0, 0, 0, 0.5)'
-                    }}
-                  >
-                    Start: 20/06/2025
-                  </span>
-                </div>
-
                 {/* Room */}
                 <div className="flex items-center gap-2">
                   <img src={MapPinIcon} alt="Room" className="w-5 h-5" style={{ stroke: 'rgba(30, 30, 30, 0.6)', strokeWidth: '2px' }} />
@@ -91,27 +95,13 @@ const ClassInfo: React.FC<ClassInfoProps> = ({ classData, studentCount, classNam
                       color: 'rgba(0, 0, 0, 0.6)'
                     }}
                   >
-                    Room: I72
+                    Room: {classData.room}
                   </span>
                 </div>
               </div>
 
-              {/* Right Column - End Date and Time */}
+              {/* Right Column - Time */}
               <div className="space-y-4">
-                {/* End Date */}
-                <div className="flex items-center gap-2">
-                  <img src={CalendarIcon} alt="End Date" className="w-5 h-5" style={{ stroke: 'rgba(30, 30, 30, 0.5)', strokeWidth: '2px' }} />
-                  <span
-                    className="font-comfortaa font-normal leading-[1.4em]"
-                    style={{
-                      fontSize: '19px',
-                      color: 'rgba(0, 0, 0, 0.5)'
-                    }}
-                  >
-                    End: 20/08/2025
-                  </span>
-                </div>
-
                 {/* Time */}
                 <div className="flex items-center gap-2">
                   <img src={ClockIcon} alt="Time" className="w-5 h-5" style={{ stroke: 'rgba(30, 30, 30, 0.6)', strokeWidth: '2px' }} />
@@ -122,53 +112,9 @@ const ClassInfo: React.FC<ClassInfoProps> = ({ classData, studentCount, classNam
                       color: 'rgba(0, 0, 0, 0.6)'
                     }}
                   >
-                    Time: 17:00:00
+                    Time: {classData.time}
                   </span>
                 </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Progress Bar Section - Following Figma design */}
-          <div className="mt-6">
-            <div className="relative">
-              {/* Progress Bar Container */}
-              <div
-                className="h-3 rounded-[30px] relative overflow-hidden"
-                style={{ background: 'rgba(0, 0, 0, 0.2)' }}
-              >
-                {/* Progress fill */}
-                <div
-                  className="absolute left-0 top-0 h-full rounded-[30px] transition-all duration-300 ease-in-out"
-                  style={{
-                    width: `${progressValue}%`,
-                    background: '#000000'
-                  }}
-                ></div>
-
-                {/* Progress text label at the start */}
-                <span
-                  className="absolute left-3 top-1/2 transform -translate-y-1/2 font-comfortaa font-normal z-10"
-                  style={{
-                    fontSize: '16px',
-                    lineHeight: '1.4em',
-                    color: 'rgba(0, 0, 0, 0.6)'
-                  }}
-                >
-                  Progress
-                </span>
-
-                {/* Percentage text at the end */}
-                <span
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 font-comfortaa font-normal z-10"
-                  style={{
-                    fontSize: '16px',
-                    lineHeight: '1.4em',
-                    color: 'rgba(0, 0, 0, 0.6)'
-                  }}
-                >
-                  {progressValue}%
-                </span>
               </div>
             </div>
           </div>
@@ -212,7 +158,8 @@ const ClassInfo: React.FC<ClassInfoProps> = ({ classData, studentCount, classNam
           <div
             className="bg-white rounded-[10px] flex items-center justify-center gap-3 px-4 py-0 border-[2px] border-solid"
             style={{
-              borderColor: '#4A42AE'
+              borderColor: capacityStatus === 'full' ? '#E2445C' : 
+                          capacityStatus === 'near-full' ? '#F8D222' : '#4A42AE'
             }}
           >
             {/* User Icon */}
@@ -234,7 +181,7 @@ const ClassInfo: React.FC<ClassInfoProps> = ({ classData, studentCount, classNam
                 color: 'rgba(0, 0, 0, 0.6)'
               }}
             >
-              {studentCount.split('/')[0]} {/* Show only current count, not total */}
+              {current} {/* Show actual current count */}
             </span>
           </div>
         </div>

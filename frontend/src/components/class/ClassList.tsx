@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import Class from "@/components/class/Class";
 import { useSidebar } from "@/components/ui/sidebar";
 import RevealOnScroll from "@/components/ui/RevealOnScroll";
-import type { ClassData } from "@/mockData/classListMock";
+import type { ClassData } from "@/types/class";
 
 interface ClassListProps {
   classes?: ClassData[];
@@ -11,6 +11,7 @@ interface ClassListProps {
   maxClasses?: number; // Optional limit for displayed classes
   enableRevealOnScroll?: boolean; // Option to disable animations if needed
   customScrollbar?: boolean; // Option to use custom scrollbar styling
+  onClassClick?: (classData: ClassData) => void; // Callback for class click
 }
 
 const ClassList: React.FC<ClassListProps> = ({
@@ -18,7 +19,8 @@ const ClassList: React.FC<ClassListProps> = ({
   className,
   maxClasses,
   enableRevealOnScroll = true,
-  customScrollbar = true
+  customScrollbar = true,
+  onClassClick
 }) => {
   const { state } = useSidebar();
   const isExpanded = state === "expanded";
@@ -55,12 +57,13 @@ const ClassList: React.FC<ClassListProps> = ({
               <Class
                 classData={classData}
                 className={cn(
-                  "w-full transition-all duration-300 ease-in-out",
+                  "w-full transition-all duration-300 ease-in-out cursor-pointer",
                   // Enhanced styling when sidebar is collapsed
                   isExpanded
                     ? "shadow-sm hover:shadow-md"
                     : "shadow-md hover:shadow-lg border border-gray-200"
                 )}
+                onClick={() => onClassClick?.(classData)}
               />
             </div>
           );

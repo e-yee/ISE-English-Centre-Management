@@ -69,7 +69,7 @@ const StudentList: React.FC<StudentListProps> = ({
           if (enableRevealOnScroll) {
             return (
               <RevealOnScroll
-                key={studentData.id}
+                key={studentData.id || `student-${index}`}
                 delay={50}
                 variant="fade-up"
                 className="w-full"
@@ -80,7 +80,7 @@ const StudentList: React.FC<StudentListProps> = ({
           }
 
           return (
-            <div key={studentData.id} className="w-full">
+            <div key={studentData.id || `student-${index}`} className="w-full">
               {studentComponent}
             </div>
           );

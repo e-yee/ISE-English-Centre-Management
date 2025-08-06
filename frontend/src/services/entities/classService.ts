@@ -9,6 +9,16 @@ export interface Class {
   teacher_id: string;
   room_id: string;
   class_date: string;
+  course?: {
+    name: string;
+  };
+  teacher?: {
+    full_name: string;
+  };
+  room?: {
+    name: string;
+  };
+  student_count?: number;
 }
 
 class ClassService extends ApiService {

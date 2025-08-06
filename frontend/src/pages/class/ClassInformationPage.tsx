@@ -2,7 +2,7 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import ClassInfo from '@/components/class/ClassInfo';
 import FeatureButtonList from '@/components/class/FeatureButtonList';
-import type { ClassData } from '@/mockData/classListMock';
+import type { ClassData } from '@/types/class';
 
 interface ClassInformationPageProps {
   className?: string;
@@ -14,16 +14,14 @@ const ClassInformationPage: React.FC<ClassInformationPageProps> = ({ className, 
   const mockClassData: ClassData = {
     id: 'CL001',
     className: 'Class 1A',
-    startDate: '20/06/2025',
-    endDate: '20/08/2025',
+    courseId: 'CRS001',
     room: 'I72',
     time: '17:00:00',
     status: 'Today',
-    statusColor: 'today',
-    progress: 60
+    statusColor: 'today'
   };
 
-  const mockStudentCount = "20";
+  const mockStudentCount = "0";
 
   return (
     <div className={cn("h-full overflow-hidden flex flex-col", className)}>

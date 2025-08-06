@@ -15,11 +15,22 @@ interface StudentTabProps {
 const StudentTab: React.FC<StudentTabProps> = ({ studentData, className }) => {
   const { state } = useSidebar();
   const isExpanded = state === "expanded";
-  const { index, name, studentId } = studentData;
+  const { index, name, studentId, contact, dateOfBirth } = studentData;
 
   const handleCopy = (text: string | undefined) => {
     if (text && text.trim()) {
       navigator.clipboard.writeText(text);
+    }
+  };
+
+  // Format date of birth for display
+  const formatDateOfBirth = (dateString: string | undefined) => {
+    if (!dateString) return '';
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-GB'); // DD/MM/YYYY format
+    } catch {
+      return dateString; // Return as-is if parsing fails
     }
   };
 
@@ -40,7 +51,7 @@ const StudentTab: React.FC<StudentTabProps> = ({ studentData, className }) => {
           isExpanded ? "p-3" : "p-2" // Further reduced padding for more compact size
         )}>
           {/* Student Name and ID Section - Reduced sizes */}
-          <div className="flex items-start mb-2">
+          <div className="flex items-start mb-3">
             {/* Index Number - Reduced size */}
             <span className="w-[20px] flex-shrink-0 pr-1 text-right text-[24px] font-semibold text-[rgba(0,0,0,0.75)] leading-[1.2em] font-comfortaa">
               {index}.
@@ -60,24 +71,24 @@ const StudentTab: React.FC<StudentTabProps> = ({ studentData, className }) => {
             </div>
           </div>
 
-          {/* Student Information Grid - 2x3 layout with reduced sizes */}
-          <div className="grid grid-cols-2 grid-rows-3 gap-x-2 gap-y-1">
-            {/* Row 1 - Email and DoB */}
-            <div className="space-y-0.5">
+          {/* Student Information Grid - 2x2 layout with better spacing */}
+          <div className="grid grid-cols-2 gap-x-3 gap-y-2">
+            {/* Row 1 - Contact and DoB */}
+            <div className="space-y-1">
               <label className="text-[12px] font-normal text-[rgba(0,0,0,0.5)] font-comfortaa leading-[1.2em]">
-                Email:
+                Contact:
               </label>
               <div className="relative flex items-center gap-1">
                 <Input
-                  value=""
+                  value={contact || ''}
                   readOnly
-                  className="flex-1 h-6 rounded-[3px] border border-[rgba(0,0,0,0.45)] bg-[rgba(217,217,217,0.3)] px-2 text-[12px] font-normal text-[rgba(0,0,0,0.65)] font-comfortaa text-center"
+                  className="flex-1 h-7 rounded-[3px] border border-[rgba(0,0,0,0.45)] bg-[rgba(217,217,217,0.3)] px-2 text-[12px] font-normal text-[rgba(0,0,0,0.65)] font-comfortaa text-center"
                   placeholder=""
                 />
                 <button
-                  onClick={() => handleCopy("")}
+                  onClick={() => handleCopy(contact)}
                   className="flex-shrink-0 w-3 h-3 hover:scale-110 transition-transform"
-                  aria-label="Copy email"
+                  aria-label="Copy contact"
                 >
                   <img
                     src={CopyIcon}
@@ -88,19 +99,19 @@ const StudentTab: React.FC<StudentTabProps> = ({ studentData, className }) => {
               </div>
             </div>
 
-            <div className="space-y-0.5">
+            <div className="space-y-1">
               <label className="text-[12px] font-normal text-[rgba(0,0,0,0.5)] font-comfortaa leading-[1.2em]">
                 DoB:
               </label>
               <div className="relative flex items-center gap-1">
                 <Input
-                  value=""
+                  value={formatDateOfBirth(dateOfBirth)}
                   readOnly
-                  className="flex-1 h-6 rounded-[3px] border border-[rgba(0,0,0,0.45)] bg-[rgba(217,217,217,0.3)] px-2 text-[12px] font-normal text-[rgba(0,0,0,0.65)] font-comfortaa text-center"
+                  className="flex-1 h-7 rounded-[3px] border border-[rgba(0,0,0,0.45)] bg-[rgba(217,217,217,0.3)] px-2 text-[12px] font-normal text-[rgba(0,0,0,0.65)] font-comfortaa text-center"
                   placeholder=""
                 />
                 <button
-                  onClick={() => handleCopy("")}
+                  onClick={() => handleCopy(formatDateOfBirth(dateOfBirth))}
                   className="flex-shrink-0 w-3 h-3 hover:scale-110 transition-transform"
                   aria-label="Copy date of birth"
                 >
@@ -113,73 +124,22 @@ const StudentTab: React.FC<StudentTabProps> = ({ studentData, className }) => {
               </div>
             </div>
 
-            {/* Row 2 - Phone and Presence */}
-            <div className="space-y-0.5">
-              <label className="text-[12px] font-normal text-[rgba(0,0,0,0.5)] font-comfortaa leading-[1.2em]">
-                Phone:
-              </label>
-              <div className="relative flex items-center gap-1">
-                <Input
-                  value=""
-                  readOnly
-                  className="flex-1 h-6 rounded-[3px] border border-[rgba(0,0,0,0.45)] bg-[rgba(217,217,217,0.3)] px-2 text-[12px] font-normal text-[rgba(0,0,0,0.65)] font-comfortaa text-center"
-                  placeholder=""
-                />
-                <button
-                  onClick={() => handleCopy("")}
-                  className="flex-shrink-0 w-3 h-3 hover:scale-110 transition-transform"
-                  aria-label="Copy phone"
-                >
-                  <img
-                    src={CopyIcon}
-                    alt="Copy"
-                    className="w-full h-full object-contain opacity-50"
-                  />
-                </button>
-              </div>
-            </div>
-
-            <div className="space-y-0.5">
+            {/* Row 2 - Presence spans both columns for better balance */}
+            <div className="col-span-2 space-y-1">
               <label className="text-[12px] font-normal text-[rgba(0,0,0,0.5)] font-comfortaa leading-[1.2em]">
                 Presence:
               </label>
               <div className="relative flex items-center gap-1">
                 <Input
-                  value=""
+                  value="Present" // Default value since backend doesn't provide this
                   readOnly
-                  className="flex-1 h-6 rounded-[3px] border border-[rgba(0,0,0,0.45)] bg-[rgba(217,217,217,0.3)] px-2 text-[12px] font-normal text-[rgba(0,0,0,0.65)] font-comfortaa text-center"
+                  className="flex-1 h-7 rounded-[3px] border border-[rgba(0,0,0,0.45)] bg-[rgba(217,217,217,0.3)] px-2 text-[12px] font-normal text-[rgba(0,0,0,0.65)] font-comfortaa text-center"
                   placeholder=""
                 />
                 <button
-                  onClick={() => handleCopy("")}
+                  onClick={() => handleCopy("Present")}
                   className="flex-shrink-0 w-3 h-3 hover:scale-110 transition-transform"
                   aria-label="Copy presence"
-                >
-                  <img
-                    src={CopyIcon}
-                    alt="Copy"
-                    className="w-full h-full object-contain opacity-50"
-                  />
-                </button>
-              </div>
-            </div>
-
-            {/* Row 3 - Note spans both columns */}
-            <div className="col-span-2 space-y-0.5">
-              <label className="text-[12px] font-normal text-[rgba(0,0,0,0.5)] font-comfortaa leading-[1.2em]">
-                Note:
-              </label>
-              <div className="relative flex items-start gap-1">
-                <textarea
-                  value=""
-                  readOnly
-                  className="flex-1 h-10 rounded-[3px] border border-[rgba(0,0,0,0.45)] bg-[rgba(217,217,217,0.3)] px-2 py-1 text-[12px] font-normal text-[rgba(0,0,0,0.65)] font-comfortaa resize-none focus:outline-none focus:border-black focus:ring-0"
-                  placeholder=""
-                />
-                <button
-                  onClick={() => handleCopy("")}
-                  className="flex-shrink-0 w-3 h-3 hover:scale-110 transition-transform mt-1"
-                  aria-label="Copy note"
                 >
                   <img
                     src={CopyIcon}

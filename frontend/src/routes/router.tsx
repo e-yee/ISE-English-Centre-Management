@@ -6,7 +6,6 @@ import NotFoundPage from '../pages/NotFoundPage';
 import UnauthorizedPage from '../pages/UnauthorizedPage';
 import Homescreen from '../pages/homescreen/Homescreen';
 import AppLayout from '../components/layout/AppLayout';
-import ExamplePage from '../pages/ExamplePage';
 
 // Import pages
 import AbsentRequestPage from '../pages/absent-request/AbsentRequestPage';
@@ -50,7 +49,6 @@ export const router = createBrowserRouter([
           // --- Teacher Routes (accessible by Teacher, Learning Advisor, Manager) ---
           {path: 'home', element: <Homescreen />},
           {path: 'colleagues', element: <ColleaguesPage />},
-          { path: 'example', element: <ExamplePage /> },
           { path: 'absent-request', element: <AbsentRequestPage /> },
           { path: 'checkin', element: <CheckInPage /> },
           { path: 'timekeeping', element: <TimeKeepingPage /> },

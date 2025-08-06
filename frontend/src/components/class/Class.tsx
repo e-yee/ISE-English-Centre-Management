@@ -1,6 +1,6 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-import type { ClassData } from '@/mockData/classListMock';
+import type { ClassData } from '@/types/class';
 import { Card, CardContent } from '@/components/ui/card';
 import { useSidebar } from '@/components/ui/sidebar';
 
@@ -12,7 +12,6 @@ import ExpiredIcon from '@/assets/status/expired.svg';
 import FutureIcon from '@/assets/status/future.svg';
 
 // New class-specific icon imports
-import CalendarIcon from '@/assets/class/calendar.svg';
 import MapPinIcon from '@/assets/class/map-pin.svg';
 import ClockIcon from '@/assets/class/clock.svg';
 import ChevronRightIcon from '@/assets/class/chevron-right.svg';
@@ -20,9 +19,10 @@ import ChevronRightIcon from '@/assets/class/chevron-right.svg';
 interface ClassProps {
   classData: ClassData;
   className?: string;
+  onClick?: () => void;
 }
 
-const Class: React.FC<ClassProps> = ({ classData, className }) => {
+const Class: React.FC<ClassProps> = ({ classData, className, onClick }) => {
   const { state } = useSidebar();
   const isExpanded = state === "expanded";
 
@@ -60,15 +60,15 @@ const Class: React.FC<ClassProps> = ({ classData, className }) => {
   const { number, name } = getClassNameWithoutNumber(classData.className);
   const StatusIconComponent = getStatusIcon(classData.statusColor);
 
-  // Get progress value from classData, fallback to 0 if not provided
-  const progressValue = classData.progress || 0;
-
   return (
-    <Card className={cn(
-      "class-card-container bg-white border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 ease-in-out",
-      "w-full min-h-[160px] rounded-[15px]",
-      className
-    )}>
+    <Card 
+      className={cn(
+        "class-card-container bg-white border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 ease-in-out",
+        "w-full min-h-[160px] rounded-[15px]",
+        className
+      )}
+      onClick={onClick}
+    >
       <CardContent className={cn(
         "transition-all duration-300 ease-in-out",
         isExpanded ? "p-6" : "p-5"
@@ -100,55 +100,14 @@ const Class: React.FC<ClassProps> = ({ classData, className }) => {
           </div>
         </div>
 
-        {/* Dates Row */}
-        <div className="flex gap-4 mb-6">
-          <div className="flex items-center gap-2">
-            <img src={CalendarIcon} alt="Start Date" className="w-4 h-4" />
-            <span className="text-sm font-normal text-black font-comfortaa">Start: {classData.startDate}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <img src={CalendarIcon} alt="End Date" className="w-4 h-4" />
-            <span className="text-sm font-normal text-black font-comfortaa">End: {classData.endDate}</span>
-          </div>
+        {/* Course ID Row */}
+        <div className="flex items-center gap-2 mb-4">
+          <span className="text-sm font-normal text-black/60 font-comfortaa">Course ID: {classData.courseId}</span>
         </div>
 
-        {/* Progress Section */}
-        <div className="space-y-3 relative">
-          {/* Progress Label */}
-          <div className="flex items-center">
-            <span className="text-sm font-normal text-black/60 font-comfortaa">Progress</span>
-          </div>
-
-          {/* Progress Bar Container - 60% width of card */}
-          <div className="relative w-[60%]">
-            {/* Progress Bar */}
-            <div className={cn(
-              "h-2 bg-black/20 rounded-[30px] relative overflow-hidden transition-all duration-300 ease-in-out"
-            )}>
-              {/* Progress fill */}
-              <div
-                className="absolute left-0 top-0 h-full bg-black rounded-[30px] transition-all duration-300 ease-in-out"
-                style={{ width: `${progressValue}%` }}
-              ></div>
-            </div>
-
-            {/* Percentage text positioned above the right end of progress bar */}
-            <span
-              className="absolute text-xs font-medium text-black/60 z-10 whitespace-nowrap font-comfortaa"
-              style={{
-                left: `${progressValue}%`,
-                top: '20px',
-                transform: 'translateX(-50%)'
-              }}
-            >
-              {progressValue}%
-            </span>
-          </div>
-
-          {/* Chevron positioned to align with progress bar center */}
-          <div className="absolute right-0" style={{ top: '80%', transform: 'translateY(-50%)' }}>
-            <img src={ChevronRightIcon} alt="Navigate" className="w-10 h-10" />
-          </div>
+        {/* Chevron positioned at the bottom right */}
+        <div className="flex justify-end">
+          <img src={ChevronRightIcon} alt="Navigate" className="w-10 h-10" />
         </div>
       </CardContent>
     </Card>

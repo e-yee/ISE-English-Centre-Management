@@ -219,8 +219,8 @@ def la_delete_student():
             "error": str(e)
         }), HTTPStatus.INTERNAL_SERVER_ERROR 
 
-# General Features        
-@student_bp.get("/")
+# Teacher Features        
+@student_bp.get("/class/")
 @role_required("Teacher", "Learning Advisor", "Manager")
 def get_students_in_class():
     try:

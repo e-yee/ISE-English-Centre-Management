@@ -5,6 +5,10 @@ export interface StudentData {
   name: string;
   classId: string;
   index: number;
+  // Backend data fields
+  contact?: string; // Combined email and phone
+  dateOfBirth?: string;
+  contactInfo?: string;
 }
 
 export const studentListMockData: StudentData[] = [
