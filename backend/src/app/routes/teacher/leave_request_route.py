@@ -256,13 +256,17 @@ def approve_leave_request(leave_request_id):
                 "message": "Leave request not found"
             }), HTTPStatus.NOT_FOUND
         
-        # Get the status from request body
         data = request.get_json()
-        status = data.get("status", "Approved")
-        
-        if status not in ["Approved", "Not Approved"]:
+        status = data.get("status")
+
+        if leave_request.status != "Pending":
             return jsonify({
-                "message": "Invalid status. Must be 'Approved' or 'Not Approved'"
+                "message": "Leave request has already been processed"
+            }), HTTPStatus.BAD_REQUEST
+        
+        if status not in ["Not Approved", "Approved"]:
+            return jsonify({
+                "message": "Invalid status. Must be 'Approved' or 'Not Approved'."
             }), HTTPStatus.BAD_REQUEST
         
         leave_request.status = status

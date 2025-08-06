@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import get_jwt_identity
+from flask_jwt_extended import get_jwt_identity, get_jwt
 from app.auth import role_required
 from marshmallow import ValidationError
 from ...http_status import HTTPStatus
@@ -90,13 +90,9 @@ def create_issue():
         data = request.get_json()
         validated = issue_schema.load(data)
 
-        identity = get_jwt_identity()
-        user = db.session.get(Account, identity)
-
-        if not user or not user.employee_id:
-            return jsonify({"message": "User not found or not an employee"}), HTTPStatus.NOT_FOUND
-
-        teacher_id, error_response, status = validate_teacher(user.employee_id)
+        id = get_jwt().get("employee_id")
+        
+        teacher_id, error_response, status = validate_teacher(id)
         if not teacher_id:
             return error_response, status
         
@@ -110,12 +106,11 @@ def create_issue():
         
         issue = Issue(
             id=generate_id(),
-            teacher_id=user.employee_id,
+            teacher_id=teacher_id,
             student_id=student_id,
             room_id=room_id,
             issue_type=validated["issue_type"],
-            issue_description=validated["issue_description"],
-            reported_date=validated.get("reported_date", datetime.date.today())
+            issue_description=validated["issue_description"]
         )
 
         db.session.add(issue)

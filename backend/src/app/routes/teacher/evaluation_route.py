@@ -1,11 +1,11 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import get_jwt_identity
+from flask_jwt_extended import get_jwt_identity, get_jwt
 from app.auth import role_required
 from marshmallow import ValidationError
 from ...http_status import HTTPStatus
 from sqlalchemy.exc import IntegrityError, OperationalError
 from ...schemas.evaluation_schema import evaluation_schema
-from ...models import Evaluation, Account, Student
+from ...models import Evaluation, Account, Student, Employee
 from extensions import db
 
 evaluation_bp = Blueprint("evaluation_bp", __name__, url_prefix="/evaluation")
@@ -81,7 +81,7 @@ def validate_evaluation(teacher_id, student_id, course_id, course_date, assessme
     return evaluation, None, None
 
 def validate_teacher(teacher_id):
-    teacher = db.session.query(Account).filter_by(id=teacher_id).first()
+    teacher = db.session.query(Employee).filter_by(id=teacher_id, role="Teacher").first()
     if not teacher:
         return None, jsonify({
             "message": "Teacher not found"
@@ -111,20 +111,14 @@ def get_evaluation():
         data = request.get_json()
         validated = evaluation_schema.load(data)
 
-        identity = get_jwt_identity()
-        user = db.session.get(Account, identity)
-
-        if not user or not user.employee_id:
-            return jsonify({
-                "message": "User not found"
-            }), HTTPStatus.NOT_FOUND
+        id = get_jwt().get("employee_id")
         
-        result, response, status = validate_teacher(user.employee_id)
-        if not result:
+        teacher, response, status = validate_teacher(id)
+        if not teacher:
             return response, status
         
         evaluations = db.session.query(Evaluation).filter_by(
-            teacher_id=result.employee_id,
+            teacher_id=id,
         ).all()
 
         return jsonify({
@@ -150,24 +144,17 @@ def add_evaluation():
         data = request.get_json()
         validated = evaluation_schema.load(data)
 
-        identity = get_jwt_identity()
-        user = db.session.get(Account, identity)
+        id = get_jwt().get("employee_id")
+        user, error_response, status_code = validate_teacher(id)
+        if not user:
+            return error_response, status_code
 
-        if not user or not user.employee_id:
-            return jsonify({
-                "message": "User not found"
-            }), HTTPStatus.NOT_FOUND
-        
-        result, response, status = validate_teacher(user.employee_id)
-        if not result:
-            return response, status
-        
         result, response, status = validate_course(validated["course_id"])
         if not result:
             return response, status
         
         result, response, status = validate_evaluation(
-            user.employee_id,
+            id,
             validated["student_id"],
             validated["course_id"],
             validated["course_date"],
@@ -182,7 +169,7 @@ def add_evaluation():
             course_id=validated["course_id"],
             course_date=validated["course_date"],
             assessment_type=validated["assessment_type"],
-            teacher_id=user.employee_id,
+            teacher_id=id,
             grade=validated["grade"],
             comment=validated["comment"],
             enrolment_id=validated["enrolment_id"],
@@ -222,31 +209,25 @@ def add_evaluation():
 @role_required("Teacher")
 def update_evaluation():
     try:
-        result, response, status = get_student_id()
-        if not result:
-            return response, status
-        
-        student_id = result
-        result, response, status = get_teacher_id()
-        if not result:
-            return response, status
-        
-        teacher_id = result
-        result, response, status = get_course_id()
-        if not result:
-            return response, status
-        
-        course_id = result
-        result, response, status = get_course_date()
-        if not result:
+        student_id, response, status = get_student_id()
+        if not student_id:
             return response, status
 
-        course_date = result
-        result, response, status = get_assessment_type()
-        if not result:
+        teacher_id, response, status = get_teacher_id()
+        if not teacher_id:
+            return response, status
+        
+        course_id, response, status = get_course_id()
+        if not course_id:
             return response, status
 
-        assessment_type = result
+        course_date, response, status = get_course_date()
+        if not course_date:
+            return response, status
+
+        assessment_type, response, status = get_assessment_type()
+        if not assessment_type:
+            return response, status
 
         evaluation, response, status = validate_evaluation(
             student_id,
@@ -255,6 +236,7 @@ def update_evaluation():
             course_date,
             assessment_type
         )
+        
         if not evaluation:
             return response, status
 
