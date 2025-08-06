@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -6,16 +6,17 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { format } from 'date-fns';
-import { CalendarIcon, BookOpen } from 'lucide-react';
+import { CalendarIcon, BookOpen, AlertCircle, CheckCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { Course, CourseFormData } from '@/types/course';
+import type { CreateCourseData } from '@/services/entities/courseService';
 
 const courseFormSchema = z.object({
-  name: z.string().min(1, "Course name is required").min(3, "Course name must be at least 3 characters"),
+  name: z.string().min(1, "Course name is required"),
   duration: z.string().refine((val) => {
     const num = parseFloat(val)
     return !isNaN(num) && num > 0
@@ -40,10 +41,22 @@ type FormData = z.infer<typeof courseFormSchema>;
 interface CourseFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (course: Course) => void;
+  onSubmit: (course: CreateCourseData) => Promise<boolean>;
+  isCreating?: boolean;
+  error?: string | null;
 }
 
-const CourseForm: React.FC<CourseFormProps> = ({ open, onOpenChange, onSubmit }) => {
+// Valid course names from backend
+const validCourseNames = [
+  "CEFR A1", "CEFR A2", "CEFR B1", "CEFR B2", "CEFR C1", "CEFR C2",
+  "IELTS Foundation", "IELTS Pre-Intermediate", "IELTS Intermediate", "IELTS Upper-Intermediate", "IELTS Advanced",
+  "TOEIC Foundation", "TOEIC Pre-Intermediate", "TOEIC Intermediate", "TOEIC Upper-Intermediate", "TOEIC Advanced",
+  "6th Grade Math", "7th Grade Math", "8th Grade Math", "9th Grade Math", "10th Grade Math", "11th Grade Math", "12th Grade Math"
+];
+
+const CourseForm: React.FC<CourseFormProps> = ({ open, onOpenChange, onSubmit, isCreating = false, error = null }) => {
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  
   const form = useForm<FormData>({
     resolver: zodResolver(courseFormSchema),
     defaultValues: {
@@ -57,25 +70,28 @@ const CourseForm: React.FC<CourseFormProps> = ({ open, onOpenChange, onSubmit })
     }
   });
 
-  const generateCourseId = () => {
-    return `COURSE-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
-  };
-
-  const handleSubmit = (data: FormData) => {
-    const newCourse: Course = {
-      id: generateCourseId(),
+  const handleSubmit = async (data: FormData) => {
+    const courseData: CreateCourseData = {
       name: data.name,
       duration: parseInt(data.duration),
-      start_date: data.start_date!,
+      start_date: data.start_date!.toISOString().split('T')[0],
       schedule: data.schedule,
       fee: parseInt(data.fee),
       prerequisites: data.prerequisites || "",
-      created_date: new Date(),
+      created_date: new Date('2025-01-02').toISOString().split('T')[0],
       description: data.description
     };
     
-    onSubmit(newCourse);
-    form.reset();
+    const success = await onSubmit(courseData);
+    if (success) {
+      setSuccessMessage("Course created successfully!");
+      form.reset();
+      // Close form after 2 seconds
+      setTimeout(() => {
+        setSuccessMessage(null);
+        onOpenChange(false);
+      }, 2000);
+    }
   };
 
   return (
@@ -91,6 +107,26 @@ const CourseForm: React.FC<CourseFormProps> = ({ open, onOpenChange, onSubmit })
           </DialogDescription>
         </DialogHeader>
         
+        {/* Error Message */}
+        {error && (
+          <div className="p-4 border border-red-200 bg-red-50 rounded-lg mb-4">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="h-4 w-4 text-red-600" />
+              <span className="text-sm text-red-800">{error}</span>
+            </div>
+          </div>
+        )}
+
+        {/* Success Message */}
+        {successMessage && (
+          <div className="p-4 border border-green-200 bg-green-50 rounded-lg mb-4">
+            <div className="flex items-center gap-2">
+              <CheckCircle className="h-4 w-4 text-green-600" />
+              <span className="text-sm text-green-800">{successMessage}</span>
+            </div>
+          </div>
+        )}
+        
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -100,9 +136,20 @@ const CourseForm: React.FC<CourseFormProps> = ({ open, onOpenChange, onSubmit })
                 render={({ field }) => (
                   <FormItem className="md:col-span-2">
                     <FormLabel>Course Name *</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g., Introduction to React" {...field} />
-                    </FormControl>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a course" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {validCourseNames.map((courseName) => (
+                          <SelectItem key={courseName} value={courseName}>
+                            {courseName}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -233,8 +280,8 @@ const CourseForm: React.FC<CourseFormProps> = ({ open, onOpenChange, onSubmit })
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              <Button type="submit">
-                Create Course
+              <Button type="submit" disabled={isCreating}>
+                {isCreating ? "Creating..." : "Create Course"}
               </Button>
             </div>
           </form>

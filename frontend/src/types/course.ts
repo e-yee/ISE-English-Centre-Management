@@ -1,5 +1,5 @@
 export interface Course {
-  id: string;
+  id?: string;
   name: string;
   duration: number;
   start_date: Date;

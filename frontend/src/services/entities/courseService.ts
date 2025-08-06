@@ -3,7 +3,6 @@ import { getUserRole } from '../../lib/utils';
 import type { Course } from '../../types/course';
 
 export interface CreateCourseData {
-  id: string;
   name: string;
   duration: number;
   start_date: string; // ISO date string

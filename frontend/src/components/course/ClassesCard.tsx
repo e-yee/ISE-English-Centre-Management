@@ -27,7 +27,7 @@ const ClassesCard: React.FC<ClassesCardProps> = ({ classes, courseId, onClick, s
           <div>
             <CardTitle className="text-lg font-bold text-gray-800">Classes</CardTitle>
             <CardDescription className="text-green-600">
-              {filteredClasses.length} class{filteredClasses.length !== 1 ? 'es' : ''}
+              {filteredClasses.length > 0 ? `${filteredClasses.length} class${filteredClasses.length !== 1 ? 'es' : ''}` : ''}
             </CardDescription>
           </div>
         </CardHeader>

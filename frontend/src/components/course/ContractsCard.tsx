@@ -48,7 +48,7 @@ const ContractsCard: React.FC<ContractsCardProps> = ({ contracts, courseId, onCl
           <div>
             <CardTitle className="text-lg font-bold text-gray-800">Contracts</CardTitle>
             <CardDescription className="text-purple-600">
-              {filteredContracts.length} contract{filteredContracts.length !== 1 ? 's' : ''}
+              {filteredContracts.length > 0 ? `${filteredContracts.length} contract${filteredContracts.length !== 1 ? 's' : ''}` : ''}
             </CardDescription>
           </div>
         </CardHeader>
