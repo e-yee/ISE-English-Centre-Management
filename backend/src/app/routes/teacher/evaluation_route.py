@@ -123,7 +123,7 @@ def get_evaluation():
 
         return jsonify({
             "message": "Evaluations retrieved successfully",
-            "data": evaluations
+            "data": evaluations,
         }), HTTPStatus.OK
 
     except Exception as e:
@@ -179,8 +179,8 @@ def add_evaluation():
         db.session.add(evaluation)
         db.session.commit()
 
-        return jsonify(evaluation_schema.dump(evaluation)), HTTPStatus.CREATED
-    
+        return jsonify(evaluation_schema.dump(evaluation, many=True)), HTTPStatus.CREATED
+
     except ValidationError as ve:
         return jsonify({
             "message": "Validation error",

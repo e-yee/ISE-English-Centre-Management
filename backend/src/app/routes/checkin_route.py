@@ -11,14 +11,14 @@ from sqlalchemy.exc import IntegrityError
 checkin_bp = Blueprint("checkin_bp", __name__, url_prefix="/checkin")
 
 def generate_id():
-    last_id = db.session.query(StaffCheckin.id).order_by(StaffCheckin.id.desc()).first()
+    last_id = db.session.query(StaffCheckin).order_by(StaffCheckin.id.desc()).first()
 
     if not last_id:
         return "CK001"
     
     else:
-        prefix = last_id[:2]
-        last_number = int(last_id[2:]) + 1
+        prefix = last_id.id[:2]
+        last_number = int(last_id.id[2:]) + 1
         return f"{prefix}{last_number:03}"
     
 
@@ -106,13 +106,7 @@ def checkin():
         db.session.add(checkin_record)
         db.session.commit()
 
-        return jsonify({
-            "message": "Check-in successful", 
-            "checkin_id": checkin_record.id,
-            "employee_id": checkin_record.employee_id,
-            "status": checkin_record.status,
-            "checkin_time": checkin_record.checkin_time.strftime("%Y-%m-%d %H:%M:%S")
-        }), HTTPStatus.CREATED
+        return jsonify(checkin_schema.dump(checkin_record, many=True)), HTTPStatus.CREATED
 
     except ValidationError as ve:
         return jsonify({"message": "Invalid input", "error": ve.messages}), HTTPStatus.BAD_REQUEST
@@ -140,4 +134,4 @@ def checkout():
 
     db.session.commit()
 
-    return jsonify({"message": f"Checked out {len(staff_checkins)} staff successfully."}), HTTPStatus.OK
+    return jsonify(checkin_schema.dump(staff_checkins, many=True)), HTTPStatus.OK

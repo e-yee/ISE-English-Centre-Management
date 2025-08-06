@@ -11,15 +11,14 @@ import datetime
 
 issue_bp = Blueprint("issue_bp", __name__, url_prefix="/issue")
 def generate_id():
-    last_id = db.session.query(Issue.id).order_by(Issue.id.desc()).first()
+    last_id = db.session.query(Issue).order_by(Issue.id.desc()).first()
 
     if not last_id:
         return "ISS001"
     else:
         # last_id is a tuple, so we need to access the first element
-        last_id_str = last_id[0]
-        prefix = last_id_str[:3]
-        last_number = int(last_id_str[3:]) + 1
+        prefix = last_id.id[:3]
+        last_number = int(last_id.id[3:]) + 1
         return f"{prefix}{last_number:03}"
     
 def get_student_issue(student_id):
@@ -174,7 +173,7 @@ def create_issue():
         db.session.commit()
         print("DEBUG: Issue saved to database successfully")
 
-        return jsonify(issue_schema.dump(issue)), HTTPStatus.CREATED
+        return jsonify(issue_schema.dump(issue, many=True)), HTTPStatus.CREATED
 
     except Exception as e:
         print(f"DEBUG: Unexpected error: {str(e)}")
@@ -210,7 +209,7 @@ def resolve_issue(issue_id):
 
         db.session.commit()
 
-        return jsonify(issue_schema.dump(issue)), HTTPStatus.OK
+        return jsonify(issue_schema.dump(issue, many=True)), HTTPStatus.OK
 
     except ValidationError as ve:
         return jsonify({

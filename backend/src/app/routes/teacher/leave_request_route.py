@@ -94,7 +94,7 @@ def validate_substitute(employee_id, substitute_id):
 def get_all():
     try:
         leave_requests = db.session.query(LeaveRequest).all()
-        return jsonify(leave_request_schema.dump(leave_requests)), HTTPStatus.OK
+        return jsonify(leave_request_schema.dump(leave_requests, many=True)), HTTPStatus.OK
 
     except Exception as e:
         return jsonify({
@@ -142,7 +142,7 @@ def add_request():
         db.session.add(leave_request)
         db.session.commit()
 
-        return jsonify(leave_request_schema.dump(leave_request)), HTTPStatus.CREATED
+        return jsonify(leave_request_schema.dump(leave_request, many=True)), HTTPStatus.CREATED
     
     except ValidationError as ve:
         return jsonify({
@@ -239,7 +239,7 @@ def get_personal_leave_requests():
     try:
         id = get_jwt().get("employee_id")
         leave_requests = db.session.query(LeaveRequest).filter_by(employee_id=id).all()
-        return jsonify(leave_request_schema.dump(leave_requests)), HTTPStatus.OK
+        return jsonify(leave_request_schema.dump(leave_requests, many=True)), HTTPStatus.OK
     except Exception as e:
         return jsonify({
             "message": "Unexpected error occurred", 

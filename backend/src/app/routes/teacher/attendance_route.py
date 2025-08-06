@@ -171,7 +171,7 @@ def view_attendance():
             term=term
         ).all()
 
-        return jsonify(list_attendance_schema.dump(records)), HTTPStatus.OK
+        return jsonify(list_attendance_schema.dump(records, many=True)), HTTPStatus.OK
 
     except Exception as e:
         return jsonify({"message": "An unexpected error occurred"}), HTTPStatus.INTERNAL_SERVER_ERROR
