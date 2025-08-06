@@ -79,27 +79,27 @@ const UserProfile: React.FC<UserProfileProps> = ({
         <div
           className={cn(
             "absolute right-0 top-full mt-2 z-50",
-            "bg-white border border-black rounded-[30px]",
+            "bg-white rounded-[15px]",
             "shadow-[0px_4px_8px_rgba(0,0,0,0.25)]",
-            "min-w-[240px]",
+            "min-w-[200px]",
             "animate-in fade-in-0 zoom-in-95 duration-200"
           )}
         >
           {/* Menu Items */}
-          <div className="overflow-hidden rounded-[30px]">
+          <div className="overflow-hidden rounded-[15px]">
             {menuItems.map((item, index) => (
               <button
                 key={item.id}
                 onClick={() => handleItemClick(item)}
                 disabled={isLoading && item.id === "logout"}
                 className={cn(
-                  "w-full px-8 py-4 text-left",
-                  "font-comfortaa text-[24px] font-normal text-black",
+                  "w-full my-1 px-8 py-2 text-left h-fit",
+                  "font-comfortaa text-[13px] font-normal text-gray-500",
                   "transition-all duration-200 ease-out",
-                  "hover:bg-[#D9D9D9]",
+                  "hover:bg-[#D9D9D9] hover:cursor-pointer",
                   "focus:outline-none focus:bg-[#D9D9D9]",
                   // Add border between items (except last)
-                  index < menuItems.length - 1 && "border-b border-black",
+                  //index < menuItems.length - 1 && "border-b border-black",
                   // Disabled state for logout button
                   isLoading && item.id === "logout" && "opacity-50 cursor-not-allowed"
                 )}
