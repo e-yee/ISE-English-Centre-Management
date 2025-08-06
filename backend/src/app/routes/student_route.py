@@ -224,13 +224,31 @@ def la_delete_student():
 @role_required("Teacher", "Learning Advisor", "Manager")
 def get_students_in_class():
     try:
-        class_id = request.args.get("id")
+        class_id = request.args.get("class_id")
         if not class_id:
             return jsonify({
                 "message": "Missing class ID in query params"
-            }), HTTPStatus.NOT_FOUND
+            }), HTTPStatus.BAD_REQUEST
+            
+        course_id = request.args.get("course_id")
+        if not course_id:
+            return jsonify({
+                "message": "Missing course ID in query params"
+            }), HTTPStatus.BAD_REQUEST
         
-        class_ = db.session.get(Class, class_id)
+        course_date = request.args.get("course_date")
+        if not course_date:
+            return jsonify({
+                "message": "Missing course date in query params"
+            }), HTTPStatus.BAD_REQUEST
+            
+        term = request.args.get("term")
+        if not term:
+            return jsonify({
+                "message": "Missing class term in query params"
+            }), HTTPStatus.BAD_REQUEST
+    
+        class_ = db.session.get(Class, (class_id, course_id, course_date, term))
         if not class_:
             return jsonify({
                 "message": "Class not found"
