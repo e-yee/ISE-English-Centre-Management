@@ -106,7 +106,7 @@ def checkin():
         db.session.add(checkin_record)
         db.session.commit()
 
-        return jsonify(checkin_schema.dump(checkin_record, many=True)), HTTPStatus.CREATED
+        return jsonify(checkin_schema.dump(checkin_record, many=False)), HTTPStatus.CREATED
 
     except ValidationError as ve:
         return jsonify({"message": "Invalid input", "error": ve.messages}), HTTPStatus.BAD_REQUEST
@@ -134,4 +134,4 @@ def checkout():
 
     db.session.commit()
 
-    return jsonify(checkin_schema.dump(staff_checkins, many=True)), HTTPStatus.OK
+    return jsonify({"message": f"Checked out {len(staff_checkins)} staff successfully."}), HTTPStatus.OK
