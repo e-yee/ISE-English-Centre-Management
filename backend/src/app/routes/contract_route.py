@@ -4,7 +4,7 @@ from marshmallow import ValidationError
 from sqlalchemy.exc import IntegrityError, OperationalError
 from extensions import db
 from ..auth import role_required
-from ..models import Contract, Student, Course
+from ..models import Contract, Student, Course, Enrolment
 from ..http_status import HTTPStatus
 from ..schemas.learning_advisor.contract_schema import contract_schema
 
@@ -19,6 +19,17 @@ def generate_id():
     else:
         prefix = last_contract.id[:3]
         num = int(last_contract.id[3:]) + 1
+        
+        return f"{prefix}{num:03}"
+
+def generate_enrolment_id():
+    last_enrolment = db.session.query(Enrolment).order_by(Enrolment.id.desc()).first()
+    
+    if not last_enrolment:
+        return "ENR001"
+    else:
+        prefix = last_enrolment.id[:3]
+        num = int(last_enrolment.id[3:]) + 1
         
         return f"{prefix}{num:03}"
     
@@ -116,8 +127,19 @@ def la_add_contract():
             start_date=course.start_date,
             end_date=course.end_date
         )
-        
         db.session.add(contract)
+        
+        # Add enrolment automatically
+        enrolment = Enrolment(
+            id=generate_enrolment_id(),
+            contract_id=contract.id,
+            student_id=contract.student_id,
+            course_id=contract.course_id,
+            course_date=contract.course_date,
+            enrolment_date=contract.start_date
+        )
+        db.session.add(enrolment)
+        
         db.session.commit()
         return jsonify(contract_schema.dump(contract)), HTTPStatus.CREATED
     
@@ -225,19 +247,27 @@ def la_update_contract():
         course_id = update_data.get("course_id", contract.course_id)
         course_date = update_data.get("course_date", contract.course_date)
         
+        enrolment = db.session.query(Enrolment).filter_by(contract_id=contract.id).first()
+        
         if student_id != contract.student_id:
-            result, response, status = validate_student(student_id)
-            if not result:
-                return response, status
-                    
-        if course_id != contract.course_id or course_date != contract.course_date:
-            result, response, status = validate_course(course_id, course_date)
-            if not result:
+            student, response, status = validate_student(student_id)
+            if not student:
                 return response, status
             
-            setattr(contract, "start_date", result.start_date)
-            setattr(contract, "end_date", result.end_date)
-            setattr(contract, "tuition_fee", result.fee)
+            setattr(enrolment, "student_id", student_id)
+                    
+        if course_id != contract.course_id or course_date != contract.course_date:
+            course, response, status = validate_course(course_id, course_date)
+            if not course:
+                return response, status
+            
+            setattr(contract, "start_date", course.start_date)
+            setattr(contract, "end_date", course.end_date)
+            setattr(contract, "tuition_fee", course.fee)
+            
+            setattr(enrolment, "course_id", course_id)
+            setattr(enrolment, "course_date", course_date)
+            setattr(enrolment, "enrolment_date", course.start_date)
 
         result, response, status = check_existed_contract(student_id, course_id, course_date)
         if not result:
@@ -291,6 +321,10 @@ def la_delete_contract():
             return response, status
         
         db.session.delete(contract)
+        
+        enrolment = db.session.query(Enrolment).filter_by(contract_id=contract.id).first()
+        db.session.delete(enrolment)
+        
         db.session.commit()
         return jsonify({
             "message": "Contract deleted successfully"
@@ -316,7 +350,7 @@ def la_delete_contract():
             "message": "Unexpected error occurred", 
             "error": str(e)
         }), HTTPStatus.INTERNAL_SERVER_ERROR
-        
+            
 # Manager Features
 @contract_bp.get("/manager/")
 @role_required("Manager")
