@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from app.auth import role_required
 from ...http_status import HTTPStatus
 from marshmallow import ValidationError
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, OperationalError
 from ...models import Employee, Contract, Course, Student
 from extensions import db
 from sqlalchemy import func
@@ -50,18 +50,40 @@ def overview_statistics():
         return jsonify({
             "message": str(e)
         }), HTTPStatus.INTERNAL_SERVER_ERROR
+    
+    except IntegrityError as ie:
+        return jsonify({
+            "message": "Database integrity error",
+            "error": str(ie)
+        }), HTTPStatus.BAD_REQUEST
+
+    except OperationalError as oe:
+        return jsonify({
+            "message": "Database operational error",
+            "error": str(oe)
+        }), HTTPStatus.BAD_REQUEST
+
 
 @dashboard_bp.get("/statistics/students")
 @role_required("Manager")
 def student_statistics():
-    pass
+    # Total students, students group by age (Elementary, Middle School, High School), students group by class type (Math/English)
+    course_to_subject_map = {
+        "Math": ["MTH001", "MTH002", "MTH003", "MTH004", "MTH101", "MTH102", "MTH103"],
+        "English": ["ENG001", "ENG002", "ENG003", "ENG004", "ENG005", "ENG006", 
+                    "ENG101", "ENG102", "ENG103", "ENG104", "ENG105", "ENG201", 
+                    "ENG202", "ENG203", "ENG204", "ENG205"]
+    }
+
 
 @dashboard_bp.get("/statistics/teachers")
 @role_required("Manager")
 def teacher_statistics():
+    # Total teachers, teachers group by subject (Math/English), teachers group by experience (0-2 years, 3-5 years, 6+ years)
     pass
 
 @dashboard_bp.get("/statistics/revenue")
 @role_required("Manager")
 def revenue_statistics():
+    # Total revenue in each month, each term and each school year
     pass
