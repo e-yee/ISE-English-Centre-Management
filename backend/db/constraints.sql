@@ -86,7 +86,7 @@ ALTER TABLE class ADD CONSTRAINT FK_class_room
     FOREIGN KEY (room_id) REFERENCES room(id);
 
 ALTER TABLE student_attendance ADD CONSTRAINT CHK_student_attendance_status CHECK (
-    status IN ('Present', 'Absent')
+    status IN ('Present', 'Absent', 'Unknown')
 );
 ALTER TABLE student_attendance ADD CONSTRAINT FK_student_attendance_student
     FOREIGN KEY (student_id) REFERENCES student(id);
