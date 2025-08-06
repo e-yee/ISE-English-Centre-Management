@@ -18,6 +18,14 @@ class CourseService extends ApiService {
     return this.get<Course[]>('/course/learningadvisor/');
   }
   
+  async getAllCoursesForManager(): Promise<Course[]> {
+    return this.get<Course[]>('/course/manager/');
+  }
+  
+  async getCourseForManager(courseId: string, courseDate: string): Promise<Course> {
+    return this.get<Course>(`/course/manager/search?id=${courseId}&course_date=${courseDate}`);
+  }
+  
   async createCourse(courseData: CreateCourseData): Promise<Course> {
     console.log('🔍 createCourse called with data:', courseData);
     
@@ -41,6 +49,9 @@ class CourseService extends ApiService {
       case 'Learning Advisor':
         console.log('🔍 Calling getAllCourses');
         return this.getAllCourses();
+      case 'Manager':
+        console.log('🔍 Calling getAllCoursesForManager');
+        return this.getAllCoursesForManager();
       default:
         console.log('⚠️ Falling to default, role not matched');
         return [];

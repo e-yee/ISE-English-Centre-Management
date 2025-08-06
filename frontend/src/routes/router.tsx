@@ -22,6 +22,7 @@ import AddMaterialsPage from '../pages/materials/AddMaterialsPage';
 import ClassReportPage from '../pages/class-report/ClassReportPage';
 import ScoringPage from '../pages/scoring/ScoringPage';
 import CoursePage from '../pages/course/CoursePage';
+import CourseClassesPage from '../pages/course/CourseClassesPage';
 import ContractPage from '../pages/contract/ContractPage';
 import IssuesPage from '../pages/issues/IssuesPage';
 
@@ -64,6 +65,7 @@ export const router = createBrowserRouter([
           { path: 'issues', element: <IssuesPage /> },
           // --- Manager/Learning Advisor Routes ---
           { path: 'dashboard', element: <CoursePage /> },
+          { path: 'course-classes/:courseId/:courseDate', element: <CourseClassesPage /> },
           { path: 'contracts/:courseId', element: <ContractPage /> },
         ],
       },

@@ -8,6 +8,7 @@ import { useContracts, useCreateContract, useUpdateContract } from '@/hooks/enti
 import { useCourses } from '@/hooks/entities/useCourses';
 import type { Contract, CreateContractData, ContractResponse, UpdateContractData } from '@/types/contract';
 import type { Course } from '@/types/course';
+import { getUserRole } from '@/lib/utils';
 
 const ContractPage: React.FC = () => {
   const { courseId } = useParams<{ courseId: string }>();
@@ -85,6 +86,9 @@ const ContractPage: React.FC = () => {
     }));
   };
 
+  const userRole = getUserRole();
+  const isManager = userRole === 'Manager';
+
   if (!courseId) {
     return (
       <div className="h-full bg-background p-6 overflow-y-auto">
@@ -129,17 +133,19 @@ const ContractPage: React.FC = () => {
             </div>
           </div>
           
-          <Button 
-            className="flex items-center gap-2"
-            onClick={() => {
-              setEditingContract(null);
-              setIsFormOpen(true);
-            }}
-            disabled={!selectedCourse}
-          >
-            <Plus className="h-4 w-4" />
-            Add Contract
-          </Button>
+          {!isManager && (
+            <Button 
+              className="flex items-center gap-2"
+              onClick={() => {
+                setEditingContract(null);
+                setIsFormOpen(true);
+              }}
+              disabled={!selectedCourse}
+            >
+              <Plus className="h-4 w-4" />
+              Add Contract
+            </Button>
+          )}
         </div>
 
         {/* Error Messages */}

@@ -12,6 +12,7 @@ import type { Course } from '@/types/course';
 import type { CreateCourseData } from '@/services/entities/courseService';
 import { mockContracts } from '@/mockData/contractMock';
 import { mockClasses } from '@/mockData/classMock';
+import { getUserRole } from '@/lib/utils';
 
 const CoursePage: React.FC = () => {
   const navigate = useNavigate();
@@ -33,7 +34,9 @@ const CoursePage: React.FC = () => {
   };
 
   const handleClassesClick = () => {
-    alert('Navigate to classes page for course: ' + selectedCourse?.id);
+    if (selectedCourse) {
+      navigate(`/course-classes/${selectedCourse.id}/${selectedCourse.created_date}`);
+    }
   };
 
   const handleContractsClick = () => {
@@ -50,6 +53,9 @@ const CoursePage: React.FC = () => {
     }
     return !!result;
   };
+
+  const userRole = getUserRole();
+  const isManager = userRole === 'Manager';
 
   return (
     <div className="h-full bg-background p-6 overflow-y-auto">
@@ -70,8 +76,8 @@ const CoursePage: React.FC = () => {
             </h1>
             <p className="text-muted-foreground">Manage and view course details</p>
           </div>
-          {/* Add Course Button (only show in grid view) */}
-          {!selectedCourse && (
+          {/* Add Course Button (only show in grid view and not for managers) */}
+          {!selectedCourse && !isManager && (
             <Button className="flex items-center gap-2" onClick={() => setIsFormOpen(true)}>
               + Add Course
             </Button>

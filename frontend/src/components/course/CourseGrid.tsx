@@ -25,9 +25,9 @@ const CourseGrid: React.FC<CourseGridProps> = ({ courses, onCourseSelect }) => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {courses.map((course) => (
+      {courses.map((course, index) => (
         <Card 
-          key={course.id} 
+          key={`${course.id}-${index}`} 
           className="hover:shadow-xl transition-all duration-300 border-2 hover:border-blue-200 bg-gradient-to-br from-white to-gray-50 cursor-pointer group"
           onClick={() => onCourseSelect(course)}
         >
