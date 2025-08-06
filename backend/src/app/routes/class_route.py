@@ -6,7 +6,7 @@ from sqlalchemy.exc import IntegrityError, OperationalError
 from extensions import db
 from ..auth import role_required
 from ..http_status import HTTPStatus
-from ..models import Class, Course, Employee, Room
+from ..models import Class, Course, Employee, Room, Enrolment, StudentAttendance
 from ..schemas.learning_advisor.class_schema import class_schema
 
 class_bp = Blueprint("class_bp", __name__, url_prefix="/class")
@@ -43,7 +43,7 @@ def validate_course(course_id, course_date):
         learning_advisor_id=employee_id,
         course_id=course_id,
         course_date=course_date
-    )
+    ).first()
     
     if not course:
         return None, jsonify({
@@ -104,7 +104,7 @@ def validate_class_date(course_id, course_date, class_date):
             "message": "Start hour not in course's schedule"
         }), HTTPStatus.BAD_REQUEST
         
-    return True, None, None
+    return class_date, None, None
 
 def validate_class(class_id):
     class_ = db.session.get(Class, class_id)
@@ -179,32 +179,49 @@ def la_add_class():
         json_data = request.get_json()
         validated = class_schema.load(json_data)
         
-        result, response, status = validate_course(validated["course_id"], validated["course_date"])
-        if not result:
+        course, response, status = validate_course(validated["course_id"], validated["course_date"])
+        if not course:
             return response, status 
         
-        result, response, status = validate_teacher(validated["teacher_id"])
-        if not result:
+        teacher, response, status = validate_teacher(validated["teacher_id"])
+        if not teacher:
             return response, status 
         
-        response, status, result = validate_class_date(validated["course_id"], validated["course_date"], validated["class_date"])
-        if not result:
+        class_date, response, status = validate_class_date(validated["course_id"], validated["course_date"], validated["class_date"])
+        if not class_date:
             return response, status
         
-        result, response, status = validate_room(validated["room_id"])
-        if not result:
+        room, response, status = validate_room(validated["room_id"])
+        if not room:
             return response, status 
 
         class_ = Class(
             id=generate_id(validated["course_id"], validated["course_date"], validated["term"]),
-            course_id=validated["course_id"],
-            course_date=validated["course_date"],
+            course_id=course.id,
+            course_date=course.created_date,
             term=validated["term"],
-            teacher_id=validated["teacher_id"],
-            room_id=validated["room_id"],
-            class_date=validated["class_date"]
+            teacher_id=teacher.id,
+            room_id=room.id,
+            class_date=class_date
         )
         db.session.add(class_)
+        
+        enrolments = db.session.query(Enrolment).filter_by(
+            course_id=course.id,
+            course_date=course.created_date
+        ).all()
+        
+        for enrolment in enrolments:
+            student_attendance = StudentAttendance(
+                student_id=enrolment.student_id,
+                class_id=class_.id,
+                course_id=enrolment.course_id,
+                course_date=enrolment.course_date,
+                term=class_.term,
+                enrolment_id=enrolment.id
+            )
+            db.session.add(student_attendance)
+            
         db.session.commit()
         
         return jsonify(class_schema.dump(class_)), HTTPStatus.CREATED
@@ -257,10 +274,15 @@ def la_update_class():
         room_id = update_data.get("room_id", class_.room_id)
         class_date = update_data.get("class_date",class_.class_date)
         
+        is_differ_student_attendances = False
+        old_class = class_
+        
         if course_id != class_.course_id or course_date != class_.course_date:
             result, response, status = validate_course(course_id, course_date)
             if not result:
                 return response, status
+            
+            is_differ_student_attendances = True
         
         if teacher_id != class_.teacher_id:
             result, response, status = validate_teacher(teacher_id)
@@ -276,9 +298,37 @@ def la_update_class():
             result, response, status = validate_room(room_id)
             if not result:
                 return response, status
-        
+            
         for key, value in update_data.items():
             setattr(class_, key, value)
+            
+            if key == "term":
+                for student_attendance in old_class.student_attendance:
+                    setattr(student_attendance, key, value)
+        
+        if is_differ_student_attendances:
+            db.session.query(StudentAttendance).filter_by(
+                class_id=old_class.id,
+                course_id=old_class.course_id,
+                course_date=old_class.course_date,
+                term=old_class.term
+            ).delete()
+            
+            enrolments = db.session.query(Enrolment).filter_by(
+                course_id=class_.course_id,
+                course_date=class_.course_date
+            ).all()
+            
+            for enrolment in enrolments:
+                student_attendance = StudentAttendance(
+                    student_id=enrolment.student_id,
+                    class_id=class_.id,
+                    course_id=enrolment.course_id,
+                    course_date=enrolment.course_date,
+                    term=class_.term,
+                    enrolment_id=enrolment.id
+                )
+                db.session.add(student_attendance)
         
         db.session.commit()
         return jsonify({
