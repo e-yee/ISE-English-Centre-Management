@@ -5,7 +5,7 @@ from marshmallow import ValidationError
 from ...http_status import HTTPStatus
 from sqlalchemy.exc import IntegrityError, OperationalError
 from ...schemas.teacher.issue_schema import issue_schema
-from ...models import Issue, Account, Student, Room
+from ...models import Issue, Account, Student, Room, Employee
 from extensions import db
 import datetime
 
@@ -42,7 +42,7 @@ def validate_issue(issue_id):
     return issue, None, None
 
 def validate_teacher(teacher_id):
-    teacher = db.session.query(Account).filter_by(id=teacher_id, role='Teacher').first()
+    teacher = db.session.query(Employee).filter_by(id=teacher_id, role='Teacher').first()
 
     if not teacher:
         return None, jsonify({"message": "Teacher not found"}), HTTPStatus.NOT_FOUND
@@ -66,7 +66,7 @@ def validate_room(room_id):
     return room, None, None
 
 @issue_bp.get("/view")
-@role_required("Teacher", "Learning Advisor")
+@role_required("Manager", "Learning Advisor")
 def view_issues():
     try:
         issues = db.session.query(Issue).all()
@@ -80,6 +80,25 @@ def view_issues():
             "message": "Unexpected error occurred", "error": str(e)
         }), HTTPStatus.INTERNAL_SERVER_ERROR
     
+@issue_bp.get("/view/<string:teacher_id>")
+@role_required("Teacher")
+def view_teacher_issues(teacher_id):
+    try:
+        teacher, response, status = validate_teacher(teacher_id)
+        if not teacher:
+            return response, status
+
+        issues = db.session.query(Issue).filter_by(teacher_id=teacher.id).all()
+        if not issues:
+            return jsonify({"message": "No issues found for this teacher"}), HTTPStatus.NOT_FOUND
+
+        return jsonify(issue_schema.dump(issues)), HTTPStatus.OK
+
+    except Exception as e:
+        return jsonify({
+            "message": "Unexpected error occurred", "error": str(e)
+        }), HTTPStatus.INTERNAL_SERVER_ERROR
+
 @issue_bp.post("/create")
 @role_required("Teacher")
 def create_issue():
@@ -137,8 +156,8 @@ def create_issue():
         }), HTTPStatus.BAD_REQUEST
 
 @issue_bp.put("/update/<string:issue_id>")
-@role_required("Teacher", "Learning Advisor")
-def update_issue(issue_id):
+@role_required("Manager", "Learning Advisor")
+def resolve_issue(issue_id):
     try:
         issue, error_response, status = validate_issue(issue_id)
         if not issue:

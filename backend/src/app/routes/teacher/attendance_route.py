@@ -207,7 +207,7 @@ def mark_attendance():
         
         data = request.get_json()
         validated = list_attendance_schema.load(data)
-        records = validated["mark"]
+        records = validated["marks"]
 
         updated_records = 0
         for record in records:
