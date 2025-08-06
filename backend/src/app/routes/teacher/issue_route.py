@@ -16,8 +16,10 @@ def generate_id():
     if not last_id:
         return "ISS001"
     else:
-        prefix = last_id[:3]
-        last_number = int(last_id[3:]) + 1
+        # last_id is a tuple, so we need to access the first element
+        last_id_str = last_id[0]
+        prefix = last_id_str[:3]
+        last_number = int(last_id_str[3:]) + 1
         return f"{prefix}{last_number:03}"
     
 def get_student_issue(student_id):
@@ -73,7 +75,9 @@ def view_issues():
         if not issues:
             return jsonify({"message": "No issues found"}), HTTPStatus.NOT_FOUND
         
-        return jsonify(issue_schema.dump(issues)), HTTPStatus.OK
+        # Ensure we always return an array, even for single items
+        issues_data = issue_schema.dump(issues, many=True)
+        return jsonify(issues_data), HTTPStatus.OK
     
     except Exception as e:
         return jsonify({
@@ -92,7 +96,9 @@ def view_teacher_issues(teacher_id):
         if not issues:
             return jsonify({"message": "No issues found for this teacher"}), HTTPStatus.NOT_FOUND
 
-        return jsonify(issue_schema.dump(issues)), HTTPStatus.OK
+        # Ensure we always return an array, even for single items
+        issues_data = issue_schema.dump(issues, many=True)
+        return jsonify(issues_data), HTTPStatus.OK
 
     except Exception as e:
         return jsonify({
@@ -103,45 +109,75 @@ def view_teacher_issues(teacher_id):
 @role_required("Teacher")
 def create_issue():
     try:
+        print("=== DEBUG: Starting create_issue ===")
+        
         if not request.is_json:
+            print("DEBUG: Request is not JSON")
             return jsonify({"message": "Missing or invalid JSON"}), HTTPStatus.BAD_REQUEST
         
         data = request.get_json()
-        validated = issue_schema.load(data)
+        print(f"DEBUG: Received data: {data}")
+        
+        try:
+            validated = issue_schema.load(data)
+            print(f"DEBUG: Validated data: {validated}")
+        except ValidationError as ve:
+            print(f"DEBUG: Validation error: {ve.messages}")
+            return jsonify({
+                "message": "Invalid input", "error": ve.messages
+            }), HTTPStatus.BAD_REQUEST
 
         id = get_jwt().get("employee_id")
+        print(f"DEBUG: Teacher ID from JWT: {id}")
         
-        teacher_id, error_response, status = validate_teacher(id)
-        if not teacher_id:
+        teacher, error_response, status = validate_teacher(id)
+        if not teacher:
+            print(f"DEBUG: Teacher validation failed: {error_response}")
             return error_response, status
+        print(f"DEBUG: Teacher validated: {teacher.id}")
         
-        student_id, error_response, status = validate_student(validated["student_id"])
-        if not student_id and validated["issue_type"] == "Student Behavior":
-            return jsonify({"message": "Student ID is required for Student Behavior issues"}), HTTPStatus.BAD_REQUEST
+        student = None
+        if validated.get("student_id"):
+            print(f"DEBUG: Validating student_id: {validated['student_id']}")
+            student, error_response, status = validate_student(validated["student_id"])
+            if not student and validated["issue_type"] == "Student Behavior":
+                print("DEBUG: Student validation failed for Student Behavior issue")
+                return jsonify({"message": "Student ID is required for Student Behavior issues"}), HTTPStatus.BAD_REQUEST
+            if student:
+                print(f"DEBUG: Student validated: {student.id}")
 
-        room_id, error_response, status = validate_room(validated["room_id"])
-        if not room_id and validated["issue_type"] == "Technical":
-            return error_response, status
+        room = None
+        if validated.get("room_id"):
+            print(f"DEBUG: Validating room_id: {validated['room_id']}")
+            room, error_response, status = validate_room(validated["room_id"])
+            if not room and validated["issue_type"] == "Technical":
+                print("DEBUG: Room validation failed for Technical issue")
+                return error_response, status
+            if room:
+                print(f"DEBUG: Room validated: {room.id}")
+        
+        issue_id = generate_id()
+        print(f"DEBUG: Generated issue ID: {issue_id}")
         
         issue = Issue(
-            id=generate_id(),
-            teacher_id=teacher_id,
-            student_id=student_id,
-            room_id=room_id,
+            id=issue_id,
+            teacher_id=teacher.id,
+            student_id=student.id if student else None,
+            room_id=room.id if room else None,
             issue_type=validated["issue_type"],
             issue_description=validated["issue_description"]
         )
+        
+        print(f"DEBUG: Created issue object: {issue.id}, {issue.teacher_id}, {issue.student_id}, {issue.room_id}, {issue.issue_type}")
 
         db.session.add(issue)
         db.session.commit()
+        print("DEBUG: Issue saved to database successfully")
 
         return jsonify(issue_schema.dump(issue)), HTTPStatus.CREATED
 
-    except ValidationError as ve:
-        return jsonify({
-            "message": "Invalid input", "error": ve.messages
-        }), HTTPStatus.BAD_REQUEST
     except Exception as e:
+        print(f"DEBUG: Unexpected error: {str(e)}")
         return jsonify({
             "message": "Unexpected error occurred", "error": str(e)
         }), HTTPStatus.INTERNAL_SERVER_ERROR

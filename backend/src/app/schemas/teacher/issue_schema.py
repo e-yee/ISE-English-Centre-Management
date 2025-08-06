@@ -8,7 +8,7 @@ class IssueSchema(ma.Schema):
     issue_description = fields.String(required=True)
     status = fields.String(required=False)
     reported_date = fields.Date(required=False)
-    student_id = fields.String(required=False)
-    room_id = fields.String(required=False)
+    student_id = fields.String(required=False, allow_none=True)
+    room_id = fields.String(required=False, allow_none=True)
 
 issue_schema = IssueSchema()

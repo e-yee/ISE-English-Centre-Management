@@ -82,6 +82,12 @@ const MainSidebar: React.FC<SidebarProps> = ({ className }) => {
       icon: "/src/assets/sidebar/material.svg",
       url: "#",
     },
+    {
+      id: "issues",
+      title: "Issues",
+      icon: "/src/assets/sidebar/issues.svg",
+      url: "#",
+    },
   ];
 
   // Role-specific menu items
@@ -139,6 +145,12 @@ const MainSidebar: React.FC<SidebarProps> = ({ className }) => {
         navigate("/courses");
       } else {
         console.log("Navigation to /courses (demo mode - navigation disabled)");
+      }
+    } else if (itemId === "issues") {
+      if (navigate) {
+        navigate("/issues");
+      } else {
+        console.log("Navigation to /issues (demo mode - navigation disabled)");
       }
     } else {
       // For other items, just log for now (can be extended later)

@@ -22,6 +22,7 @@ import AddMaterialsPage from '../pages/materials/AddMaterialsPage';
 import ClassReportPage from '../pages/class-report/ClassReportPage';
 import ScoringPage from '../pages/scoring/ScoringPage';
 import CoursePage from '../pages/course/CoursePage';
+import IssuesPage from '../pages/issues/IssuesPage';
 
 export const router = createBrowserRouter([
   {
@@ -59,6 +60,7 @@ export const router = createBrowserRouter([
           { path: 'materials', element: <AddMaterialsPage /> },
           { path: 'report', element: <ClassReportPage /> },
           { path: 'scoring/:classId', element: <ScoringPage /> },
+          { path: 'issues', element: <IssuesPage /> },
           
           // Fallback redirect for authenticated users at the root
           { path: '/', element: <Navigate to="/home" replace /> },
