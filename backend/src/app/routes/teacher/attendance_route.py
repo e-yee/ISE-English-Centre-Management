@@ -215,7 +215,7 @@ def mark_attendance():
             status = record["status"]
 
             attendance_record = db.session.query(StudentAttendance).filter_by(
-                student_id=validated["student_id"],
+                student_id=student_id,
                 class_id=class_id,
                 course_id=course_id,
                 course_date=course_date,
