@@ -5,15 +5,34 @@ import { Card, CardContent } from '@/components/ui/card';
 import AvatarIcon from '@/assets/class/user.svg';
 import ClockIcon from '@/assets/class/clock.svg';
 import MapPinIcon from '@/assets/class/map-pin.svg';
+import { BookOpen, GraduationCap, Hash, Calendar, Clock, MapPin, Award } from 'lucide-react';
 
 interface ClassInfoProps {
   classData: ClassData;
   studentCount: string; // Format: "10/50"
   className?: string;
   isExpanded?: boolean; // New prop for expanded view
+  // Additional props for comprehensive class information
+  courseName?: string;
+  courseId?: string;
+  courseDate?: string;
+  term?: number;
+  teacherName?: string;
+  classDate?: string;
 }
 
-const ClassInfo: React.FC<ClassInfoProps> = ({ classData, studentCount, className, isExpanded = false }) => {
+const ClassInfo: React.FC<ClassInfoProps> = ({ 
+  classData, 
+  studentCount, 
+  className, 
+  isExpanded = false,
+  courseName,
+  courseId,
+  courseDate,
+  term,
+  teacherName,
+  classDate
+}) => {
   // Helper function to parse student count
   const parseStudentCount = (countString: string) => {
     const [current, max] = countString.split('/').map(Number);
@@ -33,87 +52,130 @@ const ClassInfo: React.FC<ClassInfoProps> = ({ classData, studentCount, classNam
     return 'available';
   };
 
+  // Format date for display
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString();
+  };
+
+  // Format time for display
+  const formatTime = (dateString: string) => {
+    return new Date(dateString).toLocaleTimeString([], { 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    });
+  };
+
   const { current, max, percentage } = parseStudentCount(studentCount);
   const capacityStatus = getCapacityStatus(current, max);
 
-  // If expanded view is requested, render the glassmorphism card layout
+  // If expanded view is requested, render the comprehensive card layout
   if (isExpanded) {
     return (
       <Card className={cn(
         "class-information-card w-full",
-        // Glassmorphism styling with dark border - reduced height to about half
+        // Glassmorphism styling with dark border
         "border-[3px] border-black rounded-[15px] backdrop-blur-[35px]",
-        "shadow-lg min-h-[300px] max-h-[400px]",
+        "shadow-lg min-h-[400px]",
         className
       )}
       style={{
         background: 'rgba(212, 208, 208, 0.3)',
       }}>
-        <CardContent className="p-6 h-full flex flex-col justify-center">
+        <CardContent className="p-6 h-full flex flex-col">
+          {/* Top Section: Class ID, Course Name and Student Count */}
+          <div className="flex justify-between items-start mb-6">
+            {/* Left: Class ID and Course Name */}
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-2">
+                <Hash className="w-5 h-5 text-[#0A6CFF]" />
+                <span className="text-base font-semibold text-[#0A6CFF]">
+                  {classData.id}
+                </span>
+              </div>
+              <div className="text-2xl font-bold text-[#0A6CFF] leading-tight">
+                {courseName || classData.className}
+              </div>
+            </div>
+            
+            {/* Right: Student Count Badge */}
+            <div className="flex items-center justify-center gap-2 w-[90px] h-[45px] rounded-[10px] bg-white border-[2px] border-solid border-[#4A42AE] flex-shrink-0">
+              <img src={AvatarIcon} alt="Students" className="w-6 h-6" style={{ stroke: 'rgba(30, 30, 30, 0.6)', strokeWidth: '3px' }} />
+              <span className="text-[28px] font-normal text-black/60 leading-[140%] font-['Comfortaa']">
+                {current}
+              </span>
+            </div>
+          </div>
+          
+          {/* Main Information Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1">
+            {/* Left Column */}
+            <div className="space-y-4">
+              {/* Course Information */}
+              <div className="flex items-center gap-3">
+                <BookOpen className="w-5 h-5 text-[rgba(38,125,246,0.74)]" />
+                <div>
+                  <div className="text-sm font-medium text-gray-600">Course</div>
+                  <div className="text-base font-semibold text-[rgba(38,125,246,0.74)]">
+                    {courseId || classData.courseId}
+                  </div>
+                </div>
+              </div>
 
-          {/* Layout following Figma design */}
-          <div className="space-y-6">
-            {/* Top Row - Student Count (Quantity) */}
-            <div className="flex justify-start">
-              <div
-                className="relative rounded-[10px] p-[3px]"
-                style={{
-                  background: 'linear-gradient(135deg, #4A42AE 0%, #1E1B48 100%)',
-                }}
-              >
-                <div
-                  className="flex items-center gap-3 rounded-[7px] px-4 py-0"
-                  style={{
-                    background: 'white',
-                  }}
-                >
-                  <img src={AvatarIcon} alt="Students" className="w-6 h-6" style={{ stroke: 'rgba(30, 30, 30, 0.6)', strokeWidth: '3px' }} />
-                  <span
-                    className="font-comfortaa font-normal leading-[1.4em]"
-                    style={{
-                      fontSize: '40px',
-                      color: 'rgba(0, 0, 0, 0.6)'
-                    }}
-                  >
-                    {current}
-                  </span>
+              {/* Teacher Information */}
+              <div className="flex items-center gap-3">
+                <GraduationCap className="w-5 h-5 text-[rgba(38,125,246,0.74)]" />
+                <div>
+                  <div className="text-sm font-medium text-gray-600">Teacher</div>
+                  <div className="text-base font-semibold text-[rgba(38,125,246,0.74)]">
+                    {teacherName || 'Unknown Teacher'}
+                  </div>
+                </div>
+              </div>
+
+              {/* Room Information */}
+              <div className="flex items-center gap-3">
+                <MapPin className="w-5 h-5 text-[rgba(38,125,246,0.74)]" />
+                <div>
+                  <div className="text-sm font-medium text-gray-600">Room</div>
+                  <div className="text-base font-semibold text-[rgba(38,125,246,0.74)]">
+                    {classData.room}
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Details Section - Following Figma layout with vertical alignment */}
-            <div className="flex gap-12">
-              {/* Left Column - Room */}
-              <div className="space-y-4">
-                {/* Room */}
-                <div className="flex items-center gap-2">
-                  <img src={MapPinIcon} alt="Room" className="w-5 h-5" style={{ stroke: 'rgba(30, 30, 30, 0.6)', strokeWidth: '2px' }} />
-                  <span
-                    className="font-comfortaa font-normal leading-[1.4em]"
-                    style={{
-                      fontSize: '20px',
-                      color: 'rgba(0, 0, 0, 0.6)'
-                    }}
-                  >
-                    Room: {classData.room}
-                  </span>
+            {/* Right Column */}
+            <div className="space-y-4">
+              {/* Course Date */}
+              <div className="flex items-center gap-3">
+                <Calendar className="w-5 h-5 text-[rgba(38,125,246,0.74)]" />
+                <div>
+                  <div className="text-sm font-medium text-gray-600">Course Date</div>
+                  <div className="text-base font-semibold text-[rgba(38,125,246,0.74)]">
+                    {courseDate ? formatDate(courseDate) : 'N/A'}
+                  </div>
                 </div>
               </div>
 
-              {/* Right Column - Time */}
-              <div className="space-y-4">
-                {/* Time */}
-                <div className="flex items-center gap-2">
-                  <img src={ClockIcon} alt="Time" className="w-5 h-5" style={{ stroke: 'rgba(30, 30, 30, 0.6)', strokeWidth: '2px' }} />
-                  <span
-                    className="font-comfortaa font-normal leading-[1.4em]"
-                    style={{
-                      fontSize: '20px',
-                      color: 'rgba(0, 0, 0, 0.6)'
-                    }}
-                  >
-                    Time: {classData.time}
-                  </span>
+              {/* Term */}
+              <div className="flex items-center gap-3">
+                <Award className="w-5 h-5 text-[rgba(38,125,246,0.74)]" />
+                <div>
+                  <div className="text-sm font-medium text-gray-600">Term</div>
+                  <div className="text-base font-semibold text-[rgba(38,125,246,0.74)]">
+                    {term || 'N/A'}
+                  </div>
+                </div>
+              </div>
+
+              {/* Class Date & Time */}
+              <div className="flex items-center gap-3">
+                <Clock className="w-5 h-5 text-[#082541]" />
+                <div>
+                  <div className="text-sm font-medium text-gray-600">Class Date & Time</div>
+                  <div className="text-base font-semibold text-[#082541]">
+                    {classDate ? `${formatDate(classDate)} at ${formatTime(classDate)}` : classData.time}
+                  </div>
                 </div>
               </div>
             </div>
