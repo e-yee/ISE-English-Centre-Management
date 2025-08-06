@@ -25,4 +25,32 @@ export interface ContractFormData {
   end_date: Date;
   payment_status: 'In Progress' | 'Paid';
   description?: string;
+}
+
+// New interfaces for API operations
+export interface CreateContractData {
+  student_id: string;
+  course_id: string;
+  course_date: string; // ISO date string for API
+}
+
+export interface UpdateContractData {
+  student_id?: string;
+  course_id?: string;
+  course_date?: string; // ISO date string for API
+}
+
+export interface ContractResponse {
+  id: string;
+  student_id: string;
+  employee_id: string;
+  course_id: string;
+  course_date: string;
+  tuition_fee: number;
+  payment_status: 'In Progress' | 'Paid';
+  start_date: string;
+  end_date: string;
+  student?: {
+    fullname: string;
+  };
 } 

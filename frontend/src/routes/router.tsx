@@ -22,6 +22,7 @@ import AddMaterialsPage from '../pages/materials/AddMaterialsPage';
 import ClassReportPage from '../pages/class-report/ClassReportPage';
 import ScoringPage from '../pages/scoring/ScoringPage';
 import CoursePage from '../pages/course/CoursePage';
+import ContractPage from '../pages/contract/ContractPage';
 import IssuesPage from '../pages/issues/IssuesPage';
 
 export const router = createBrowserRouter([
@@ -61,18 +62,9 @@ export const router = createBrowserRouter([
           { path: 'report', element: <ClassReportPage /> },
           { path: 'scoring/:classId', element: <ScoringPage /> },
           { path: 'issues', element: <IssuesPage /> },
-        ],
-      },
-    ],
-  },
-  {
-    element: <ProtectedRoute allowedRoles={['Manager', 'Learning Advisor']} />,
-    children: [
-      {
-        path: '/',
-        element: <AppLayout />,
-        children: [
+          // --- Manager/Learning Advisor Routes ---
           { path: 'dashboard', element: <CoursePage /> },
+          { path: 'contracts/:courseId', element: <ContractPage /> },
         ],
       },
     ],

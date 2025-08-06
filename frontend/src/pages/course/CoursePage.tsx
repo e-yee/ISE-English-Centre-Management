@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import CourseGrid from '@/components/course/CourseGrid';
 import CourseForm from '@/components/course/CourseForm';
@@ -11,6 +12,7 @@ import { mockContracts } from '@/mockData/contractMock';
 import { mockClasses } from '@/mockData/classMock';
 
 const CoursePage: React.FC = () => {
+  const navigate = useNavigate();
   const [courses, setCourses] = useState<Course[]>(mockCourses);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -28,7 +30,9 @@ const CoursePage: React.FC = () => {
   };
 
   const handleContractsClick = () => {
-    alert('Navigate to contracts page for course: ' + selectedCourse?.id);
+    if (selectedCourse) {
+      navigate(`/contracts/${selectedCourse.id}`);
+    }
   };
 
   const handleAddCourse = (newCourse: Course) => {

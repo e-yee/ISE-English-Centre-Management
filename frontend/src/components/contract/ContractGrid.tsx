@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { FileText, ChevronDown, ChevronUp } from 'lucide-react';
+import { FileText, ChevronDown, ChevronUp, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import type { Contract } from '@/types/contract';
 import { mockStudents } from '@/mockData/studentMock';
@@ -9,9 +9,15 @@ import { mockCourses } from '@/mockData/courseMock';
 
 interface ContractGridProps {
   contracts: Contract[];
+  isLoading?: boolean;
+  onContractUpdated?: () => void;
 }
 
-const ContractGrid: React.FC<ContractGridProps> = ({ contracts }) => {
+const ContractGrid: React.FC<ContractGridProps> = ({ 
+  contracts, 
+  isLoading = false,
+  onContractUpdated 
+}) => {
   const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
 
   const toggleCardExpansion = (contractId: string) => {
@@ -50,6 +56,15 @@ const ContractGrid: React.FC<ContractGridProps> = ({ contracts }) => {
     const course = mockCourses.find(c => c.id === courseId);
     return course ? course.name : courseId;
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <span className="ml-2 text-muted-foreground">Loading contracts...</span>
+      </div>
+    );
+  }
 
   if (contracts.length === 0) {
     return (
