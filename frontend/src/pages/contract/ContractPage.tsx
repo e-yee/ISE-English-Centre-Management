@@ -4,15 +4,16 @@ import { Button } from '@/components/ui/button';
 import { Plus, FileText, AlertCircle, ArrowLeft } from 'lucide-react';
 import ContractForm from '@/components/contract/ContractForm';
 import ContractGrid from '@/components/contract/ContractGrid';
-import { useContracts, useCreateContract } from '@/hooks/entities/useContracts';
+import { useContracts, useCreateContract, useUpdateContract } from '@/hooks/entities/useContracts';
 import { useCourses } from '@/hooks/entities/useCourses';
-import type { Contract, CreateContractData, ContractResponse } from '@/types/contract';
+import type { Contract, CreateContractData, ContractResponse, UpdateContractData } from '@/types/contract';
 import type { Course } from '@/types/course';
 
 const ContractPage: React.FC = () => {
   const { courseId } = useParams<{ courseId: string }>();
   const navigate = useNavigate();
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingContract, setEditingContract] = useState<Contract | null>(null);
   
   // Fetch courses to get the selected course details
   const { data: courses, isLoading: coursesLoading, error: coursesError } = useCourses();
@@ -31,18 +32,49 @@ const ContractPage: React.FC = () => {
   
   // Create contract hook
   const { createContract, isCreating, error: createError } = useCreateContract();
+  
+  // Update contract hook
+  const { updateContract, isUpdating, error: updateError } = useUpdateContract();
 
   const handleAddContract = async (contractData: CreateContractData) => {
     const result = await createContract(contractData);
     if (result) {
       setIsFormOpen(false);
+      setEditingContract(null);
       // Refetch contracts to show the new one
       refetchContracts();
     }
   };
 
+  const handleUpdateContract = async (contractData: UpdateContractData) => {
+    if (!editingContract) return;
+    
+    const result = await updateContract(editingContract.id, contractData);
+    if (result) {
+      setIsFormOpen(false);
+      setEditingContract(null);
+      // Refetch contracts to show the updated one
+      refetchContracts();
+    }
+  };
+
+  const handleEditContract = (contract: Contract) => {
+    setEditingContract(contract);
+    setIsFormOpen(true);
+  };
+
   const handleBackToCourses = () => {
     navigate('/dashboard');
+  };
+
+  const handleFormSubmit = async (contractData: CreateContractData | UpdateContractData) => {
+    if (editingContract) {
+      // Update mode
+      await handleUpdateContract(contractData as UpdateContractData);
+    } else {
+      // Create mode
+      await handleAddContract(contractData as CreateContractData);
+    }
   };
 
   // Convert ContractResponse to Contract for display
@@ -50,8 +82,6 @@ const ContractPage: React.FC = () => {
     return contractResponses.map(contract => ({
       ...contract,
       course_date: new Date(contract.course_date),
-      start_date: new Date(contract.start_date),
-      end_date: new Date(contract.end_date),
     }));
   };
 
@@ -101,7 +131,10 @@ const ContractPage: React.FC = () => {
           
           <Button 
             className="flex items-center gap-2"
-            onClick={() => setIsFormOpen(true)}
+            onClick={() => {
+              setEditingContract(null);
+              setIsFormOpen(true);
+            }}
             disabled={!selectedCourse}
           >
             <Plus className="h-4 w-4" />
@@ -127,15 +160,6 @@ const ContractPage: React.FC = () => {
             </div>
           </div>
         )}
-        
-        {createError && (
-          <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-            <div className="flex items-center gap-2">
-              <AlertCircle className="h-4 w-4 text-red-600" />
-              <span className="text-sm text-red-800">Failed to create contract: {createError}</span>
-            </div>
-          </div>
-        )}
 
         {/* Contract Grid */}
         {selectedCourse ? (
@@ -150,6 +174,7 @@ const ContractPage: React.FC = () => {
               contracts={convertContracts(contracts || [])} 
               isLoading={contractsLoading}
               onContractUpdated={refetchContracts}
+              onEditContract={handleEditContract}
             />
           </div>
         ) : coursesLoading ? (
@@ -173,9 +198,11 @@ const ContractPage: React.FC = () => {
         <ContractForm 
           open={isFormOpen}
           onOpenChange={setIsFormOpen}
-          onSubmit={handleAddContract}
+          onSubmit={handleFormSubmit}
           selectedCourse={selectedCourse || null}
-          isCreating={isCreating}
+          isCreating={isCreating || isUpdating}
+          error={createError || updateError}
+          editingContract={editingContract}
         />
       </div>
     </div>

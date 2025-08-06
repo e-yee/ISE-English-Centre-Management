@@ -82,7 +82,7 @@ const MainSidebar: React.FC<SidebarProps> = ({ className }) => {
     {
       id: "issues",
       title: "Issues",
-      icon: "/src/assets/sidebar/issues.svg",
+      icon: "/src/assets/sidebar/error.svg",
       url: "#",
     },
   ];

@@ -7,18 +7,19 @@ import { Textarea } from '@/components/ui/textarea';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { format } from 'date-fns';
-import { CalendarIcon, FileText } from 'lucide-react';
+import { CalendarIcon, FileText, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { CreateContractData } from '@/types/contract';
+import type { CreateContractData, UpdateContractData } from '@/types/contract';
 import type { Course } from '@/types/course';
-import { mockStudents } from '@/mockData/studentMock';
+import type { Contract } from '@/types/contract';
 
 const contractFormSchema = z.object({
-  student_id: z.string().min(1, "Student is required"),
+  student_id: z.string().min(1, "Student ID is required"),
   course_id: z.string().min(1, "Course is required"),
   course_date: z.date().refine((date) => {
     return date <= new Date()
@@ -30,9 +31,11 @@ type FormData = z.infer<typeof contractFormSchema>;
 interface ContractFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (contractData: CreateContractData) => void;
+  onSubmit: (contractData: CreateContractData | UpdateContractData) => Promise<void> | void;
   selectedCourse: Course | null;
   isCreating?: boolean;
+  error?: string | null;
+  editingContract?: Contract | null;
 }
 
 const ContractForm: React.FC<ContractFormProps> = ({ 
@@ -40,32 +43,47 @@ const ContractForm: React.FC<ContractFormProps> = ({
   onOpenChange, 
   onSubmit, 
   selectedCourse,
-  isCreating = false 
+  isCreating = false,
+  error = null,
+  editingContract = null
 }) => {
   const form = useForm<FormData>({
     resolver: zodResolver(contractFormSchema),
     defaultValues: {
-      student_id: "",
+      student_id: editingContract?.student_id || "",
       course_id: selectedCourse?.id || "",
-      course_date: new Date(),
+      course_date: editingContract?.course_date ? new Date(editingContract.course_date) : new Date(),
     }
   });
 
-  // Update form when selectedCourse changes
+  // Update form when selectedCourse changes or when editing
   React.useEffect(() => {
-    if (selectedCourse) {
+    if (selectedCourse?.id) {
       form.setValue('course_id', selectedCourse.id);
     }
-  }, [selectedCourse, form]);
+    if (editingContract) {
+      form.setValue('student_id', editingContract.student_id);
+      form.setValue('course_date', new Date(editingContract.course_date));
+    }
+  }, [selectedCourse, editingContract, form]);
 
   const handleSubmit = (data: FormData) => {
-    const contractData: CreateContractData = {
-      student_id: data.student_id,
-      course_id: data.course_id,
-      course_date: format(data.course_date, 'yyyy-MM-dd'), // Convert to ISO string
-    };
-    
-    onSubmit(contractData);
+    if (editingContract) {
+      // Update mode
+      const updateData: UpdateContractData = {
+        student_id: data.student_id,
+        course_date: format(data.course_date, 'yyyy-MM-dd'),
+      };
+      onSubmit(updateData);
+    } else {
+      // Create mode
+      const contractData: CreateContractData = {
+        student_id: data.student_id,
+        course_id: data.course_id,
+        course_date: format(data.course_date, 'yyyy-MM-dd'),
+      };
+      onSubmit(contractData);
+    }
     form.reset();
   };
 
@@ -79,39 +97,43 @@ const ContractForm: React.FC<ContractFormProps> = ({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <FileText className="h-5 w-5" />
-            Add New Contract
+            {editingContract ? 'Edit Contract' : 'Add New Contract'}
           </DialogTitle>
           <DialogDescription>
-            Create a new contract for {selectedCourse.name}. All fields marked with * are required.
+            {editingContract 
+              ? `Edit contract for ${selectedCourse?.name || 'the selected course'}.`
+              : `Create a new contract for ${selectedCourse?.name || 'the selected course'}. All fields marked with * are required.`
+            }
           </DialogDescription>
         </DialogHeader>
         
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+            {/* Error Alert */}
+            {error && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="student_id"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Student *</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a student" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {mockStudents.map((student) => (
-                          <SelectItem key={student.id} value={student.id}>
-                            <div className="flex flex-col">
-                              <span className="font-medium">{student.fullname}</span>
-                              <span className="text-xs text-muted-foreground">{student.contact_info}</span>
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <FormLabel>Student ID *</FormLabel>
+                    <FormControl>
+                      <Input 
+                        {...field} 
+                        placeholder="Enter student ID (e.g., STU001)"
+                        disabled={isCreating}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Enter the student ID for the contract
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -126,13 +148,13 @@ const ContractForm: React.FC<ContractFormProps> = ({
                     <FormControl>
                       <Input 
                         {...field} 
-                        value={selectedCourse.name}
+                        value={selectedCourse?.name || field.value || ''}
                         disabled
                         className="bg-gray-50"
                       />
                     </FormControl>
                     <FormDescription>
-                      Course: {selectedCourse.name} • ${selectedCourse.fee} • {selectedCourse.duration} months
+                      Course: {selectedCourse?.name || ''} • ${selectedCourse?.fee || 0} • {selectedCourse?.duration || 0} months
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -154,6 +176,7 @@ const ContractForm: React.FC<ContractFormProps> = ({
                               "w-full pl-3 text-left font-normal",
                               !field.value && "text-muted-foreground"
                             )}
+                            disabled={isCreating}
                           >
                             {field.value ? (
                               format(field.value, "PPP")
@@ -193,7 +216,7 @@ const ContractForm: React.FC<ContractFormProps> = ({
                 Cancel
               </Button>
               <Button type="submit" disabled={isCreating}>
-                {isCreating ? 'Creating...' : 'Create Contract'}
+                {isCreating ? (editingContract ? 'Updating...' : 'Creating...') : (editingContract ? 'Update Contract' : 'Create Contract')}
               </Button>
             </div>
           </form>
