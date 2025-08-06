@@ -12,4 +12,11 @@ class Config:
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=24)
     JWT_REFRESH_TOKEN_EXPIRES = False
     JWT_BLACKLIST_ENABLED = True
-    JWT_BLACKLIST_TOKEN_CHECKS = ["access", "refresh"]
+    JWT_BLACKLIST_TOKEN_CHECKS = ["access"]
+    MAIL_SERVER = os.getenv("MAIL_SERVER")
+    MAIL_PORT = 587
+    MAIL_USERNAME = os.getenv("MAIL_USERNAME")
+    MAIL_PASSWORD = os.getenv("MAIL_PASSWORD")
+    MAIL_DEFAULT_SENDER = os.getenv("MAIL_USERNAME")
+    MAIL_USE_TLS = True
+    MAIL_USE_SSL = False

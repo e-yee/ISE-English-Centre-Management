@@ -22,13 +22,13 @@ interface AuthState {
   user: User | null;
   isLoading: boolean;
   error: string | null;
+  success: string | null;
   isAuthenticated: boolean;
 }
 
 interface ForgotPasswordState {
   email: string;
-  verificationCode: string;
-  step: 1 | 2 | 3;
+  step: 1 | 2; // Removed verification step
 }
 
 interface NavigationCallbacks {
@@ -43,8 +43,7 @@ interface AuthContextType extends AuthState {
   
   // Forgot password actions
   sendForgotPasswordEmail: (email: string) => Promise<void>;
-  forgotPasswordVerify: (verificationCode: string) => Promise<void>;
-  forgotPasswordReset: (newPassword: string) => Promise<void>;
+  resetPassword: (token: string, newPassword: string) => Promise<void>;
   
   // Utility functions
   checkAuth: () => boolean;
@@ -52,7 +51,7 @@ interface AuthContextType extends AuthState {
   
   // Forgot password state
   forgotPasswordEmail: string;
-  forgotPasswordStep: 1 | 2 | 3;
+  forgotPasswordStep: 1 | 2;
   
   // Navigation callbacks
   setNavigationCallbacks: (callbacks: NavigationCallbacks) => void;
@@ -62,6 +61,7 @@ interface AuthContextType extends AuthState {
 type AuthAction =
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'SET_ERROR'; payload: string | null }
+  | { type: 'SET_SUCCESS'; payload: string | null }
   | { type: 'SET_USER'; payload: User | null }
   | { type: 'SET_AUTHENTICATED'; payload: boolean }
   | { type: 'SET_FORGOT_PASSWORD_STATE'; payload: Partial<ForgotPasswordState> }
@@ -73,6 +73,7 @@ const initialState: AuthState = {
   user: null,
   isLoading: true, // Start with loading true to prevent race condition
   error: null,
+  success: null,
   isAuthenticated: false,
 };
 
@@ -83,12 +84,17 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
       return { ...state, isLoading: action.payload };
     case 'SET_ERROR':
       return { ...state, error: action.payload };
+    case 'SET_SUCCESS':
+      return { ...state, success: action.payload };
     case 'SET_USER':
       return { ...state, user: action.payload };
     case 'SET_AUTHENTICATED':
       return { ...state, isAuthenticated: action.payload };
     case 'RESET_AUTH_STATE':
-      return initialState;
+      return {
+        ...initialState,
+        isLoading: false, // Ensure loading is false after reset
+      };
     default:
       return state;
   }
@@ -120,7 +126,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [authState, dispatch] = useReducer(authReducer, initialState);
   const [forgotPasswordState, setForgotPasswordState] = React.useState<ForgotPasswordState>({
     email: '',
-    verificationCode: '',
     step: 1,
   });
   
@@ -264,11 +269,35 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     dispatch({ type: 'SET_LOADING', payload: true });
     
     try {
+      // Clear auth data first
       await authService.logout();
+      
+      // Reset state before navigation to prevent race conditions
+      dispatch({ type: 'RESET_AUTH_STATE' });
+      
+      // Small delay to ensure state is properly reset before navigation
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Clear any lingering focus and navigate
+      if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
+      
+      // Force focus to body to prevent focus issues
+      document.body.focus();
+      
+      navigateTo('/auth/login');
     } catch (error) {
       console.error('Logout error:', error);
-    } finally {
+      // Even if API call fails, clear local state
       dispatch({ type: 'RESET_AUTH_STATE' });
+      
+      // Clear focus and navigate
+      if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
+      document.body.focus();
+      
       navigateTo('/auth/login');
     }
   };
@@ -277,9 +306,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const sendForgotPasswordEmail = async (email: string) => {
     dispatch({ type: 'SET_LOADING', payload: true });
     dispatch({ type: 'SET_ERROR', payload: null });
+    dispatch({ type: 'SET_SUCCESS', payload: null });
 
     try {
-      await authService.forgotPasswordEmail(email);
+      await authService.requestPasswordReset(email);
       
       setForgotPasswordState(prev => ({
         ...prev,
@@ -288,55 +318,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }));
 
       dispatch({ type: 'SET_LOADING', payload: false });
+      dispatch({ type: 'SET_SUCCESS', payload: 'Reset link sent to your email! Please check your inbox.' });
       
-      navigateTo('/auth/forget-password/verify');
+      // Don't redirect - user should check their email
     } catch (error: any) {
-      dispatch({ type: 'SET_ERROR', payload: error.message || 'Failed to send verification email' });
+      dispatch({ type: 'SET_ERROR', payload: error.message || 'Failed to send reset email' });
       dispatch({ type: 'SET_LOADING', payload: false });
       throw error;
     }
   };
 
-  // Forgot password - verify code
-  const forgotPasswordVerify = async (verificationCode: string) => {
+  // Reset password with token
+  const resetPassword = async (token: string, newPassword: string) => {
     dispatch({ type: 'SET_LOADING', payload: true });
     dispatch({ type: 'SET_ERROR', payload: null });
 
     try {
-      await authService.forgotPasswordVerify(forgotPasswordState.email, verificationCode);
-      
-      setForgotPasswordState(prev => ({
-        ...prev,
-        verificationCode,
-        step: 3,
-      }));
-
-      dispatch({ type: 'SET_LOADING', payload: false });
-      
-      navigateTo('/auth/forget-password/new-password');
-    } catch (error: any) {
-      dispatch({ type: 'SET_ERROR', payload: error.message || 'Invalid verification code' });
-      dispatch({ type: 'SET_LOADING', payload: false });
-      throw error;
-    }
-  };
-
-  // Forgot password - reset password
-  const forgotPasswordReset = async (newPassword: string) => {
-    dispatch({ type: 'SET_LOADING', payload: true });
-    dispatch({ type: 'SET_ERROR', payload: null });
-
-    try {
-      await authService.forgotPasswordReset(
-        forgotPasswordState.email,
-        forgotPasswordState.verificationCode,
-        newPassword
-      );
+      await authService.resetPassword(token, newPassword);
 
       // Reset forgot password state
       setForgotPasswordState({
         email: '',
-        verificationCode: '',
         step: 1,
       });
 
@@ -373,6 +375,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     user: authState.user,
     isLoading: authState.isLoading,
     error: authState.error,
+    success: authState.success,
     isAuthenticated: authState.isAuthenticated,
 
     // Forgot password state
@@ -385,8 +388,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     // Forgot password actions
     sendForgotPasswordEmail,
-    forgotPasswordVerify,
-    forgotPasswordReset,
+    resetPassword: (token: string, newPassword: string) => resetPassword(token, newPassword), // Use new resetPassword
 
     // Utility functions
     checkAuth,
@@ -398,14 +400,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     authState.user,
     authState.isLoading,
     authState.error,
+    authState.success,
     authState.isAuthenticated,
     forgotPasswordState.email,
     forgotPasswordState.step,
     login,
     logout,
     sendForgotPasswordEmail,
-    forgotPasswordVerify,
-    forgotPasswordReset,
+    resetPassword,
     checkAuth,
     clearError,
     setNavigationCallbacks,

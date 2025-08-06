@@ -1,13 +1,9 @@
 import { RouterProvider } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
-import { MockAuthProvider } from './contexts/MockAuthContext';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { router } from './routes/router';
-import ExamplePage from './pages/ExamplePage';
+import IssuesPage from './pages/issues/IssuesPage';
 import DemoLayout from './components/demo/DemoLayout';
-import ScoreList from './components/scoring/ScoreList';
-import CoursePage from './pages/course/CoursePage';
-import ContractPage from './pages/contract/ContractPage';
 
 // 🔧 EASY TOGGLE: Set to true for production routes, false for demo mode
 const USE_PRODUCTION_ROUTES = true;
@@ -40,7 +36,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <DemoLayout>
-          <ContractPage />
+          <IssuesPage />
         </DemoLayout>
       </AuthProvider>
     </QueryClientProvider>

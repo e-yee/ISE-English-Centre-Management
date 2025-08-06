@@ -135,7 +135,7 @@ CREATE TABLE
         course_date DATE,
         term INT,
         enrolment_id VARCHAR(10) NOT NULL,
-        status VARCHAR(20) NOT NULL,
+        status VARCHAR(20) NOT NULL DEFAULT 'Unknown',
 
         PRIMARY KEY (student_id, class_id, course_id, course_date, term)
     );

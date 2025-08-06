@@ -11,12 +11,12 @@ export const useAuthFlow = () => {
     user,
     isLoading, 
     error,
+    success,
     isAuthenticated,
     login: contextLogin,
     logout: contextLogout,
     sendForgotPasswordEmail: contextSendForgotPasswordEmail,
-    forgotPasswordVerify: contextForgotPasswordVerify,
-    forgotPasswordReset: contextForgotPasswordReset,
+    resetPassword: contextResetPassword,
     clearError: contextClearError,
     forgotPasswordEmail,
     forgotPasswordStep,
@@ -86,25 +86,11 @@ export const useAuthFlow = () => {
     }
   }, [contextSendForgotPasswordEmail]);
 
-  // Forgot password - verify code - wrapper around AuthContext method with navigation
-  const forgotPasswordVerify = useCallback(async (verificationCode: string) => {
+  // Reset password - wrapper around AuthContext method
+  const resetPassword = useCallback(async (token: string, newPassword: string) => {
     try {
-      // Use the forgotPasswordVerify from AuthContext
-      await contextForgotPasswordVerify(verificationCode);
-      
-      // Navigation is now handled by AuthContext with React Router
-      console.log('useAuthFlow: Verify code successful, navigation handled by AuthContext');
-    } catch (error: any) {
-      console.error('useAuthFlow: Verify code failed:', error);
-      throw error;
-    }
-  }, [contextForgotPasswordVerify]);
-
-  // Forgot password - reset password - wrapper around AuthContext method with navigation
-  const forgotPasswordReset = useCallback(async (newPassword: string) => {
-    try {
-      // Use the forgotPasswordReset from AuthContext
-      await contextForgotPasswordReset(newPassword);
+      // Use the resetPassword from AuthContext
+      await contextResetPassword(token, newPassword);
       
       // Navigation is now handled by AuthContext with React Router
       console.log('useAuthFlow: Reset password successful, navigation handled by AuthContext');
@@ -112,7 +98,7 @@ export const useAuthFlow = () => {
       console.error('useAuthFlow: Reset password failed:', error);
       throw error;
     }
-  }, [contextForgotPasswordReset]);
+  }, [contextResetPassword]);
 
   // Check if user is authenticated (for route guards) - directly use isAuthenticated from context
   const checkAuth = useCallback(() => {
@@ -120,28 +106,18 @@ export const useAuthFlow = () => {
   }, [isAuthenticated]);
 
   return {
-    // Auth state - directly from AuthContext
     user,
     isLoading,
     error,
+    success,
     isAuthenticated,
-
-    // Forgot password state - directly from AuthContext
-    forgotPasswordEmail,
-    forgotPasswordStep,
-
-    // Auth actions - wrapped for navigation
     login,
     logout,
-
-    // Forgot password actions - wrapped for navigation
     sendForgotPasswordEmail: sendForgotPasswordEmailWithNav,
-    forgotPasswordVerify,
-    forgotPasswordReset,
-
-    // Utility functions
-    checkAuth,
+    resetPassword: contextResetPassword,
     clearError: contextClearError,
+    forgotPasswordEmail,
+    forgotPasswordStep,
   };
 };
 

@@ -1,5 +1,5 @@
 from flask import Flask
-from extensions import db, jwt, ma, migrate, cors
+from extensions import db, jwt, ma, migrate, cors, mail
 from app.routes import register_blueprints
 from config import Config
 
@@ -11,6 +11,7 @@ def create_app():
     jwt.init_app(app)
     ma.init_app(app)
     migrate.init_app(app, db)
+    mail.init_app(app)
     cors.init_app(
         app,
         resources={r"/*": {"origin": "http://localhost:5000"}},

@@ -1,25 +1,28 @@
 export interface Contract {
   id: string;
-  contract_number: string;
-  student_name: string;
-  course_name: string;
+  student_id: string;
+  employee_id: string;
+  course_id: string;
+  course_date: Date;
+  tuition_fee: number;
+  payment_status: 'In Progress' | 'Paid';
   start_date: Date;
   end_date: Date;
-  total_amount: number;
-  payment_status: 'paid' | 'partial' | 'unpaid';
-  contract_status: 'active' | 'completed' | 'cancelled';
-  created_date: Date;
+  // UI display fields (computed from relationships)
+  student_name?: string;
+  course_name?: string;
+  employee_name?: string;
+  contract_number?: string;
   description?: string;
 }
 
 export interface ContractFormData {
-  contract_number: string;
-  student_name: string;
-  course_name: string;
+  student_id: string;
+  course_id: string;
+  course_date: Date;
+  tuition_fee: string;
   start_date: Date;
   end_date: Date;
-  total_amount: string;
-  payment_status: 'paid' | 'partial' | 'unpaid';
-  contract_status: 'active' | 'completed' | 'cancelled';
-  description: string;
+  payment_status: 'In Progress' | 'Paid';
+  description?: string;
 } 

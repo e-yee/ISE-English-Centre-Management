@@ -23,7 +23,7 @@ ALTER TABLE leave_request ADD CONSTRAINT CHK_leave_request_date CHECK (
 );
 
 ALTER TABLE leave_request ADD CONSTRAINT CHK_leave_request_status CHECK (
-    status IN ('Approved', 'Not Approved')
+    status IN ('Approved', 'Not Approved', 'Pending')
 );
         
 ALTER TABLE leave_request ADD CONSTRAINT CHK_leave_request_substitute__id CHECK (
@@ -86,7 +86,7 @@ ALTER TABLE class ADD CONSTRAINT FK_class_room
     FOREIGN KEY (room_id) REFERENCES room(id);
 
 ALTER TABLE student_attendance ADD CONSTRAINT CHK_student_attendance_status CHECK (
-    status IN ('Present', 'Absent')
+    status IN ('Present', 'Absent', 'Unknown')
 );
 ALTER TABLE student_attendance ADD CONSTRAINT FK_student_attendance_student
     FOREIGN KEY (student_id) REFERENCES student(id);

@@ -10,6 +10,18 @@ from sqlalchemy.exc import IntegrityError
 
 checkin_bp = Blueprint("checkin_bp", __name__, url_prefix="/checkin")
 
+def generate_id():
+    last_id = db.session.query(StaffCheckin).order_by(StaffCheckin.id.desc()).first()
+
+    if not last_id:
+        return "CK001"
+    
+    else:
+        prefix = last_id.id[:2]
+        last_number = int(last_id.id[2:]) + 1
+        return f"{prefix}{last_number:03}"
+    
+
 @checkin_bp.post("/in")
 def checkin():
     if not request.is_json:
@@ -85,7 +97,7 @@ def checkin():
 
 
         checkin_record = StaffCheckin(
-            id=validated["id"],
+            id=generate_id(),
             employee_id=validated["employee_id"],
             status=status,
             checkin_time=datetime.datetime.now(),
@@ -94,7 +106,7 @@ def checkin():
         db.session.add(checkin_record)
         db.session.commit()
 
-        return jsonify({"message": "Check-in successful", "checkin_id": checkin_record.id}), HTTPStatus.CREATED
+        return jsonify(checkin_schema.dump(checkin_record, many=False)), HTTPStatus.CREATED
 
     except ValidationError as ve:
         return jsonify({"message": "Invalid input", "error": ve.messages}), HTTPStatus.BAD_REQUEST
@@ -103,7 +115,6 @@ def checkin():
         return jsonify({"message": "Database error", "error": str(ie.orig)}), HTTPStatus.INTERNAL_SERVER_ERROR
 
     except Exception as e:
-        print(f"DEBUG: Actual error: {str(e)}")
         return jsonify({"message": "Unexpected error occured", "error": str(e)}), HTTPStatus.INTERNAL_SERVER_ERROR
 
 @checkin_bp.put("/out")

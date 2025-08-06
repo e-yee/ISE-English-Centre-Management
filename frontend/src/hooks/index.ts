@@ -7,6 +7,7 @@ export { default as useTokenRefresh } from './useTokenRefresh';
 export { useCheckIn } from './entities/useCheckIn';
 export { useStudents, useClassStudents } from './entities/useStudent';
 export { useCourses, useCreateCourse } from './entities/useCourses';
+export { useIssues, useCreateIssue, useUpdateIssue } from './entities/useIssues';
 
 // Legacy hook (for backward compatibility)
 export { default as useAuthFlow } from './useAuthFlow'; 

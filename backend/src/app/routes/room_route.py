@@ -69,4 +69,4 @@ def manager_add_room():
         return jsonify({
             "message": "Unexpected error occurred",
             "error": str(e)
-        }), HTTPStatus.INTERNAL_SERVER_ERROR       
+        }), HTTPStatus.INTERNAL_SERVER_ERROR

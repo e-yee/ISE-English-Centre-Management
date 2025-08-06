@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import LoadingState from '../components/layout/sidebar/LoadingState';
 //import { useAuth } from '../contexts/MockAuthContext';
 
 interface ProtectedRouteProps {
@@ -46,11 +47,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles }) => {
   if (isLoading) {
     console.log('ProtectedRoute: Showing loading state');
     return (
-      <div className="h-screen w-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Checking authentication...</p>
-        </div>
+      <div className="h-screen w-screen flex items-center justify-center bg-gray-50" tabIndex={-1}>
+        <LoadingState message="Checking authentication..." />
       </div>
     );
   }
@@ -62,6 +60,12 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles }) => {
       isAuthenticated,
       user
     });
+    
+    // Clear any lingering focus before redirect
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+    
     return <Navigate to="/auth/login" replace />;
   }
 

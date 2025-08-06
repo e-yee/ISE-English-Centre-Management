@@ -1,6 +1,6 @@
 INSERT INTO employee (id, full_name, email, phone_number, nickname, philosophy, achievements, role, teacher_status) VALUES
-('EMP001', 'John Smith', 'john.smith@example.com', '0912345678', 'Johnny', 'Teach with passion', 'Teacher of the Year 2023', 'Teacher', 'Available'),
-('EMP002', 'Emily Jones', 'emily.jones@example.com', '0987654321', 'Em', 'Learn by doing', 'IELTS 8.5 Certificate', 'Teacher', 'Available'),
+('EM001', 'John Smith', 'john.smith@example.com', '0912345678', 'Johnny', 'Teach with passion', 'Teacher of the Year 2023', 'Teacher', 'Available'),
+('EM002', 'Emily Jones', 'emily.jones@example.com', '0987654321', 'Em', 'Learn by doing', 'IELTS 8.5 Certificate', 'Teacher', 'Available'),
 ('EM003', 'Michael Williams', 'michael.w@example.com', '0911223344', 'Mike', 'Patience is key', '10 years experience', 'Teacher', 'Unavailable'),
 ('EM004', 'Jessica Brown', 'jess.brown@example.com', '0955667788', 'Jess', 'Every student can succeed', 'Cambridge CELTA', 'Teacher', 'Available'),
 ('EM005', 'David Garcia', 'david.garcia@example.com', '0933445566', 'Dave', 'Communication is everything', 'Top Performer Q1 2024', 'Learning Advisor', NULL),
@@ -64,8 +64,17 @@ enrolment('ER002', 'CT002', 'ST002', 'CL002', '2025-07-04', '2025-08-07');
 ------------------------
 
 -- Room Samples
-room('R001', 'Math Room', 'Free');
-room('R002', 'English Room', 'Free');
+INSERT INTO room (id, name, status) VALUES
+('ROOM01', 'Sunshine Room', 'Free'),
+('ROOM02', 'Ocean Room', 'Free'),
+('ROOM03', 'Mountain Room', 'Free'),
+('ROOM04', 'Forest Room', 'Free'),
+('ROOM05', 'Galaxy Room', 'Free'),
+('ROOM06', 'River Room', 'Free'),
+('ROOM07', 'Comet Room', 'Free'),
+('ROOM08', 'Star Room', 'Free'),
+('ROOM09', 'Rainbow Room', 'Free'),
+('ROOM10', 'Discovery Lab', 'Free');
 
 ------------------------
 

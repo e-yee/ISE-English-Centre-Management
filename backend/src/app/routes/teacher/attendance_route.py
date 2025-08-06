@@ -1,84 +1,263 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import get_jwt_identity
+from flask_jwt_extended import get_jwt_identity, get_jwt
 from app.auth import role_required
 from marshmallow import ValidationError
 from ...http_status import HTTPStatus
-from sqlalchemy.exc import IntegrityError
-from ...schemas.attendance_schema import attendance_schema
-from ...models import StudentAttendance, Account
+from sqlalchemy.exc import IntegrityError, OperationalError
+from ...schemas.attendance_schema import list_attendance_schema
+from ...models import StudentAttendance, Account, Course, Class, Student, Employee
 from extensions import db
 
 attendance_bp = Blueprint("attendance_bp", __name__, url_prefix="/attendance")
 
-@attendance_bp.route("/attendance/<date>", methods=["POST"])
-@role_required("Teacher")
-def mark_attendance(date):
-    if not request.is_json:
-        return jsonify({"message": "Missing or invalid JSON"}), HTTPStatus.BAD_REQUEST
-    try: 
-        identity = get_jwt_identity()
-        user = db.session.get(Account, identity)
+def get_course_date():
+    date_str = request.args.get("course_date")
+    if not date_str:
+        return None, jsonify({
+            "message": "Course date is required"
+        }), HTTPStatus.BAD_REQUEST
+    
+    return date_str, None, None
 
-        if not user or not user.employee_id:
-            return jsonify({"message": "Unauthorized or employee profile missing"}), HTTPStatus.FORBIDDEN
+def get_term():
+    term = request.args.get("term")
+    if not term:
+        return None, jsonify({
+            "message": "Term is required"
+        }), HTTPStatus.BAD_REQUEST
+    
+    return term, None, None
 
-        data = request.get_json()
-        validated = attendance_schema.load(data)
+def get_student_id():
+    id = request.args.get("student_id")
+    if not id:
+        return None, jsonify({
+            "message": "Student ID is required"
+        }), HTTPStatus.BAD_REQUEST
+    
+    return id, None, None
 
-        student = db.session.get(StudentAttendance, validated["student_id"])
-        if not student:
-            return jsonify({"message": "Student not found"}), HTTPStatus.NOT_FOUND
-        
-        attendance = StudentAttendance(
-            student_id=validated["student_id"],
-            class_id=validated["class_id"],
-            course_id=validated["course_id"],
-            term=validated["term"],
-            enrolment_id=validated["enrolment_id"],
-            status="Present"
-        )
+def get_class_id():
+    id = request.args.get("class_id")
+    if not id:
+        return None, jsonify({
+            "message": "Class ID is required"
+        }), HTTPStatus.BAD_REQUEST
+    
+    return id, None, None
 
-        db.session.add(attendance)
-        db.session.commit()
+def get_course_id():
+    id = request.args.get("course_id")
+    if not id:
+        return None, jsonify({
+            "message": "Course ID is required"
+        }), HTTPStatus.BAD_REQUEST
+    
+    return id, None, None
 
-        return jsonify({"message": "Attendance marked successfully"}), HTTPStatus.CREATED
+def validate_attendance(teacher_id, class_id, course_id, course_date, term):
+    attendance = db.session.query(StudentAttendance).filter_by(
+        teacher_id=teacher_id,
+        class_id=class_id,
+        course_id=course_id,
+        course_date=course_date,
+        term=term
+    ).first()
 
-    except ValidationError as ve:
-        return ({"message": "Invalid input"}, ve.messages), HTTPStatus.BAD_REQUEST
+    if not attendance:
+        return None, jsonify({
+            "message": "Attendance record not found"
+        }), HTTPStatus.NOT_FOUND
+    
+    return attendance, None, None
 
-    except IntegrityError as ie:
-        return ({"message": "Database error", "error": str(ie.orig)}), HTTPStatus.INTERNAL_SERVER_ERROR
+def validate_teacher(teacher_id):
+    teacher = db.session.query(Employee).filter_by(id=teacher_id, role="Teacher").first()
+    if not teacher:
+        return jsonify({
+            "message": "Invalid teacher ID"
+        }), HTTPStatus.BAD_REQUEST
+    
+    class_id = db.session.query(Class).filter_by(teacher_id=teacher_id).first()
 
-    except Exception as e:
-        return ({"message": "Unexpected error occurred", "error": str(e)}), HTTPStatus.INTERNAL_SERVER_ERROR
+    if not class_id or class_id.teacher_id != teacher:
+        return jsonify({
+            "message": "Teacher is not assigned to this class"
+        }), HTTPStatus.BAD_REQUEST
+    
+    return teacher, None, None
 
-@attendance_bp.route("/view", methods=["GET"])
-@role_required("Teacher", "Leaning Advisor")
+def validate_lerning_advisor(learning_advisor_id):
+    learning_advisor = db.session.query(Employee).filter_by(id=learning_advisor_id, role="Learning Advisor").first()
+    if not learning_advisor:
+        return jsonify({
+            "message": "Invalid learning advisor ID"
+        }), HTTPStatus.BAD_REQUEST
+    
+    return learning_advisor, None, None
+
+def validate_student(student_id):
+    student = db.session.query(Student).filter_by(id=student_id, role="student").first()
+    if not student:
+        return jsonify({
+            "message": "Invalid student ID"
+        }), HTTPStatus.BAD_REQUEST
+    
+    return student, None, None
+
+def validate_class(class_id):
+    class_ = db.session.query(Class).filter_by(id=class_id).first()
+    if not class_:
+        return jsonify({
+            "message": "Invalid class ID"
+        }), HTTPStatus.BAD_REQUEST
+    
+    return class_, None, None
+
+def validate_course(course_id, course_date):
+    learning_advisor = get_jwt().get("employee_id")
+    course = db.session.query(Course).filter_by(
+        course_id=course_id,
+        learning_advisor=learning_advisor,
+        course_date=course_date
+    ).first()
+
+    if not course:
+        return jsonify({
+            "message": "Invalid course ID or date"
+        }), HTTPStatus.BAD_REQUEST
+    
+    return course, None, None
+
+def validate_term(term):
+    term = db.session.query(Course).filter_by(term=term).first()
+    if not term:
+        return jsonify({
+            "message": "Invalid term"
+        }), HTTPStatus.BAD_REQUEST
+    return term, None, None
+
+@attendance_bp.get("/view")
+@role_required("Teacher", "Learning Advisor")
 def view_attendance():
-    if not request.is_json:
-        return jsonify({"message": "Missing or invalid JSON"}), HTTPStatus.BAD_REQUEST
     try:
-        identity = get_jwt_identity()
-        user = db.session.get(Account, identity)
+        id = get_jwt().get("employee_id")
+        teacher, error_response, status_code = validate_teacher(id)
 
-        if not user or not user.employee_id:
-            return jsonify({"message": "Unauthorized or employee profile missing"}), HTTPStatus.FORBIDDEN
+        la, error_response, status_code = validate_lerning_advisor(id)
+        if not teacher or not la:
+            return error_response, status_code
 
-        student_id = request.args.get("student_id")
-        if not student_id:
-            return jsonify({"message": "Student ID is required"}), HTTPStatus.BAD_REQUEST
+        class_id, error_response, status_code = get_class_id()
+        if not class_id:
+            return error_response, status_code
         
-        attendance_records = db.session.query(StudentAttendance).filter_by(student_id=student_id).all()
-        if not attendance_records:
-            return jsonify({"message": "No attendance records found for this student"}), HTTPStatus.NOT_FOUND
+        course_id, error_response, status_code = get_course_id()
+        if not course_id:
+            return error_response, status_code
         
-        return jsonify(attendance_schema.dump(attendance_records)), HTTPStatus.OK
+        term, error_response, status_code = get_term()
+        if not term:
+            return error_response, status_code
+        
+        course_date, error_response, status_code = get_course_date()
+        if not course_date:
+            return error_response, status_code
+        
+        records = db.session.query(StudentAttendance).filter_by(
+            class_id=class_id,
+            course_id=course_id,
+            course_date=course_date,
+            term=term
+        ).all()
 
-    except ValidationError as ve:
-        return jsonify({"message": "Invalid input", "error": ve.messages}), HTTPStatus.BAD_REQUEST
-
-    except IntegrityError as ie:
-        return jsonify({"message": "Database error", "error": str(ie.orig)}), HTTPStatus.INTERNAL_SERVER_ERROR
+        return jsonify(list_attendance_schema.dump(records, many=True)), HTTPStatus.OK
 
     except Exception as e:
-        return jsonify({"message": "Unexpected error occurred", "error": str(e)}), HTTPStatus.INTERNAL_SERVER_ERROR 
+        return jsonify({"message": "An unexpected error occurred"}), HTTPStatus.INTERNAL_SERVER_ERROR
+    
+@attendance_bp.patch("/mark")
+@role_required("Teacher")
+def mark_attendance():
+    try:
+        if not request.is_json:
+            return jsonify({"message": "Request must be JSON"}), HTTPStatus.BAD_REQUEST
+        
+        teacher_id = get_jwt().get("employee_id")
+        teacher, error_response, status_code = validate_teacher(teacher_id)
+
+        if not teacher:
+            return error_response, status_code
+        
+        class_id, error_response, status_code = get_class_id()
+        if not class_id:
+            return error_response, status_code
+        
+        course_id, error_response, status_code = get_course_id()
+        if not course_id:
+            return error_response, status_code
+        
+        course_date, error_response, status_code = get_course_date()
+        if not course_date:
+            return error_response, status_code
+        
+        term, error_response, status_code = get_term()
+        if not term:
+            return error_response, status_code
+        
+        data = request.get_json()
+        validated = list_attendance_schema.load(data)
+        records = validated["marks"]
+
+        updated_records = 0
+        for record in records:
+            student_id = record["student_id"]
+            status = record["status"]
+
+            attendance_record = db.session.query(StudentAttendance).filter_by(
+                student_id=student_id,
+                class_id=class_id,
+                course_id=course_id,
+                course_date=course_date,
+                term=term
+            ).first()
+
+            if attendance_record:
+                if attendance_record.status != status:
+                    attendance_record.status = status
+                    updated_records += 1
+        
+        if updated_records > 0:
+            db.session.commit()
+            return jsonify({"message": f"Updated {updated_records} attendance records"}), HTTPStatus.OK
+        
+        return jsonify({"message": "No records updated"}), HTTPStatus.OK
+    
+    except ValidationError as ve:
+        return jsonify({
+            "message": "Invalid input", "errors": ve.messages
+        }), HTTPStatus.BAD_REQUEST
+    
+    except IntegrityError as ie:
+        db.session.rollback()
+        return jsonify({
+            "message": "Database error", "error": str(ie.orig)
+        }), HTTPStatus.BAD_REQUEST
+    
+    except OperationalError as oe:
+        db.session.rollback()
+        return jsonify({
+            "message": "Database connection error", "error": str(oe)
+        }), HTTPStatus.BAD_REQUEST
+    
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": "An unexpected error occurred"}), HTTPStatus.INTERNAL_SERVER_ERROR
+        
+
+
+    
+
+    
+
+

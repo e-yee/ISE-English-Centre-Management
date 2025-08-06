@@ -1,6 +1,7 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import ProtectedRoute from './ProtectedRoutes';
 import AuthPage from '../pages/auth/AuthPage';
+import ResetPasswordPage from '../pages/auth/ResetPasswordPage';
 import NotFoundPage from '../pages/NotFoundPage';
 import UnauthorizedPage from '../pages/UnauthorizedPage';
 import Homescreen from '../pages/homescreen/Homescreen';
@@ -21,6 +22,7 @@ import AddMaterialsPage from '../pages/materials/AddMaterialsPage';
 import ClassReportPage from '../pages/class-report/ClassReportPage';
 import ScoringPage from '../pages/scoring/ScoringPage';
 import CoursePage from '../pages/course/CoursePage';
+import IssuesPage from '../pages/issues/IssuesPage';
 
 export const router = createBrowserRouter([
   {
@@ -30,10 +32,9 @@ export const router = createBrowserRouter([
   {
     path: '/auth',
     children: [
-      { path: 'login', element: <AuthPage /> },
-      { path: 'forget-password/email', element: <AuthPage /> },
-      { path: 'forget-password/verify', element: <AuthPage /> },
-      { path: 'forget-password/new-password', element: <AuthPage /> },
+      { path: 'login', element: <AuthPage key="login" /> },
+      { path: 'forget-password/email', element: <AuthPage key="forgot-email" /> },
+      { path: 'reset', element: <ResetPasswordPage /> },
     ],
   },
   {
@@ -59,6 +60,7 @@ export const router = createBrowserRouter([
           { path: 'materials', element: <AddMaterialsPage /> },
           { path: 'report', element: <ClassReportPage /> },
           { path: 'scoring/:classId', element: <ScoringPage /> },
+          { path: 'issues', element: <IssuesPage /> },
           
           // Fallback redirect for authenticated users at the root
           { path: '/', element: <Navigate to="/home" replace /> },
