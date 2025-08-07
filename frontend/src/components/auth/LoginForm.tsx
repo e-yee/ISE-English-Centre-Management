@@ -32,10 +32,10 @@ export function LoginForm({ onForgotPassword, onSubmit, isLoading = false }: Log
   };
 
   return (
-    <Card className="w-full max-w-lg mx-auto bg-[#EFECE7] border-black border-2 rounded-[30px] shadow-[10px_4px_4px_0px_rgba(0,0,0,0.25)] font-comfortaa">
-      <CardHeader className="text-center pb-6">
+    <Card className="rounded-lg w-full h-max bg-[#EFECE7] shadow-[10px_4px_4px_0px_rgba(0,0,0,0.25)] font-comfortaa"> {/*shadow-[10px_4px_4px_0px_rgba(0,0,0,0.25)]*/}
+      <CardHeader className="text-center">
         {/* Logo - Made bigger */}
-        <div className="flex justify-center mb-4">
+        <div className="flex justify-center">
           <img src={logoSvg} alt="Logo" className="w-48 h-auto" />
         </div>
 
@@ -45,13 +45,13 @@ export function LoginForm({ onForgotPassword, onSubmit, isLoading = false }: Log
         </CardTitle>
       </CardHeader>
 
-      <CardContent className="space-y-6 px-12 pb-12">
+      <CardContent className="space-y-6 px-22">
         <form onSubmit={handleLogin} className="space-y-6 select-none">
           {/* Username Field */}
           <div className="space-y-2">
             <label
               htmlFor="username"
-              className="block text-[30px] font-comfortaa font-semibold text-[#000000] text-left leading-[1.4]"
+              className="block text-[22px] font-comfortaa font-semibold text-[#000000] text-left leading-[1.4]"
             >
               Username
             </label>
@@ -71,7 +71,7 @@ export function LoginForm({ onForgotPassword, onSubmit, isLoading = false }: Log
           <div className="space-y-2 relative">
             <label
               htmlFor="password"
-              className="block text-[30px] font-comfortaa font-semibold text-[#000000] text-left leading-[1.4]"
+              className="block text-[22px] font-comfortaa font-semibold text-[#000000] text-left leading-[1.4]"
             >
               Password
             </label>
@@ -91,7 +91,7 @@ export function LoginForm({ onForgotPassword, onSubmit, isLoading = false }: Log
               <button
                 type="button"
                 onClick={onForgotPassword}
-                className="text-[25px] font-comfortaa font-medium text-[rgba(0,0,0,0.65)] hover:underline leading-[1.4]"
+                className="text-[18px] font-comfortaa font-medium text-[rgba(0,0,0,0.65)] hover:underline leading-[1.4]"
                 disabled={isLoading}
               >
                 Forgot Password?
@@ -100,17 +100,20 @@ export function LoginForm({ onForgotPassword, onSubmit, isLoading = false }: Log
           </div>
 
           {/* Login Button - Updated with exact Figma specifications */}
-          <div className="pt-16 relative">
+          <div className="pt-10 pb-[31px] relative flex justify-center">
             <Button
               type="submit"
-              className="relative w-full h-[88px] bg-[rgba(203,175,135,0.3)] text-[#000000] hover:bg-[rgba(203,175,135,0.4)] border-2 border-black rounded-full font-comfortaa font-semibold transition-all duration-200 disabled:opacity-50"
+              className="cursor-pointer w-3/4 h-[60px] 
+                         bg-[rgba(203,175,135,0.3)] text-[#000000] 
+                         hover:bg-[rgba(203,175,135,0.4)] hover:border-2 hover:border-black 
+                         rounded-3xl font-comfortaa font-semibold"
               style={{
                 backdropFilter: 'blur(50px)',
                 background: 'rgba(203, 175, 135, 0.3)'
               }}
               disabled={isLoading}
             >
-              <span className="text-[50px] font-semibold leading-[1.4] flex items-center justify-center">
+              <span className="text-[35px] font-semibold leading-[1.4] flex items-center justify-center">
                 {isLoading ? "Logging in..." : "Login"}
               </span>
             </Button>
