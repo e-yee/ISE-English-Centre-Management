@@ -162,7 +162,7 @@ const AbsentRequestPage: React.FC<AbsentRequestPageProps> = ({ className }) => {
                       
                       <div className="bg-gray-50 rounded-lg p-3">
                         <div className="text-xs font-comfortaa font-medium text-gray-500 uppercase tracking-wide mb-1">
-                          Request ID
+                          Requested by ID
                         </div>
                         <div className="font-comfortaa text-sm text-gray-800 font-mono">
                           {request.id}

@@ -57,43 +57,31 @@ def checkin():
             if not classes:
                 return jsonify({"message": "No classes found for this teacher"}), HTTPStatus.NOT_FOUND
             
-            today_weekday = datetime.datetime.now().weekday()
-            weekday_map = {
-                "Mon": 0,
-                "Tue": 1,
-                "Wed": 2,
-                "Thu": 3,
-                "Fri": 4,
-                "Sat": 5,
-                "Sun": 6
-            }
+            # Get today's date
+            today = datetime.datetime.now().date()
+            current_time = datetime.datetime.now().time()
 
-            today_start_time = []
+            # Find classes for today
+            today_classes = []
             for item in classes:
-                # Sample schedule format: "Mon - Wed, 09:00 - 10:30"   
-                # Please follow the following format
-                matched = re.search(r"(\w{3}) - (\w{3}), (\d{2}:\d{2}) - (\d{2}:\d{2})", item.schedule)
-                if matched:
-                    first_day_of_week = matched.group(1)
-                    second_day_of_week = matched.group(2)
+                # Check if class is today
+                if item.class_date.date() == today:
+                    today_classes.append(item)
 
-                    start_time = matched.group(3)
-                    start = datetime.datetime.strptime(start_time, "%H:%M").time()
-
-                    if weekday_map[first_day_of_week] == today_weekday or \
-                        weekday_map[second_day_of_week] == today_weekday:
-                            today_start_time.append(start)
-
-            if not today_start_time:
+            if not today_classes:
                 return jsonify({"message": "No classes found for today"}), HTTPStatus.NOT_FOUND
             
-            today_start_time.sort()
-            first_class_start_time = today_start_time[0]
+            # Sort classes by start time
+            today_classes.sort(key=lambda x: x.class_date.time())
+            first_class = today_classes[0]
+            first_class_start_time = first_class.class_date.time()
 
             if time >= first_class_start_time + datetime.timedelta(minutes=15):
                 status = "Late"
             elif time <= first_class_start_time:
-                status = "Checked In" 
+                status = "Checked In"
+            else:
+                status = "Checked In"
 
 
         checkin_record = StaffCheckin(
