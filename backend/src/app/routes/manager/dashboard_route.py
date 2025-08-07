@@ -204,7 +204,17 @@ def revenue_statistics():
                     int(func.extract('month', Contract.created_date)) == term_to_month_map[term]
                 ).scalar() or 0
 
-        
+    except IntegrityError as ie:
+        return jsonify({
+            "message": "Database integrity error",
+            "error": str(ie.orig)
+        }), HTTPStatus.BAD_REQUEST
+
+    except OperationalError as oe:
+        return jsonify({
+            "message": "Database operational error",
+            "error": str(oe)
+        }), HTTPStatus.BAD_REQUEST    
     
     except Exception as e:
         return jsonify({
