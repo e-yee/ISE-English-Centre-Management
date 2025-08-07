@@ -1,9 +1,8 @@
 from flask import Blueprint, request, jsonify
 from app.auth import role_required
 from ...http_status import HTTPStatus
-from marshmallow import ValidationError
 from sqlalchemy.exc import IntegrityError, OperationalError
-from ...models import Employee, Contract, Enrolment, Student, Class
+from ...models import Employee, Contract, Student, LeaveRequest, StaffCheckin, Class, Course
 from extensions import db
 from sqlalchemy import func, literal, distinct, cast, Integer
 from flask_jwt_extended import get_jwt
@@ -19,6 +18,24 @@ def validate_manager(id):
         }), HTTPStatus.NOT_FOUND
     
     return manager, None, None
+
+def get_teacher_id():
+    teacher_id = request.args.get("teacher_id")
+    if not teacher_id:
+        return None, jsonify({
+            "message": "Teacher ID is required"
+        }), HTTPStatus.BAD_REQUEST
+    
+    return teacher_id, None, None
+
+def validate_teacher(teacher_id):
+    teacher = db.session.query(Employee).filter_by(id=teacher_id, role='Teacher').first()
+    if not teacher:
+        return None, jsonify({
+            "message": "Teacher not found"
+        }), HTTPStatus.NOT_FOUND
+    
+    return teacher, None, None
 
 @dashboard_bp.get("/statistics")
 @role_required("Manager")
@@ -126,7 +143,6 @@ def student_statistics():
         }), HTTPStatus.BAD_REQUEST
 
 
-
 @dashboard_bp.get("/statistics/teachers")
 @role_required("Manager")
 def teacher_statistics():
@@ -159,6 +175,88 @@ def teacher_statistics():
             "error": str(oe)
         }), HTTPStatus.BAD_REQUEST
 
+@dashboard_bp.get("/statistics/teachers/details")
+@role_required("Manager")
+def teacher_detail_statistics():
+    try:
+        id = get_jwt().get("employee_id")
+        manager, error_response, status = validate_manager(id)
+        if not manager:
+            return error_response, status
+        
+        teacher_id, error_response, status = get_teacher_id()
+        if not teacher_id:
+            return error_response, status
+
+        teacher, error_response, status = validate_teacher(teacher_id)
+        if not teacher:
+            return error_response, status
+
+        leave_counts = db.session.query(LeaveRequest).filter_by(
+            employee_id = teacher_id,
+            status = 'Approved'
+        ).count()
+
+        teaching_hours = 1.5
+
+        late_counts = db.session.query(StaffCheckin).filter_by(
+                employee_id = teacher_id,
+                status = 'Late'
+        ).count() or 0
+
+        on_time_counts = db.session.query(StaffCheckin).filter_by(
+                employee_id = teacher_id,
+                status = 'Checked In'
+        ).count() or 0
+
+        total_counts  = late_counts + on_time_counts
+
+        late_percentage = (late_counts / total_counts * 100) if total_counts > 0 else 0
+        on_time_percentage = (on_time_counts / total_counts * 100) if total_counts > 0 else 0
+        
+        total_math_courses = db.session.query(Class).join(Course).filter(
+            Course.id == Class.course_id,
+            Course.id.like("MTH%"),
+            Class.teacher_id == teacher_id
+        ).count()
+
+        total_math_hours = total_math_courses * teaching_hours
+
+        total_english_courses = db.session.query(Class).join(Course).filter(
+            Course.id == Class.course_id,
+            Course.id.like("ENG%"),
+            Class.teacher_id == teacher_id
+        ).count()
+
+        total_english_hours = total_english_courses * teaching_hours
+
+        return jsonify({
+            "leave_counts": leave_counts,
+            "late_counts": late_counts,
+            "on_time_counts": on_time_counts,
+            "total_counts": total_counts,
+            "late_percentage": late_percentage,
+            "on_time_percentage": on_time_percentage,
+            "total_math_hours": total_math_hours,
+            "total_english_hours": total_english_hours
+        })
+
+    except IntegrityError as ie:
+        return jsonify({
+            "message": "Database integrity error",
+            "error": str(ie.orig)
+        }), HTTPStatus.BAD_REQUEST
+    
+    except OperationalError as oe:
+        return jsonify({
+            "message": "Database operational error",
+            "error": str(oe)
+        }), HTTPStatus.BAD_REQUEST
+    
+    except Exception as e:
+        return jsonify({
+            "message": str(e)
+        }), HTTPStatus.INTERNAL_SERVER_ERROR
 
 @dashboard_bp.get("/statistics/revenue")
 @role_required("Manager")
