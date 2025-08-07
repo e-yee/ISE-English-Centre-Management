@@ -21,8 +21,17 @@ const FeatureButtonList: React.FC<FeatureButtonListProps> = ({ className, classI
   const [activeButton, setActiveButton] = useState<string | null>(null);
   const navigate = useNavigate();
 
+  // Determine if we're currently on the class page or a feature page
+  const isOnClassPage = window.location.pathname.includes('/class/') && !window.location.pathname.includes('/class-info/') && !window.location.pathname.includes('/scoring/');
+
   // Feature buttons with routing
   const featureButtons: FeatureButton[] = [
+    {
+      id: "back",
+      title: "Back",
+      route: isOnClassPage ? "/home" : (classId ? `/class/${classId}` : "/class/1"),
+      onClick: () => navigate(isOnClassPage ? "/home" : (classId ? `/class/${classId}` : "/class/1"))
+    },
     {
       id: "information",
       title: "Information",
