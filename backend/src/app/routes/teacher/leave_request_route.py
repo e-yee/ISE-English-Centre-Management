@@ -132,6 +132,7 @@ def add_request():
             start_date=validated["start_date"],
             end_date=validated["end_date"],
             reason=validated["reason"],
+            status="Pending",
         )
 
         db.session.add(leave_request)
@@ -241,7 +242,7 @@ def get_personal_leave_requests():
             "error": str(e)
         }), HTTPStatus.INTERNAL_SERVER_ERROR
     
-@leave_request_bp.put("/approve/<int:leave_request_id>")
+@leave_request_bp.put("/approve/<string:leave_request_id>")
 @role_required("Manager")
 def approve_leave_request(leave_request_id):
     try:
@@ -254,7 +255,7 @@ def approve_leave_request(leave_request_id):
         data = request.get_json()
         status = data.get("status")
 
-        if leave_request.status != "Pending":
+        if leave_request.status and leave_request.status != "Pending":
             return jsonify({
                 "message": "Leave request has already been processed"
             }), HTTPStatus.BAD_REQUEST
