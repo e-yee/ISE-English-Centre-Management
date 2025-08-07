@@ -110,7 +110,7 @@ def create_issue():
         if not request.is_json:
             return jsonify({"message": "Missing or invalid JSON"}), HTTPStatus.BAD_REQUEST
         
-        data = request.get_json()  
+        data = request.get_json()
         validated = issue_schema.load(data)
 
         id = get_jwt().get("employee_id")
@@ -118,11 +118,11 @@ def create_issue():
         teacher, error_response, status = validate_teacher(id)
         if not teacher:
             return error_response, status
-        
+
         student, error_response, status = validate_student(validated["student_id"]) if validated.get("student_id") else (None, None, None)
         if validated.get("student_id") and not student:
             return error_response, status
-        
+
         room, error_response, status = validate_room(validated["room_id"]) if validated.get("room_id") else (None, None, None)
         if validated.get("room_id") and not room:
             return error_response, status
@@ -139,7 +139,7 @@ def create_issue():
         db.session.add(issue)
         db.session.commit()
 
-        return jsonify(issue_schema.dump(issue, many=True)), HTTPStatus.CREATED
+        return jsonify(issue_schema.dump(issue)), HTTPStatus.CREATED
 
     except Exception as e:
         return jsonify({
