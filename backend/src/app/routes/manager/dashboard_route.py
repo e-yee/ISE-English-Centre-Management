@@ -88,8 +88,8 @@ def student_statistics():
         middle_school_students = db.session.query(Student).filter(verify_age < 15 and verify_age >= 12).count()
         high_school_students = db.session.query(Student).filter(verify_age < 18 and verify_age >= 15).count()
 
-        math_students = db.session.query(Student.id).join(Enrolment).filter(Enrolment.course_id.in_(course_to_subject_map["Math"])).count()
-        english_students = db.session.query(Student.id).join(Enrolment).filter(Enrolment.course_id.in_(course_to_subject_map["English"])).count()
+        math_students = db.session.query(Student.id).join(Enrolment).filter(Enrolment.course_id == course_to_subject_map["Math"]).count()
+        english_students = db.session.query(Student.id).join(Enrolment).filter(Enrolment.course_id == course_to_subject_map["English"]).count()
 
         return jsonify({
             "total_students": total_students,
@@ -138,10 +138,10 @@ def teacher_statistics():
 
         total_teachers = db.session.query(Employee).filter_by(role='Teacher').count()
         math_teachers = db.session.query(Employee.id).join(Class).filter(
-            Class.course_id.in_(course_to_subject_map["Math"])
+            Class.course_id == course_to_subject_map["Math"]
         ).distinct().count()
         english_teachers = db.session.query(Employee.id).join(Class).filter(
-            Class.course_id.in_(course_to_subject_map["English"])
+            Class.course_id == course_to_subject_map["English"]
         ).distinct().count()
 
         return jsonify({
@@ -181,9 +181,15 @@ def revenue_statistics():
         # Assume the company was found in 2023
         start_year = 2023
         current_year = datetime.datetime.now().year
-        revenue_by_month = [0 for _ in range(12)]
-        revenue_by_term = [0 for _ in range(3)]  
         revenue_by_year = [0 for _ in range(current_year - start_year + 1)]
+
+        for i in range(1, 13):
+            revenue_by_year[i - 1] = [0 for _ in range (1, 3)]
+
+        term_to_month_map = {
+            1: [1, 2, 3, 4, 5, 6],
+            2: [7, 8, 9, 10, 11, 12],
+        }
 
         for year in range(start_year, current_year + 1):
             revenue_by_year[year / start_year] = db.session.query(func.sum(Contract.tuition_fee)).filter(
@@ -191,24 +197,14 @@ def revenue_statistics():
                 func.extract('year', Contract.created_date) == year
             ).scalar() or 0
 
-        for month in range(1, 13):
-            revenue_by_month[month - 1] = db.session.query(func.sum(Contract.tuition_fee)).filter(
-                Contract.status == 'Paid',
-                func.extract('year', Contract.created_date) == current_year,
-                func.extract('month', Contract.created_date) == month
-            ).scalar() or 0
+            for term in range(1, 3):
+                revenue_by_year[year / start_year][term - 1] = db.session.query(func.sum(Contract.tuition_fee)).filter(
+                    Contract.status == 'Paid',
+                    int(func.extract('year', Contract.created_date)) == year,
+                    int(func.extract('month', Contract.created_date)) == term_to_month_map[term]
+                ).scalar() or 0
 
-        for term in range(1, 4):
-            revenue_by_term[term - 1] = db.session.query(func.sum(Contract.tuition_fee)).join(Class).filter(
-                Class.term == term,
-                Contract.status == 'Paid'
-            ).scalar() or 0
-
-        return jsonify({
-            "revenue_by_month": revenue_by_month,
-            "revenue_by_term": revenue_by_term,
-            "revenue_by_year": revenue_by_year
-        }), HTTPStatus.OK
+        
     
     except Exception as e:
         return jsonify({
