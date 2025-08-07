@@ -2,6 +2,7 @@ from extensions import ma
 from marshmallow import fields
 
 class EmployeeSchema(ma.Schema):
+    id = fields.String(dump_only=True)  # Include in responses, not required for input
     full_name = fields.String(required=True)
     email = fields.String(required=True)
     nickname = fields.String(allow_none=True)

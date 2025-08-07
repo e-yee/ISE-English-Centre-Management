@@ -174,7 +174,7 @@ def resolve_issue(issue_id):
 
         db.session.commit()
 
-        return jsonify(issue_schema.dump(issue, many=True)), HTTPStatus.OK
+        return jsonify(issue_schema.dump(issue)), HTTPStatus.OK
 
     except ValidationError as ve:
         return jsonify({

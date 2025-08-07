@@ -72,6 +72,9 @@ const ColleagueProfilePanel: React.FC<ColleagueProfilePanelProps> = ({ colleague
               <p className="text-lg text-gray-600">
                 {colleague.email} | {colleague.phone}
               </p>
+              <p className="text-sm text-blue-600 font-medium mt-1">
+                Employee ID: {colleague.id}
+              </p>
             </div>
           </div>
         </div>

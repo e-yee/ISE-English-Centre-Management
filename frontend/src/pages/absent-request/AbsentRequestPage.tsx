@@ -304,6 +304,7 @@ const AbsentRequestPage: React.FC<AbsentRequestPageProps> = ({ className }) => {
           {userRole === 'Teacher' || userRole === 'Learning Advisor' ? (
             <AbsenceRequestForm 
               isPending={pendingRequests.length > 0}
+              pendingRequest={latestPendingRequest}
             />
           ) : (
             // Manager view - approval interface

@@ -18,7 +18,7 @@ const ColleaguesPage: React.FC<ColleaguesPageProps> = ({ className }) => {
 
   // Transform Employee data to match Colleague interface
   const colleagues: Colleague[] = (employees || []).map(employee => ({
-    id: employee.email, // Use email as unique identifier
+    id: employee.id || employee.email, // Use employee ID as unique identifier, fallback to email
     name: employee.name || employee.full_name,
     email: employee.email,
     phone: employee.phone || employee.phone_number || '',

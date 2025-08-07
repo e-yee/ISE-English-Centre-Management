@@ -70,6 +70,9 @@ const ColleagueList: React.FC<ColleagueListProps> = ({ colleagues, selectedColle
                               <h3 className="font-semibold text-gray-900 truncate">
                                 {colleague.name}
                               </h3>
+                              <span className="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full">
+                                ID: {colleague.id}
+                              </span>
                               {colleague.nickname && (
                                 <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
                                   {colleague.nickname}
