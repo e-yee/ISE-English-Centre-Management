@@ -30,8 +30,7 @@ def register_blueprints(app):
         homepage_bp,
         student_bp,
         issue_bp,
-        leave_request_bp,
-        dashboard_bp
+        leave_request_bp
     ]
     
     for bp in all_blueprints:
