@@ -146,9 +146,9 @@ def check_duplicate_class(course, term, class_date):
 
 def create_student_attendance(class_):
     enrolments = db.session.query(Enrolment).filter_by(
-            course_id=class_.course_id,
-            course_date=class_.course_date
-        ).all()
+        course_id=class_.course_id,
+        course_date=class_.course_date
+    ).all()
         
     for enrolment in enrolments:
         student_attendance = StudentAttendance(
