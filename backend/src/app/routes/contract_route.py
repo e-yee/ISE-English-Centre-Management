@@ -11,16 +11,16 @@ from ..schemas.learning_advisor.contract_schema import contract_schema
 contract_bp = Blueprint("contract_bp", __name__, url_prefix="/contract")
 
 # Helper Function
-def generate_id():
+def generate_contract_id():
     last_contract = db.session.query(Contract).order_by(Contract.id.desc()).first()
     
     if not last_contract:
         return "CON001"
     else:
         prefix = last_contract.id[:3]
-        num = int(last_contract.id[3:]) + 1
+        contract_number = int(last_contract.id[3:]) + 1
         
-        return f"{prefix}{num:03}"
+        return f"{prefix}{contract_number:03}"
 
 def generate_enrolment_id():
     last_enrolment = db.session.query(Enrolment).order_by(Enrolment.id.desc()).first()
@@ -29,9 +29,9 @@ def generate_enrolment_id():
         return "ENR001"
     else:
         prefix = last_enrolment.id[:3]
-        num = int(last_enrolment.id[3:]) + 1
+        enrolment_number = int(last_enrolment.id[3:]) + 1
         
-        return f"{prefix}{num:03}"
+        return f"{prefix}{enrolment_number:03}"
     
 def get_contract_id():
     id = request.args.get("id")
@@ -51,7 +51,7 @@ def validate_student(student_id):
     
     return student, None, None
 
-def validate_course(course_id, course_date):
+def validate_course_for_advisor(course_id, course_date):
     employee_id = get_jwt().get("employee_id")
     course = db.session.query(Course).filter_by(
         id=course_id, 
@@ -65,7 +65,7 @@ def validate_course(course_id, course_date):
         
     return course, None, None
 
-def validate_contract(contract_id):
+def validate_contract_for_advisor(contract_id):
     employee_id = get_jwt().get("employee_id")
     contract = db.session.query(Contract).filter_by(
         id=contract_id,
@@ -78,7 +78,7 @@ def validate_contract(contract_id):
     
     return contract, None, None
 
-def check_existed_contract(student_id, course_id, course_date):
+def check_duplicate_contract(student_id, course_id, course_date):
     existed_contract = db.session.query(Contract).filter_by(
         student_id=student_id,
         course_id=course_id,
@@ -94,31 +94,31 @@ def check_existed_contract(student_id, course_id, course_date):
 # Learning Advisor Features
 @contract_bp.post("/learningadvisor/add")
 @role_required("Learning Advisor")
-def la_add_contract():
+def advisor_create_contract():
     try:        
         if not request.is_json:
             return jsonify({
                 "message": "Missing or invalid JSON"
             }), HTTPStatus.BAD_REQUEST
         
-        json_data = request.get_json()
-        validated = contract_schema.load(json_data)
+        request_data = request.get_json()
+        validated_data = contract_schema.load(request_data)
         
-        student, response, status = validate_student(validated["student_id"])
+        student, error_response, status_code = validate_student(validated_data["student_id"])
         if not student:
-            return response, status
+            return error_response, status_code
 
-        course, response, status = validate_course(validated["course_id"], validated["course_date"])
+        course, error_response, status_code = validate_course_for_advisor(validated_data["course_id"], validated_data["course_date"])
         if not course:
-            return response, status
+            return error_response, status_code
         
-        result, response, status = check_existed_contract(validated["student_id"], validated["course_id"], validated["course_date"])
+        result, error_response, status_code = check_duplicate_contract(validated_data["student_id"], validated_data["course_id"], validated_data["course_date"])
         if not result:
-            return response, status
+            return error_response, status_code
         
         employee_id = get_jwt().get("employee_id")
         contract = Contract(
-            id=generate_id(),
+            id=generate_contract_id(),
             student_id=student.id,
             employee_id=employee_id,
             course_id=course.id,
@@ -172,7 +172,7 @@ def la_add_contract():
 
 @contract_bp.get("/learningadvisor/")
 @role_required("Learning Advisor")
-def la_get_all_contracts_from_course():
+def advisor_get_contracts_by_course():
     try:
         course_id = request.args.get("course_id")
         course_date = request.args.get("course_date")
@@ -192,8 +192,8 @@ def la_get_all_contracts_from_course():
                 "message": "Course not found"
             }), HTTPStatus.NOT_FOUND
             
-        contracts = course.contract
-        return jsonify(contract_schema.dump(contracts, many=True)), HTTPStatus.OK
+        contract_list = course.contract
+        return jsonify(contract_schema.dump(contract_list, many=True)), HTTPStatus.OK
 
     except Exception as e:
         db.session.rollback()
@@ -204,15 +204,15 @@ def la_get_all_contracts_from_course():
     
 @contract_bp.get("/learningadvisor/search")
 @role_required("Learning Advisor")
-def la_get_contract():
+def advisor_get_contract():
     try:
-        id, response, status = get_contract_id()
+        id, error_response, status_code = get_contract_id()
         if not id:
-            return response, status
+            return error_response, status_code
         
-        contract, response, status = validate_contract(id)
+        contract, error_response, status_code = validate_contract_for_advisor(id)
         if not contract:
-            return response, status
+            return error_response, status_code
         
         return jsonify(contract_schema.dump(contract)), HTTPStatus.OK
 
@@ -225,41 +225,41 @@ def la_get_contract():
     
 @contract_bp.put("/learningadvisor/update")
 @role_required("Learning Advisor")
-def la_update_contract():
+def advisor_update_contract():
     try:
-        id, response, status = get_contract_id()
+        id, error_response, status_code = get_contract_id()
         if not id:
-            return response, status
+            return error_response, status_code
         
-        contract, response, status = validate_contract(id)
+        contract, error_response, status_code = validate_contract_for_advisor(id)
         if not contract:
-            return response, status
+            return error_response, status_code
         
         if not request.is_json:
             return jsonify({
                 "message": "Missing or invalid JSON"
             }), HTTPStatus.BAD_REQUEST
         
-        json_data = request.get_json()
-        update_data = contract_schema.load(json_data, partial=True)
+        request_data = request.get_json()
+        update_fields = contract_schema.load(request_data, partial=True)
         
-        student_id = update_data.get("student_id", contract.student_id)
-        course_id = update_data.get("course_id", contract.course_id)
-        course_date = update_data.get("course_date", contract.course_date)
+        student_id = update_fields.get("student_id", contract.student_id)
+        course_id = update_fields.get("course_id", contract.course_id)
+        course_date = update_fields.get("course_date", contract.course_date)
         
         enrolment = db.session.query(Enrolment).filter_by(contract_id=contract.id).first()
         
         if student_id != contract.student_id:
-            student, response, status = validate_student(student_id)
+            student, error_response, status_code = validate_student(student_id)
             if not student:
-                return response, status
+                return error_response, status_code
             
             setattr(enrolment, "student_id", student_id)
                     
         if course_id != contract.course_id or course_date != contract.course_date:
-            course, response, status = validate_course(course_id, course_date)
+            course, error_response, status_code = validate_course_for_advisor(course_id, course_date)
             if not course:
-                return response, status
+                return error_response, status_code
             
             setattr(contract, "start_date", course.start_date)
             setattr(contract, "end_date", course.end_date)
@@ -269,11 +269,11 @@ def la_update_contract():
             setattr(enrolment, "course_date", course_date)
             setattr(enrolment, "enrolment_date", course.start_date)
 
-        result, response, status = check_existed_contract(student_id, course_id, course_date)
+        result, error_response, status_code = check_duplicate_contract(student_id, course_id, course_date)
         if not result:
-            return response, status
+            return error_response, status_code
         
-        for key, value in update_data.items():
+        for key, value in update_fields.items():
             setattr(contract, key, value)
         
         db.session.commit()
@@ -310,20 +310,18 @@ def la_update_contract():
 
 @contract_bp.delete("/learningadvisor/delete")
 @role_required("Learning Advisor")
-def la_delete_contract():
+def advisor_delete_contract():
     try:
-        id, response, status = get_contract_id()
+        id, error_response, status_code = get_contract_id()
         if not id:
-            return response, status
+            return error_response, status_code
         
-        contract, response, status = validate_contract(id)
+        contract, error_response, status_code = validate_contract_for_advisor(id)
         if not contract:
-            return response, status
+            return error_response, status_code
         
         db.session.delete(contract)
-        
-        enrolment = db.session.query(Enrolment).filter_by(contract_id=contract.id).first()
-        db.session.delete(enrolment)
+        db.session.query(Enrolment).filter_by(contract_id=contract.id).delete()
         
         db.session.commit()
         return jsonify({
@@ -354,7 +352,7 @@ def la_delete_contract():
 # Manager Features
 @contract_bp.get("/manager/")
 @role_required("Manager")
-def manager_get_all_contracts_from_course():
+def manager_get_contracts_by_course():
     try:
         course_id = request.args.get("course_id")
         course_date = request.args.get("course_date")
@@ -372,8 +370,8 @@ def manager_get_all_contracts_from_course():
                 "message": "Course not found"
             }), HTTPStatus.NOT_FOUND
             
-        contracts = course.contract
-        return jsonify(contract_schema.dump(contracts, many=True)), HTTPStatus.OK
+        contract_list = course.contract
+        return jsonify(contract_schema.dump(contract_list, many=True)), HTTPStatus.OK
 
     except Exception as e:
         return jsonify({
@@ -385,9 +383,9 @@ def manager_get_all_contracts_from_course():
 @role_required("Manager")
 def manager_get_contract():
     try:
-        id, response, status = get_contract_id()
+        id, error_response, status_code = get_contract_id()
         if not id:
-            return response, status
+            return error_response, status_code
         
         contract = db.session.get(Contract, id)
         if not contract:

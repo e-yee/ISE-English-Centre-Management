@@ -13,7 +13,7 @@ from ..http_status import HTTPStatus
 course_bp = Blueprint("course_bp", __name__, url_prefix="/course")
 
 # Helper Functions
-def generate_id(course_name):
+def generate_course_id(course_name):
     prefix_map = {
         "CEFR A1": "ENG001",
         "CEFR A2": "ENG002",
@@ -42,7 +42,7 @@ def generate_id(course_name):
     
     return prefix_map[course_name]
 
-def get_course_id_date():
+def get_course_composite_key():
     course_id = request.args.get("id")
     
     if not course_id:
@@ -64,7 +64,7 @@ def get_course_id_date():
         
     return course_id, datetime.strptime(course_date, "%Y-%m-%d"), None, None
 
-def validate_name(name):
+def validate_course_name(name):
     name_map = {
         "CEFR A1", "CEFR A2", "CEFR B1", "CEFR B2", "CEFR C1", "CEFR C2",
         "IELTS Foundation", "IELTS Pre-Intermediate", "IELTS Intermediate", "IELTS Upper-Intermediate", "IELTS Advanced",
@@ -79,7 +79,7 @@ def validate_name(name):
     
     return name, None, None
 
-def validate_duration(duration):
+def validate_course_duration(duration):
     if duration < 0:
         return None, jsonify({
             "message": "Duration must be larger than 0"
@@ -87,7 +87,7 @@ def validate_duration(duration):
     
     return duration, None, None
 
-def validate_start_date(date, created_date):
+def validate_course_start_date(date, created_date):
     if date < created_date:
         return None, jsonify({
             "message": "Date data must be larger than created date"
@@ -95,7 +95,7 @@ def validate_start_date(date, created_date):
         
     return date, None, None
 
-def validate_schedule(schedule):
+def validate_course_schedule_format(schedule):
     matched = re.search(r"(\w{3}) - (\w{3}), (\d{2}:\d{2}) - (\d{2}:\d{2})", schedule)
     
     if not matched:
@@ -130,7 +130,7 @@ def validate_schedule(schedule):
         
     return schedule, None, None
 
-def validate_fee(fee):
+def validate_course_fee(fee):
     if fee < 0:
         return None, jsonify({
             "message": "Fee must be larger than 0"
@@ -138,7 +138,7 @@ def validate_fee(fee):
     
     return fee, None, None
 
-def validate_created_date(date):
+def validate_course_created_date(date):
     milestones = datetime.strptime("2025-01-01", "%Y-%m-%d")
     
     if date < milestones.date():
@@ -151,52 +151,52 @@ def validate_created_date(date):
 # Learning Advisor Features
 @course_bp.post("/learningadvisor/add")
 @role_required("Learning Advisor")
-def la_add_course():
+def advisor_create_course():
     try:
         if not request.is_json:
             return jsonify({
                 "message": "Missing or invalid JSON"
             }), HTTPStatus.BAD_REQUEST
         
-        json_data = request.get_json()
-        validated = course_schema.load(json_data)
+        request_data = request.get_json()
+        validated_data = course_schema.load(request_data)
         
-        name, response, status = validate_name(validated["name"])
+        name, error_response, status_code = validate_course_name(validated_data["name"])
         if not name:
-            return response, status
+            return error_response, status_code
         
-        duration, response, status = validate_duration(validated["duration"])
+        duration, error_response, status_code = validate_course_duration(validated_data["duration"])
         if not duration:
-            return response, status
+            return error_response, status_code
 
-        schedule, response, status = validate_schedule(validated["schedule"])
+        schedule, error_response, status_code = validate_course_schedule_format(validated_data["schedule"])
         if not schedule:
-            return response, status
+            return error_response, status_code
 
-        fee, response, status = validate_fee(validated["fee"])
+        fee, error_response, status_code = validate_course_fee(validated_data["fee"])
         if not fee:
-            return response, status
+            return error_response, status_code
         
-        created_date, response, status = validate_created_date(validated["created_date"])
+        created_date, error_response, status_code = validate_course_created_date(validated_data["created_date"])
         if not created_date:
-            return response, status
+            return error_response, status_code
         
-        start_date, response, status = validate_start_date(validated["start_date"], created_date)
+        start_date, error_response, status_code = validate_course_start_date(validated_data["start_date"], created_date)
         if not start_date:
-            return response, status
+            return error_response, status_code
         
         employee_id = get_jwt().get("employee_id")
         course = Course(
-            id=generate_id(name),
+            id=generate_course_id(name),
             name=name,
             duration=duration,
             start_date=start_date,
             schedule=schedule,
             learning_advisor_id=employee_id,
             fee=fee,
-            prerequisites=validated["prerequisites"],
+            prerequisites=validated_data["prerequisites"],
             created_date=created_date,
-            description=validated["description"]
+            description=validated_data["description"]
         )
         
         db.session.add(course)
@@ -233,11 +233,11 @@ def la_add_course():
         
 @course_bp.get("/learningadvisor/")
 @role_required("Learning Advisor")
-def la_get_all():
+def advisor_get_courses():
     try:
         employee_id = get_jwt().get("employee_id")
-        courses = db.session.query(Course).filter_by(learning_advisor_id=employee_id).all()
-        return jsonify(course_schema.dump(courses, many=True)), HTTPStatus.OK
+        course_list = db.session.query(Course).filter_by(learning_advisor_id=employee_id).all()
+        return jsonify(course_schema.dump(course_list, many=True)), HTTPStatus.OK
 
     except Exception as e:
         return jsonify({
@@ -246,11 +246,11 @@ def la_get_all():
 
 @course_bp.get("/learningadvisor/search")
 @role_required("Learning Advisor")
-def la_get_course():
+def advisor_get_course():
     try:
-        course_id, course_date, response, status = get_course_id_date()
+        course_id, course_date, error_response, status_code = get_course_composite_key()
         if not course_id or not course_date:
-            return response, status
+            return error_response, status_code
 
         employee_id = get_jwt().get("employee_id")
         course = db.session.query(Course).filter_by(
@@ -272,11 +272,11 @@ def la_get_course():
         
 @course_bp.put("/learningadvisor/update")
 @role_required("Learning Advisor")
-def la_update_course():
+def advisor_update_course():
     try:
-        course_id, course_date, response, status = get_course_id_date()
+        course_id, course_date, error_response, status_code = get_course_composite_key()
         if not course_id or not course_date:
-            return response, status
+            return error_response, status_code
         
         employee_id = get_jwt().get("employee_id")
         course = db.session.query(Course).filter_by(
@@ -294,40 +294,40 @@ def la_update_course():
                 "message": "Missing or invalid JSON"
             }), HTTPStatus.BAD_REQUEST
         
-        json_data = request.get_json()
-        update_data = course_schema.load(json_data, partial=True)
+        request_data = request.get_json()
+        update_fields = course_schema.load(request_data, partial=True)
         
-        if update_data.get("learning_advisor_id"):
+        if update_fields.get("learning_advisor_id"):
             return jsonify({
                 "message": "Permission denied"
             }), HTTPStatus.FORBIDDEN
         
-        duration = update_data.get("duration", course.duration)
-        start_date = update_data.get("start_date", course.start_date)
-        schedule = update_data.get("schedule", course.schedule)
-        fee = update_data.get("fee", course.fee)
+        duration = update_fields.get("duration", course.duration)
+        start_date = update_fields.get("start_date", course.start_date)
+        schedule = update_fields.get("schedule", course.schedule)
+        fee = update_fields.get("fee", course.fee)
         
         if duration != course.duration:
-            result, response, status = validate_duration(duration)
+            result, error_response, status_code = validate_course_duration(duration)
             if not result:
-                return response, status
+                return error_response, status_code
 
         if start_date != course.start_date:
-            result, response, status = validate_start_date(start_date)
+            result, error_response, status_code = validate_course_start_date(start_date)
             if not result:
-                return response, status
+                return error_response, status_code
            
         if schedule != course.schedule: 
-            result, response, status = validate_schedule(schedule)
+            result, error_response, status_code = validate_course_schedule_format(schedule)
             if not result:
-                return response, status
+                return error_response, status_code
 
         if fee != course.fee:
-            result, response, status = validate_fee(fee)
+            result, error_response, status_code = validate_course_fee(fee)
             if not result:
-                return response, status
+                return error_response, status_code
         
-        for key, value in update_data.items():
+        for key, value in update_fields.items():
             setattr(course, key, value)
             
         db.session.commit()
@@ -365,11 +365,11 @@ def la_update_course():
 
 @course_bp.delete("/learningadvisor/delete")
 @role_required("Learning Advisor")
-def la_delete_course():
+def advisor_delete_course():
     try:
-        course_id, course_date, response, status = get_course_id_date()
+        course_id, course_date, error_response, status_code = get_course_composite_key()
         if not course_id or not course_date:
-            return response, status
+            return error_response, status_code
         
         employee_id = get_jwt().get("employee_id")
         course = db.session.query(Course).filter_by(
@@ -413,10 +413,10 @@ def la_delete_course():
 # Manager Features
 @course_bp.get("/manager/")
 @role_required("Manager")
-def manager_get_all():
+def manager_get_courses():
     try:
-        courses = db.session.query(Course).all()
-        return jsonify(course_schema.dump(courses, many=True)), HTTPStatus.OK
+        course_list = db.session.query(Course).all()
+        return jsonify(course_schema.dump(course_list, many=True)), HTTPStatus.OK
 
     except Exception as e:
         return jsonify({
@@ -427,9 +427,9 @@ def manager_get_all():
 @role_required("Manager")
 def manager_get_course():
     try:
-        course_id, course_date, response, status = get_course_id_date()
+        course_id, course_date, error_response, status_code = get_course_composite_key()
         if not course_id or not course_date:
-            return response, status
+            return error_response, status_code
 
         course = db.session.query(Course).filter_by(
             course_id=course_id, 
