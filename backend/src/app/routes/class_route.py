@@ -201,16 +201,9 @@ def advisor_get_classes_by_course():
                 "message": "Missing course ID or course date in query params"
             }), HTTPStatus.BAD_REQUEST
         
-        employee_id = get_jwt().get("employee_id")
-        course = db.session.query(Course).filter_by(
-            id=course_id,
-            created_date=course_date,
-            learning_advisor_id=employee_id
-        ).first()
+        course, error_response, status_code = validate_course_for_advisor(course_id, course_date)
         if not course:
-            return jsonify({
-                "message": "Course not found"
-            }), HTTPStatus.NOT_FOUND
+            return error_response, status_code
             
         class_list = course.class_
         return jsonify(class_schema.dump(class_list, many=True)), HTTPStatus.OK
@@ -460,7 +453,7 @@ def teacher_get_assigned_classes():
         
 # Manager Features
 @class_bp.get("/manager/")
-@role_required("manager")
+@role_required("Manager")
 def manager_get_classes_by_course():
     try:
         course_id = request.args.get("course_id")
