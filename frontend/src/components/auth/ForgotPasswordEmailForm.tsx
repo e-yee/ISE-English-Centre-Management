@@ -37,13 +37,17 @@ export function ForgotPasswordEmailForm({
       <CardHeader className="text-center pb-6">
         {/* Logo */}
         <div className="flex justify-center mb-4">
-          <img src={logoSvg} alt="Logo" className="w-48 h-auto" />
+          <img src={logoSvg} alt="Logo" className="w-[250px] h-[120px]" />
+          {/*Title*/}
+          <CardTitle className="pt-3 text-[46px] font-comfortaa font-bold text-[#78746C] leading-[1.4] select-none">
+          FORGOT PASSWORD
+          </CardTitle>
         </div>
 
         {/* Title */}
-        <CardTitle className="text-[50px] font-comfortaa font-semibold text-[#78746C] leading-[1.4] select-none">
+        {/* <CardTitle className="text-[42px] font-comfortaa font-bold text-[#78746C] leading-[1.4] select-none">
           FORGOT PASSWORD
-        </CardTitle>
+        </CardTitle> */}
       </CardHeader>
 
       <CardContent className="space-y-8 px-12 pb-12">
@@ -59,15 +63,15 @@ export function ForgotPasswordEmailForm({
             </div>
           ) : (
             <>
-              <p className="text-[20px] font-comfortaa text-[#78746C] text-center leading-relaxed">
+              {/* <p className="text-[20px] font-comfortaa text-[#78746C] text-center leading-relaxed">
                 Enter your email address and we'll send you a link to reset your password.
-              </p>
+              </p> */}
 
               {/* Email Field */}
-              <div className="space-y-4">
+              <div className="space-y-2">
                 <label
                   htmlFor="email"
-                  className="block text-[30px] font-comfortaa font-semibold text-[#121212] text-center"
+                  className="block text-[26px] font-comfortaa font-semibold text-[#121212] text-left"
                 >
                   Email
                 </label>
@@ -91,7 +95,7 @@ export function ForgotPasswordEmailForm({
                 <Button
                   type="button"
                   onClick={onBackToLogin}
-                  className="flex-1 bg-transparent text-[#121212] hover:bg-[rgba(0,0,0,0.1)] border-2 border-black rounded-[30px] py-4 text-[25px] font-comfortaa font-medium transition-all duration-200"
+                  className="cursor-pointer flex-1 bg-transparent text-[#121212] hover:bg-[rgba(0,0,0,0.1)] border-2 border-black rounded-[30px] py-4 text-[25px] font-comfortaa font-medium transition-all duration-200"
                   disabled={isLoading}
                 >
                   Back

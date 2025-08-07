@@ -155,40 +155,54 @@ const AuthPage: React.FC = () => {
   };
 
   return (
-    <div className="h-screen w-screen overflow-hidden bg-[#F5F5F5] font-comfortaa">
-      <div className="flex h-full">
-        {/* Left Half - Auth Form */}
-        <div className="w-1/2 flex items-center justify-center p-8 bg-[#F5F5F5] relative">
-          {error && (
-            <div className="absolute top-4 right-4 bg-red-50 border border-red-300 text-red-800 px-4 py-3 rounded-lg shadow-md z-20 max-w-sm">
-              <div className="flex items-start">
-                <div className="flex-shrink-0">
-                  <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <div className="ml-3">
-                  <p className="text-sm font-medium">{error}</p>
-                </div>
+    <div className="h-screen w-screen flex flex-row justify-center-safe content-center font-comfortaa bg-auto bg-no-repeat bg-right" style={{
+        backgroundImage: `url(${classroomBG})`,}}>                   
+        {/* Error notification */}
+        {error && (
+          <div className="absolute top-4 right-4 bg-red-50 border border-red-300 text-red-800 px-4 py-3 rounded-lg shadow-md z-20 max-w-sm">
+            <div className="flex items-start">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <p className="text-sm font-medium">{error}</p>
               </div>
             </div>
-          )}
-          <div className="w-full max-w-lg">
-            {renderCurrentForm()}
+          </div>
+        )}          
+
+        {/* Form */}
+        <div className="w-1/2 ">
+          {renderCurrentForm()}
+        </div>         
+
+        {/* <div className="w-1/2 flex items-center justify-center p-10">
+        <div className="w-full h-[85%] rounded-2xl backdrop-blur-lg bg-white/30 border border-white/30 shadow-lg px-10 py-8 text-white"></div>
+        </div> */}
+
+        <div className="w-1/2 px-10 py-5">
+          <div className="w-full h-[100%] rounded-lg 
+                          backdrop-blur-none bg-white/10 border border-gray-500/40 border-1 
+                          shadow-lg px-10 py-8 text-white
+                          flex flex-col items-center gap-4">
+            <h1 className="text-5xl font-semibold">Welcome</h1>
+            <p className="self-start text-[20px] font-thin">Welcome back! We are glad to have you here - let's get you logged in</p>            
           </div>
         </div>
 
         {/* Right Half - Background Image */}
-        <div
-          className="w-1/2 bg-cover bg-center bg-no-repeat"
+        {/* <div
+          className="w-1/2 bg-auto bg-center bg-no-repeat"
           style={{
             backgroundImage: `url(${classroomBG})`,
           }}
         >
+        </div> */}
           {/* Optional overlay for better image presentation */}
-          <div className="w-full h-full bg-black/5"></div>
-        </div>
-      </div>
+          {/* <div className="w-full h-full bg-black/5"></div> */}
+              
     </div>
   );
 };
