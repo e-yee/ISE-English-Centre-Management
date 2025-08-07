@@ -174,7 +174,7 @@ const AuthPage: React.FC = () => {
         )}          
 
         {/* Form */}
-        <div className="w-1/2 ">
+        <div className="w-1/2 h-full">
           {renderCurrentForm()}
         </div>         
 
