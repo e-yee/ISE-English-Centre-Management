@@ -254,8 +254,8 @@ def advisor_get_course():
 
         employee_id = get_jwt().get("employee_id")
         course = db.session.query(Course).filter_by(
-            course_id=course_id, 
-            course_date=course_date,
+            id=course_id, 
+            created_date=course_date,
             learning_advisor_id=employee_id
         ).first()
         if not course:
@@ -280,8 +280,8 @@ def advisor_update_course():
         
         employee_id = get_jwt().get("employee_id")
         course = db.session.query(Course).filter_by(
-            course_id=course_id, 
-            course_date=course_date,
+            id=course_id, 
+            created_date=course_date,
             learning_advisor_id=employee_id
         ).first()
         if not course:
@@ -432,8 +432,8 @@ def manager_get_course():
             return error_response, status_code
 
         course = db.session.query(Course).filter_by(
-            course_id=course_id, 
-            course_date=course_date,
+            id=course_id, 
+            created_date=course_date,
         ).first()
         if not course:
             return jsonify({

@@ -45,13 +45,15 @@ const AbsentRequestPage: React.FC<AbsentRequestPageProps> = ({ className }) => {
   };
 
   // Status indicator component
-  const StatusIndicator = ({ status }: { status: 'Approved' | 'Not Approved' }) => {
+  const StatusIndicator = ({ status }: { status?: 'Approved' | 'Not Approved' | 'Pending' }) => {
     const getStatusColor = (status: string) => {
       switch (status) {
         case 'Approved':
           return 'bg-green-500 text-white';
         case 'Not Approved':
           return 'bg-red-500 text-white';
+        case 'Pending':
+          return 'bg-yellow-400 text-yellow-900';
         default:
           return 'bg-gray-400 text-gray-900';
       }
@@ -63,11 +65,15 @@ const AbsentRequestPage: React.FC<AbsentRequestPageProps> = ({ className }) => {
           return 'APPROVED';
         case 'Not Approved':
           return 'NOT APPROVED';
+        case 'Pending':
+          return 'PENDING';
         default:
           return 'UNKNOWN';
       }
     };
 
+    if (!status) return null;
+    
     return (
       <div className={cn(
         'px-4 py-2 rounded-full font-comfortaa font-bold text-sm',
@@ -162,7 +168,7 @@ const AbsentRequestPage: React.FC<AbsentRequestPageProps> = ({ className }) => {
                       
                       <div className="bg-gray-50 rounded-lg p-3">
                         <div className="text-xs font-comfortaa font-medium text-gray-500 uppercase tracking-wide mb-1">
-                          Request ID
+                          Requested by ID
                         </div>
                         <div className="font-comfortaa text-sm text-gray-800 font-mono">
                           {request.id}
@@ -261,7 +267,7 @@ const AbsentRequestPage: React.FC<AbsentRequestPageProps> = ({ className }) => {
   const requestsArray = Array.isArray(requests) ? requests : [];
   
   // Separate pending and completed requests
-  const pendingRequests = requestsArray.filter(req => !req.status) || [];
+  const pendingRequests = requestsArray.filter(req => req.status === 'Pending' || !req.status) || [];
   const completedRequests = requestsArray.filter(req => req.status === 'Approved' || req.status === 'Not Approved') || [];
 
   // Get the most recent pending request for form display
@@ -298,6 +304,7 @@ const AbsentRequestPage: React.FC<AbsentRequestPageProps> = ({ className }) => {
           {userRole === 'Teacher' || userRole === 'Learning Advisor' ? (
             <AbsenceRequestForm 
               isPending={pendingRequests.length > 0}
+              pendingRequest={latestPendingRequest}
             />
           ) : (
             // Manager view - approval interface

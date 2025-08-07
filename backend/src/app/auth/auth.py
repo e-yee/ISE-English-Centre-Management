@@ -20,8 +20,8 @@ def login():
                 "message": "Missing or invalid JSON"
             }), HTTPStatus.BAD_REQUEST
         
-        json_data = request.get_json()
-        login = login_schema.load(json_data)
+        request_data = request.get_json()
+        login = login_schema.load(request_data)
 
         username = login.get("username", "").strip()
         password = login.get("password", "").strip()
@@ -119,14 +119,43 @@ def request_reset_password():
                 "message": "Email not found"
             }), HTTPStatus.NOT_FOUND
         
-        url_prefix = "localhost:5000/auth/reset"
+        url_prefix = "localhost:5173/auth/reset"
         token = serializer.dumps(email, salt=salt)
         reset_link = url_prefix + f"?token={token}"
         msg = Message(
             "Reset Your Password",
             recipients=[email]
         )
-        msg.body = f"Click the link to reset your password: {reset_link}"
+        msg.html = f"""
+        <html>
+        <body>
+            <h2>Password Reset Request</h2>
+            <p>You have requested to reset your password.</p>
+            <p>Click the link below to reset your password:</p>
+            <br>
+            <a href="{reset_link}" style="background-color: #4CAF50; color: white; padding: 14px 20px; text-decoration: none; border-radius: 4px; display: inline-block;">
+                Reset Password
+            </a>
+            <br><br>
+            <p>If the button doesn't work, copy and paste this link into your browser:</p>
+            <p style="word-break: break-all; color: #666;">{reset_link}</p>
+            <br>
+            <p>This link will expire in 5 minutes.</p>
+            <p>If you didn't request this password reset, please ignore this email.</p>
+        </body>
+        </html>
+        """
+        msg.body = f"""Password Reset Request
+
+You have requested to reset your password.
+
+Click the link below to reset your password:
+
+{reset_link}
+
+This link will expire in 5 minutes.
+
+If you didn't request this password reset, please ignore this email."""
         mail.send(msg)
         
         return jsonify({

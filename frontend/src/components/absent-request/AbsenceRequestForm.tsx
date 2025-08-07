@@ -22,9 +22,10 @@ interface AbsenceRequestFormProps {
   className?: string;
   status?: 'pending' | 'approved' | 'rejected';
   isPending?: boolean;
+  pendingRequest?: LeaveRequest;
 }
 
-const AbsenceRequestForm: React.FC<AbsenceRequestFormProps> = ({ className, status, isPending }) => {
+const AbsenceRequestForm: React.FC<AbsenceRequestFormProps> = ({ className, status, isPending, pendingRequest }) => {
   const [startDate, setStartDate] = useState<Date | undefined>();
   const [endDate, setEndDate] = useState<Date | undefined>();
   const [absenceType, setAbsenceType] = useState<string>('');
@@ -34,6 +35,22 @@ const AbsenceRequestForm: React.FC<AbsenceRequestFormProps> = ({ className, stat
   const { createRequest, isLoading, error, success, clearMessages } = useCreateLeaveRequest();
 
   const isDisabled = isPending || status === 'pending';
+
+  // Parse pending request data and populate form fields
+  React.useEffect(() => {
+    if (pendingRequest && isPending) {
+      // Parse the reason field to extract absence type and notes
+      const reasonParts = pendingRequest.reason.split(': ');
+      const parsedAbsenceType = reasonParts[0] || '';
+      const parsedNotes = reasonParts.slice(1).join(': ') || '';
+      
+      setStartDate(new Date(pendingRequest.start_date));
+      setEndDate(new Date(pendingRequest.end_date));
+      setAbsenceType(parsedAbsenceType);
+      setNotes(parsedNotes);
+      setSubstituteId(pendingRequest.substitute_id);
+    }
+  }, [pendingRequest, isPending]);
 
   const clearForm = () => {
     setStartDate(undefined);
@@ -65,6 +82,18 @@ const AbsenceRequestForm: React.FC<AbsenceRequestFormProps> = ({ className, stat
 
   return (
     <div className={cn('w-full max-w-4xl p-8 space-y-8 bg-white rounded-lg shadow-md', className)}>
+      {/* Pending Request Indicator */}
+      {isPending && pendingRequest && (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+          <div className="flex items-center space-x-2">
+            <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
+            <p className="font-comfortaa font-semibold text-yellow-800">
+              Pending Request - Form displays your submitted request (read-only)
+            </p>
+          </div>
+        </div>
+      )}
+      
       <div className="space-y-6">
         <div>
           <Label htmlFor="absence-type" className="font-comfortaa font-bold text-lg">Type of Absence</Label>
@@ -208,20 +237,22 @@ const AbsenceRequestForm: React.FC<AbsenceRequestFormProps> = ({ className, stat
       </div>
 
       <div className="flex justify-end space-x-4">
-        <Button 
-          variant="outline" 
-          onClick={clearForm}
-          className="font-comfortaa font-semibold text-lg"
-        >
-          CLEAR FORM
-        </Button>
+        {!isPending && (
+          <Button 
+            variant="outline" 
+            onClick={clearForm}
+            className="font-comfortaa font-semibold text-lg"
+          >
+            CLEAR FORM
+          </Button>
+        )}
         <Button 
           style={{ backgroundColor: '#945CD8', color: 'white' }} 
           className="font-comfortaa font-semibold text-lg"
           disabled={isDisabled || isLoading}
           onClick={handleSubmit}
         >
-          {isLoading ? 'SUBMITTING...' : 'SUBMIT'}
+          {isLoading ? 'SUBMITTING...' : isPending ? 'REQUEST PENDING' : 'SUBMIT'}
         </Button>
       </div>
     </div>

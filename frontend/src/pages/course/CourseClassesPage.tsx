@@ -6,7 +6,7 @@ import { SearchInput } from "@/components/ui/SearchInput";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useClassesByCourse } from "@/hooks/entities/useClasses";
-import type { ClassData } from "@/mockData/classListMock";
+import type { ClassData } from "@/types/class";
 import type { Class } from "@/services/entities/classService";
 
 // Transform backend Class to frontend ClassData
@@ -38,13 +38,11 @@ const transformClassToClassData = (classItem: Class): ClassData => {
   return {
     id: classItem.id,
     className: `${classItem.term}.Class ${classItem.id}`,
+    courseId: classItem.course_id,
     room: classItem.room_id,
     time: classDate.toTimeString().split(' ')[0],
-    startDate: classDate.toLocaleDateString('en-GB'),
-    endDate: new Date(classDate.getTime() + 60 * 24 * 60 * 60 * 1000).toLocaleDateString('en-GB'), // +60 days
     status,
-    statusColor,
-    progress: Math.floor(Math.random() * 100) // Random progress for now
+    statusColor
   };
 };
 
@@ -135,7 +133,7 @@ const CourseClassesPage: React.FC = () => {
             <ArrowLeft className="h-4 w-4" />
             Back to Course
           </Button>
-          <h1 className="text-2xl font-semibold">Course Classes</h1>
+          <h1 className="text-2xl font-semibold">Course Classes - {courseId}</h1>
         </div>
       </div>
 

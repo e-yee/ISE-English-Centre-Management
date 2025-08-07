@@ -11,4 +11,4 @@ class LeaveRequestSchema(ma.Schema):
     status = fields.String(required=False)
     created_date = fields.Date(required=False)
 
-leave_request_schema = LeaveRequestSchema(many = True)
+leave_request_schema = LeaveRequestSchema()
