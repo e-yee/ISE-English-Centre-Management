@@ -20,8 +20,8 @@ def login():
                 "message": "Missing or invalid JSON"
             }), HTTPStatus.BAD_REQUEST
         
-        json_data = request.get_json()
-        login = login_schema.load(json_data)
+        request_data = request.get_json()
+        login = login_schema.load(request_data)
 
         username = login.get("username", "").strip()
         password = login.get("password", "").strip()
