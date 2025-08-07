@@ -9,7 +9,7 @@ from ..http_status import HTTPStatus
 account_bp = Blueprint("account_bp", __name__, url_prefix="/account")
 
 # Helper Functions
-def generate_id():
+def generate_account_id():
     last_account = db.session.query(Account).order_by(Account.id.desc()).first()
     
     if not last_account:
@@ -17,26 +17,26 @@ def generate_id():
     else:
         print(last_account.id)
         prefix = last_account.id[:3]
-        num = int(last_account.id[3:]) + 1
+        account_number = int(last_account.id[3:]) + 1
         
-        return f"{prefix}{num:03}"
+        return f"{prefix}{account_number:03}"
     
 @account_bp.post("/add")
-def add_account():
+def create_account():
     try:
         if not request.is_json:
             return jsonify({
                 "message": "Missing or invalid JSON"
             }), HTTPStatus.BAD_REQUEST
 
-        json_data = request.get_json()        
-        validated = account_schema.load(json_data)
+        request_data = request.get_json()        
+        validated_data = account_schema.load(request_data)
         
         account = Account(
-            id=generate_id(),
-            employee_id=validated["employee_id"],
-            username=validated["username"],
-            password_hash=pwd_context.hash(validated["password"])
+            id=generate_account_id(),
+            employee_id=validated_data["employee_id"],
+            username=validated_data["username"],
+            password_hash=pwd_context.hash(validated_data["password"])
         )
         db.session.add(account)
         db.session.commit()
@@ -70,7 +70,7 @@ def add_account():
         }), HTTPStatus.INTERNAL_SERVER_ERROR
     
 @account_bp.get("/")
-def get_all():
+def get_all_accounts():
     try:
         accounts = db.session.query(Account).all()
         return jsonify(account_schema.dump(accounts, many=True)), HTTPStatus.OK
@@ -82,7 +82,7 @@ def get_all():
         }), HTTPStatus.INTERNAL_SERVER_ERROR
 
 @account_bp.get("/search")
-def get_account():
+def get_account_by_id():
     try:
         id = request.args.get("id")
         if not id:

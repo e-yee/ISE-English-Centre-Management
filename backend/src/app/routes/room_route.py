@@ -10,33 +10,33 @@ from ..http_status import HTTPStatus
 room_bp = Blueprint("room_bp", __name__, url_prefix="/room")
 
 # Helper Functions
-def generate_id():
+def generate_room_id():
     last_room = db.session.query(Room).order_by(Room.id.desc()).first()
     
     if not last_room:
         return "ROOM001"
     else:
         prefix = last_room.id[:4]
-        num = int(last_room.id[4:]) + 1
+        room_number = int(last_room.id[4:]) + 1
         
-        return f"{prefix}{num:03}"
+        return f"{prefix}{room_number:03}"
     
 # Manager Features
 @room_bp.post("/manager/add")
 @role_required("Manager")
-def manager_add_room():
+def manager_create_room():
     try:
         if not request.is_json:
             return jsonify({
                 "message": "Missing or invalid JSON"
             }), HTTPStatus.BAD_REQUEST
         
-        json_data = request.get_json()
-        validated = room_schema.load(json_data)
+        request_data = request.get_json()
+        validated_data = room_schema.load(request_data)
         
         room = Room(
-            id=generate_id(),
-            name=validated["name"]
+            id=generate_room_id(),
+            name=validated_data["name"]
         )
         
         db.session.add(room)

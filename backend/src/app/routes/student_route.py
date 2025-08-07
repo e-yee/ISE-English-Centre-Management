@@ -5,7 +5,6 @@ from extensions import db
 from ..auth import role_required
 from ..models import Student, Class
 from ..schemas.learning_advisor.student_schema import student_schema
-from ..schemas.learning_advisor.enrolment_schema import enrolment_schema
 from ..http_status import HTTPStatus
 
 student_bp = Blueprint("student_bp", __name__, url_prefix="/student")
@@ -18,9 +17,9 @@ def generate_student_id():
         return "STU001"
     else:
         prefix = last_student.id[:3]
-        num = int(last_student.id[3:]) + 1
+        student_number = int(last_student.id[3:]) + 1
         
-        return f"{prefix}{num:03}"
+        return f"{prefix}{student_number:03}"
 
 def get_student_id():
     id = request.args.get("id")
@@ -43,10 +42,10 @@ def validate_student(student_id):
 # General Features
 @student_bp.get("/")
 @role_required("Learning Advisor", "Manager")
-def get_all():
+def get_students():
     try:
-        students = db.session.query(Student).all()
-        return jsonify(student_schema.dump(students, many=True)), HTTPStatus.OK
+        student_list = db.session.query(Student).all()
+        return jsonify(student_schema.dump(student_list, many=True)), HTTPStatus.OK
     
     except Exception as e:
         db.session.rollback()
@@ -59,13 +58,13 @@ def get_all():
 @role_required("Learning Advisor", "Manager")
 def get_student():
     try:
-        id, response, status = get_student_id()
+        id, error_response, status_code = get_student_id()
         if not id:
-            return response, status
+            return error_response, status_code
         
-        student, response, status = validate_student(id)
+        student, error_response, status_code = validate_student(id)
         if not student:
-            return response, status
+            return error_response, status_code
 
         return jsonify(student_schema.dump(student)), HTTPStatus.OK
 
@@ -78,21 +77,21 @@ def get_student():
 # Learning Advisor Features
 @student_bp.post("/learningadvisor/add")
 @role_required("Learning Advisor")
-def la_add_student(): 
+def advisor_create_student(): 
     try:
         if not request.is_json:
             return jsonify({
                 "message": "Missing or invalid JSON"
             }), HTTPStatus.BAD_REQUEST
         
-        json_data = request.get_json()
-        validated = student_schema.load(json_data)
+        request_data = request.get_json()
+        validated_data = student_schema.load(request_data)
         
         student = Student(
             id=generate_student_id(),
-            fullname=validated["fullname"],
-            contact_info=validated["contact_info"],
-            date_of_birth=validated["date_of_birth"]
+            fullname=validated_data["fullname"],
+            contact_info=validated_data["contact_info"],
+            date_of_birth=validated_data["date_of_birth"]
         )
         
         db.session.add(student)
@@ -128,24 +127,24 @@ def la_add_student():
 
 @student_bp.put("/learningadvisor/update")
 @role_required("Learning Advisor")
-def la_update_student():
+def advisor_update_student():
     try:
-        id, response, status = get_student_id()
+        id, error_response, status_code = get_student_id()
         if not id:
-            return response, status
+            return error_response, status_code
         
-        student, response, status = validate_student(id)
+        student, error_response, status_code = validate_student(id)
         if not student:
-            return response, status
+            return error_response, status_code
         
         if not request.is_json:
             return jsonify({
                 "message: Missing or invalid JSON"
             }), HTTPStatus.BAD_REQUEST
         
-        json_data = request.get_json()
-        update_data = student_schema.load(json_data, partial=True)
-        for key, value in update_data.items():
+        request_data = request.get_json()
+        update_fields = student_schema.load(request_data, partial=True)
+        for key, value in update_fields.items():
             setattr(student, key, value)
         
         db.session.commit()
@@ -182,15 +181,15 @@ def la_update_student():
 
 @student_bp.delete("/learningadvisor/delete")
 @role_required("Learning Advisor")
-def la_delete_student():
+def advisor_delete_student():
     try:
-        id, response, status = get_student_id()
+        id, error_response, status_code = get_student_id()
         if not id:
-            return response, status
+            return error_response, status_code
         
-        student, response, status = validate_student(id)
+        student, error_response, status_code = validate_student(id)
         if not student:
-            return response, status
+            return error_response, status_code
         
         db.session.delete(student)
         db.session.commit()
@@ -222,7 +221,7 @@ def la_delete_student():
 # Teacher Features        
 @student_bp.get("/class/")
 @role_required("Teacher", "Learning Advisor", "Manager")
-def get_students_in_class():
+def get_students_by_class():
     try:
         class_id = request.args.get("class_id")
         if not class_id:
@@ -254,9 +253,9 @@ def get_students_in_class():
                 "message": "Class not found"
             }), HTTPStatus.NOT_FOUND
         
-        students = [student_attendance.student for student_attendance in class_.student_attendance]
+        student_list = [student_attendance.student for student_attendance in class_.student_attendance]
         
-        return jsonify(student_schema.dump(students, many=True)), HTTPStatus.OK
+        return jsonify(student_schema.dump(student_list, many=True)), HTTPStatus.OK
     
     except Exception as e:
         return jsonify({

@@ -11,21 +11,21 @@ from ..schemas.employee_schema import employee_schema, employee_schema
 employee_bp = Blueprint("employee_bp", __name__,  url_prefix="/employee")
 
 # Helper Functions
-def generate_id():
+def generate_employee_id():
     last_employee = db.session.query(Employee).order_by(Employee.id.desc()).first()
     
     if not last_employee:
         return "EM001"
     else:
         prefix = last_employee.id[:2]
-        num = int(last_employee.id[2:]) + 1
+        employee_number = int(last_employee.id[2:]) + 1
         
-        return f"{prefix}{num:03}"
+        return f"{prefix}{employee_number:03}"
     
 # General features
 @employee_bp.get("/profile")
 @role_required("Teacher", "Learning Advisor", "Manager")
-def get_profile():
+def get_employee():
     try:
         employee_id = get_jwt().get("employee_id")
         employee = db.session.get(Employee, employee_id)
@@ -54,15 +54,15 @@ def update_employee():
                 "message": "Missing or invalid JSON"
             }), HTTPStatus.BAD_REQUEST
         
-        json_data = request.get_json()
-        update_data = employee_schema.load(json_data, partial=True)
+        request_data = request.get_json()
+        update_fields = employee_schema.load(request_data, partial=True)
         
-        if update_data.get("role"):
+        if update_fields.get("role"):
             return jsonify({
                 "message": "Permission denied"
             }), HTTPStatus.FORBIDDEN
         
-        for key, value in update_data.items():
+        for key, value in update_fields.items():
             setattr(employee, key, value)
         
         db.session.commit()
@@ -100,31 +100,31 @@ def update_employee():
 # Manager features
 @employee_bp.post("/manager/add")
 @role_required("Manager")
-def manager_add_employee():
+def manager_create_employee():
     try:
         if not request.is_json:
             return jsonify({
                 "message": "Missing or invalid JSON"
             }), HTTPStatus.BAD_REQUEST
         
-        json_data = request.get_json()
-        validated = employee_schema.load(json_data)
+        request_data = request.get_json()
+        validated_data = employee_schema.load(request_data)
         
-        if validated["role"] == "Manager":
+        if validated_data["role"] == "Manager":
             return jsonify({
                 "message": "Permission denied for adding Manager"
             }), HTTPStatus.FORBIDDEN
         
         employee = Employee(
-            id=generate_id(),
-            full_name=validated["full_name"],
-            email=validated["email"],
-            nickname=validated["nickname"],
-            philosophy=validated["philosophy"],
-            achievements=validated["achievements"],
-            role=validated["role"],
-            phone_number=validated["phone_number"],
-            teacher_status=validated["teacher_status"]
+            id=generate_employee_id(),
+            full_name=validated_data["full_name"],
+            email=validated_data["email"],
+            nickname=validated_data["nickname"],
+            philosophy=validated_data["philosophy"],
+            achievements=validated_data["achievements"],
+            role=validated_data["role"],
+            phone_number=validated_data["phone_number"],
+            teacher_status=validated_data["teacher_status"]
         )
         db.session.add(employee)
         db.session.commit()
@@ -160,10 +160,10 @@ def manager_add_employee():
 
 @employee_bp.get("/manager/")
 @role_required("Manager")
-def manager_get_all():
+def manager_get_employees():
     try:
-        employees = db.session.query(Employee).all()
-        return jsonify(employee_schema.dump(employees, many=True)), HTTPStatus.OK
+        employee_list = db.session.query(Employee).all()
+        return jsonify(employee_schema.dump(employee_list, many=True)), HTTPStatus.OK
 
     except Exception as e:
         return jsonify({
@@ -249,8 +249,8 @@ def manager_delete_employee():
 @role_required("Teacher")
 def get_available_teacher():
     try:            
-        available_teachers = db.session.query(Employee).filter_by(teacher_status="Available")
-        return jsonify(employee_schema.dump(available_teachers, many=True)), HTTPStatus.OK
+        available_teacher_list = db.session.query(Employee).filter_by(teacher_status="Available")
+        return jsonify(employee_schema.dump(available_teacher_list, many=True)), HTTPStatus.OK
     
     except Exception as e:
         return jsonify({
@@ -267,19 +267,19 @@ def admin_add_employee():
                 "message": "Missing or invalid JSON"
             }), HTTPStatus.BAD_REQUEST
         
-        json_data = request.get_json()
-        validated = employee_schema.load(json_data)
+        request_data = request.get_json()
+        validated_data = employee_schema.load(request_data)
     
         employee = Employee(
-            id=generate_id(),
-            full_name=validated["full_name"],
-            email=validated["email"],
-            nickname=validated["nickname"],
-            philosophy=validated["philosophy"],
-            achievements=validated["achievements"],
-            role=validated["role"],
-            phone_number=validated["phone_number"],
-            teacher_status=validated["teacher_status"]
+            id=generate_employee_id(),
+            full_name=validated_data["full_name"],
+            email=validated_data["email"],
+            nickname=validated_data["nickname"],
+            philosophy=validated_data["philosophy"],
+            achievements=validated_data["achievements"],
+            role=validated_data["role"],
+            phone_number=validated_data["phone_number"],
+            teacher_status=validated_data["teacher_status"]
         )
         db.session.add(employee)
         db.session.commit()
