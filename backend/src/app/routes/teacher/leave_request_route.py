@@ -10,12 +10,8 @@ from extensions import db
 
 leave_request_bp = Blueprint("leave_request_bp", __name__, url_prefix="/leave_request")
 
-def generate_id(employee_id, start_date, end_date):
-    last_request = db.session.query(LeaveRequest).filter_by(
-        employee_id=employee_id,
-        start_date=start_date,
-        end_date=end_date
-    ).order_by(LeaveRequest.id.desc()).first()
+def generate_id():
+    last_request = db.session.query(LeaveRequest).order_by(LeaveRequest.id.desc()).first()
 
     if not last_request:
         return "LR001"
@@ -121,7 +117,6 @@ def add_request():
                 "message": "Unauthorized or employee profile missing"
             }), HTTPStatus.FORBIDDEN
 
-        
         result, response, status = validate_employee(validated["employee_id"])
         if not result:
             return response, status
@@ -131,7 +126,7 @@ def add_request():
             return response, status
         
         leave_request = LeaveRequest(
-            id=generate_id(validated["employee_id"], validated["start_date"], validated["end_date"]),
+            id=generate_id(),
             employee_id=validated["employee_id"],
             substitute_id=validated["substitute_id"],
             start_date=validated["start_date"],
@@ -142,8 +137,8 @@ def add_request():
         db.session.add(leave_request)
         db.session.commit()
 
-        return jsonify(leave_request_schema.dump(leave_request, many=True)), HTTPStatus.CREATED
-    
+        return jsonify(leave_request_schema.dump(leave_request, many=False)), HTTPStatus.CREATED
+
     except ValidationError as ve:
         return jsonify({
             "message": "Invalid input", "errors": ve.messages
