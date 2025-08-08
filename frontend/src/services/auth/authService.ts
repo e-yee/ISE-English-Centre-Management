@@ -3,7 +3,6 @@ import {
   setAccessToken,
   clearAuthData,
   setUser,
-  getUserIdFromToken,
   setUserRole,
   clearUserRole,
   decodeJWT,
@@ -150,6 +149,7 @@ export const authService = {
       const response: ApiResponse = await apiRequest('auth/request_reset', {
         method: 'POST',
         data: { email },
+        timeout: 20000,
       });
 
       return response;
@@ -167,6 +167,7 @@ export const authService = {
       const response: ApiResponse = await apiRequest(`auth/reset?token=${token}`, {
         method: 'PUT',
         data: { new_password: newPassword },
+        timeout: 20000,
       });
 
       return response;
