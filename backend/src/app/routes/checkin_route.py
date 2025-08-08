@@ -136,13 +136,18 @@ def checkout():
 @checkin_bp.get("/status")
 def view_stats():
     try:
-        id = request.args.get("employee_id")
-        employee_id, response, status = validate_id(id)
+        if not request.is_json:
+            return jsonify({
+                "message": "Invalid input", "error": "Request must be JSON"
+            }), HTTPStatus.BAD_REQUEST
 
-        if not employee_id:
+        data = request.get_json()
+        id = data.get("id")
+        employee, response, status = validate_id(id)
+        if not employee:
             return response, status
         
-        checkin_records = db.session.query(StaffCheckin).filter_by(employee_id=employee_id.id).all()
+        checkin_records = db.session.query(StaffCheckin).filter_by(employee_id=employee.id).all()
 
         return jsonify(checkin_schema.dump(checkin_records, many=True)), HTTPStatus.OK
 
