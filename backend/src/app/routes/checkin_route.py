@@ -20,7 +20,16 @@ def generate_id():
         prefix = last_id.id[:2]
         last_number = int(last_id.id[2:]) + 1
         return f"{prefix}{last_number:03}"
+
+def validate_id(id):
+    employee = db.session.query(Employee).filter_by(id=id).first()
+    if not employee:
+        return None, jsonify({
+            "message": "Employee not found"
+        }), HTTPStatus.NOT_FOUND
     
+    return employee, None, None
+
 
 @checkin_bp.post("/in")
 def checkin():
@@ -123,3 +132,20 @@ def checkout():
     db.session.commit()
 
     return jsonify({"message": f"Checked out {len(staff_checkins)} staff successfully."}), HTTPStatus.OK
+
+@checkin_bp.get("/status")
+def view_stats():
+    try:
+        id = request.args.get("employee_id")
+        employee_id, response, status = validate_id(id)
+
+        if not employee_id:
+            return response, status
+        
+        checkin_records = db.session.query(StaffCheckin).filter_by(employee_id=employee_id.id).all()
+
+        return jsonify(checkin_schema.dump(checkin_records, many=True)), HTTPStatus.OK
+
+    except Exception as e:
+        return jsonify({"message": "Unexpected error occurred", "error": str(e)}), HTTPStatus.INTERNAL_SERVER_ERROR
+
