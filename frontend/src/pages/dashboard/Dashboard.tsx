@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/contexts/AuthContext";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -119,7 +119,7 @@ function DashboardCard({
 export default function Dashboard() {
   const { user, isLoading } = useAuth();
   const role = (user?.role || "Teacher") as Role;
-  // const nav = useNavigate();
+  const nav = useNavigate();
 
   if (isLoading) {
     return (
@@ -136,7 +136,9 @@ export default function Dashboard() {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-semibold mb-6">Dashboard</h1>
+      <div className="mb-6">
+        <h1 className="text-2xl font-semibold">Dashboard</h1>
+      </div>
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         {visible.map((m) => (
           <DashboardCard
