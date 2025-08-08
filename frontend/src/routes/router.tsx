@@ -24,6 +24,10 @@ import CoursePage from '../pages/course/CoursePage';
 import CourseClassesPage from '../pages/course/CourseClassesPage';
 import ContractPage from '../pages/contract/ContractPage';
 import IssuesPage from '../pages/issues/IssuesPage';
+import Dashboard from '../pages/dashboard/Dashboard';
+import StudentsPage from '../pages/dashboard/StudentsPage';
+import TeachersPage from '../pages/dashboard/TeachersPage';
+import StatisticsPage from '../pages/dashboard/StatisticsPage';
 
 export const router = createBrowserRouter([
   {
@@ -62,7 +66,11 @@ export const router = createBrowserRouter([
           { path: 'scoring/:classId', element: <ScoringPage /> },
           { path: 'issues', element: <IssuesPage /> },
           // --- Manager/Learning Advisor Routes ---
-          { path: 'dashboard', element: <CoursePage /> },
+          { path: 'dashboard', element: <Dashboard /> },
+          { path: 'dashboard/courses', element: <CoursePage /> },
+          { path: 'dashboard/students', element: <StudentsPage /> },
+          { path: 'dashboard/teachers', element: <TeachersPage /> },
+          { path: 'dashboard/statistics', element: <StatisticsPage /> },
           { path: 'course-classes/:courseId/:courseDate', element: <CourseClassesPage /> },
           { path: 'contracts/:courseId', element: <ContractPage /> },
         ],

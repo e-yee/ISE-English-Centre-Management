@@ -58,7 +58,7 @@ const CoursePage: React.FC = () => {
   const isManager = userRole === 'Manager';
 
   return (
-    <div className="h-full bg-background p-6 overflow-y-auto">
+    <div className="h-full bg-gray-50 p-6 overflow-y-auto">
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header - match ClassScreen theme and color */}
         <div className="pt-4 pb-3 flex-shrink-0 transition-all duration-300 ease-in-out px-4 flex items-center justify-between">
