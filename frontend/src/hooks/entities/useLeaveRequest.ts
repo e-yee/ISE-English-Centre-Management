@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { useRoleBasedData } from '../base/useDataFetching';
 import leaveRequestService from '@/services/entities/leaveRequestService';
-import type { LeaveRequest } from '@/types/leaveRequest';
+import type { LeaveRequest, CreateLeaveRequestInput } from '@/types/leaveRequest';
 
 // Hook for role-based leave requests fetching
 export function useLeaveRequests() {
@@ -53,7 +53,9 @@ export function useCreateLeaveRequest() {
   const [success, setSuccess] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
-  const createRequest = async (requestData: Omit<LeaveRequest, 'id' | 'status' | 'created_date' | 'employee_id'>): Promise<LeaveRequest | null> => {
+  const createRequest = async (
+    requestData: CreateLeaveRequestInput
+  ): Promise<LeaveRequest | null> => {
     console.log('🔍 Creating leave request:', requestData);
     setIsLoading(true);
     setError(null);

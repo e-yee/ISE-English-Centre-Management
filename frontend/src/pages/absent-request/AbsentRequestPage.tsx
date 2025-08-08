@@ -33,9 +33,9 @@ const AbsentRequestPage: React.FC<AbsentRequestPageProps> = ({ className }) => {
   // Transform backend data to frontend display format
   const transformToDisplayFormat = (requests: LeaveRequest[]): LeaveRequestDisplay[] => {
     return requests.map(req => ({
-      id: req.employee_id, // Changed to use employee_id instead of req.id
+      id: req.employee_id,
       employeeName: getEmployeeNameById(req.employee_id),
-      substituteName: getEmployeeNameById(req.substitute_id),
+      substituteName: req.substitute_id ? getEmployeeNameById(req.substitute_id) : 'N/A',
       startDate: new Date(req.start_date),
       endDate: new Date(req.end_date),
       reason: req.reason,
@@ -305,6 +305,7 @@ const AbsentRequestPage: React.FC<AbsentRequestPageProps> = ({ className }) => {
             <AbsenceRequestForm 
               isPending={pendingRequests.length > 0}
               pendingRequest={latestPendingRequest}
+              requiresSubstitute={userRole === 'Teacher'}
             />
           ) : (
             // Manager view - approval interface

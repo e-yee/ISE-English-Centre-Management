@@ -1,6 +1,6 @@
 import { ApiService } from '../base/apiService';
 import { getUserRole, getEmployeeIdFromToken } from '../../lib/utils';
-import type{ LeaveRequest } from '../../types/leaveRequest';
+import type{ LeaveRequest, CreateLeaveRequestInput } from '../../types/leaveRequest';
 
 class LeaveRequestService extends ApiService {
   // For Teacher/Learning Advisor - get their personal requests
@@ -14,7 +14,7 @@ class LeaveRequestService extends ApiService {
   }
 
   // For Teacher/Learning Advisor - create new request
-  async createRequest(requestData: Omit<LeaveRequest, 'id' | 'status' | 'created_date' | 'employee_id'>): Promise<LeaveRequest> {
+  async createRequest(requestData: CreateLeaveRequestInput): Promise<LeaveRequest> {
     // Get employee_id from JWT token
     const employeeId = getEmployeeIdFromToken();
     if (!employeeId) {
@@ -24,8 +24,8 @@ class LeaveRequestService extends ApiService {
     // Add employee_id to the request data
     const requestWithEmployeeId = {
       ...requestData,
-      employee_id: employeeId
-    };
+      employee_id: employeeId,
+    } as Record<string, unknown>;
     
     return this.post<LeaveRequest>('/leave_request/create', requestWithEmployeeId);
   }

@@ -1,7 +1,7 @@
 export interface LeaveRequest {
   id: string;
   employee_id: string;
-  substitute_id: string;
+  substitute_id?: string;
   start_date: string; // Date as string from API
   end_date: string; // Date as string from API
   reason: string;
@@ -20,3 +20,6 @@ export interface LeaveRequestDisplay {
   status: 'Approved' | 'Not Approved'; // Use backend status format directly
   createdDate: Date;
 } 
+
+// Input payload for creating leave request (substitute optional for Learning Advisor)
+export type CreateLeaveRequestInput = Pick<LeaveRequest, 'start_date' | 'end_date' | 'reason'> & Partial<Pick<LeaveRequest, 'substitute_id'>>;

@@ -17,6 +17,7 @@ import calendarIcon from '@/assets/class/calendar.svg';
 import { format } from 'date-fns';
 import { useCreateLeaveRequest } from '@/hooks/entities/useLeaveRequest';
 import type { LeaveRequest } from '@/types/leaveRequest';
+import { getUserRole } from '@/lib/utils';
 import employeeService, { type Employee } from '@/services/entities/employeeService';
 import { getEmployeeIdFromToken } from '@/lib/utils';
 
@@ -25,9 +26,10 @@ interface AbsenceRequestFormProps {
   status?: 'pending' | 'approved' | 'rejected';
   isPending?: boolean;
   pendingRequest?: LeaveRequest;
+  requiresSubstitute?: boolean;
 }
 
-const AbsenceRequestForm: React.FC<AbsenceRequestFormProps> = ({ className, status, isPending, pendingRequest }) => {
+const AbsenceRequestForm: React.FC<AbsenceRequestFormProps> = ({ className, status, isPending, pendingRequest, requiresSubstitute }) => {
   const [startDate, setStartDate] = useState<Date | undefined>();
   const [endDate, setEndDate] = useState<Date | undefined>();
   const [absenceType, setAbsenceType] = useState<string>('');
@@ -43,6 +45,8 @@ const AbsenceRequestForm: React.FC<AbsenceRequestFormProps> = ({ className, stat
   const { createRequest, isLoading, error, success, clearMessages } = useCreateLeaveRequest();
 
   const isDisabled = isPending || status === 'pending';
+  const role = getUserRole();
+  const needsSubstitute = requiresSubstitute ?? role === 'Teacher';
 
   // Parse pending request data and populate form fields
   React.useEffect(() => {
@@ -56,7 +60,7 @@ const AbsenceRequestForm: React.FC<AbsenceRequestFormProps> = ({ className, stat
       setEndDate(new Date(pendingRequest.end_date));
       setAbsenceType(parsedAbsenceType);
       setNotes(parsedNotes);
-      setSubstituteId(pendingRequest.substitute_id);
+      if (pendingRequest.substitute_id) setSubstituteId(pendingRequest.substitute_id);
     }
   }, [pendingRequest, isPending]);
 
@@ -71,17 +75,18 @@ const AbsenceRequestForm: React.FC<AbsenceRequestFormProps> = ({ className, stat
   };
 
   const handleSubmit = async () => {
-    if (!startDate || !endDate || !absenceType || !notes || !substituteId) {
-      return;
-    }
+    if (!startDate || !endDate || !absenceType || !notes) return;
+    if (needsSubstitute && !substituteId) return;
 
-    const requestData: Omit<LeaveRequest, 'id' | 'status' | 'created_date'> = {
-      employee_id: 'current-user-id', // TODO: Get from auth context
-      substitute_id: substituteId,
+    const baseData = {
       start_date: startDate.toISOString().split('T')[0],
       end_date: endDate.toISOString().split('T')[0],
-      reason: `${absenceType}: ${notes}`
-    };
+      reason: `${absenceType}: ${notes}`,
+    } as const;
+
+    const requestData: any = needsSubstitute
+      ? { ...baseData, substitute_id: substituteId }
+      : { ...baseData };
 
     const result = await createRequest(requestData);
     if (result) {
@@ -90,7 +95,7 @@ const AbsenceRequestForm: React.FC<AbsenceRequestFormProps> = ({ className, stat
   };
 
   const fetchAvailableTeachers = async () => {
-    if (isDisabled) return;
+    if (isDisabled || !needsSubstitute) return;
     setTeachersLoading(true);
     setTeachersError(null);
     try {
@@ -236,61 +241,63 @@ const AbsenceRequestForm: React.FC<AbsenceRequestFormProps> = ({ className, stat
           </div>
         </div>
 
-        <div>
-          <Label htmlFor="substitute" className="font-comfortaa font-bold text-lg">Substitute Teacher</Label>
-          <DropdownMenu onOpenChange={(open) => { if (open) fetchAvailableTeachers(); }}>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn(
-                  "w-full justify-between mt-1 font-comfortaa font-medium text-xl",
-                  isDisabled && "bg-gray-100 text-gray-500 cursor-not-allowed"
-                )}
-                disabled={isDisabled}
-              >
-                {substituteId
-                  ? `${substituteId}${substituteName ? ` - ${substituteName}` : ''}`
-                  : 'Select substitute teacher...'}
-                <span className="ml-2">▼</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuPortal>
-              <DropdownMenuContent className="w-full" align="start">
-                {teachersLoading && (
-                  <DropdownMenuItem disabled className="font-comfortaa italic">Loading...</DropdownMenuItem>
-                )}
-                {!teachersLoading && teachersError && (
-                  <DropdownMenuItem disabled className="font-comfortaa text-red-500">{teachersError}</DropdownMenuItem>
-                )}
-                {teachersLoaded && !teachersLoading && !teachersError && teachers.length === 0 && (
-                  <DropdownMenuItem disabled className="font-comfortaa">No available teachers</DropdownMenuItem>
-                )}
-                {!teachersLoading && !teachersError && teachers.map((t) => (
-                  <DropdownMenuItem
-                    key={(t.id as string) ?? t.email}
-                    className="font-comfortaa"
-                    onClick={() => {
-                      const displayName = t.full_name || t.name || t.email;
-                      if (!t.id) {
-                        console.warn('Selected teacher has no id, using empty substituteId', t);
-                      }
-                      setSubstituteId((t.id as string) || '');
-                      setSubstituteName(displayName);
-                    }}
-                  >
-                    {(t.id as string) || 'N/A'} - {(t.full_name || t.name || t.email)}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenuPortal>
-          </DropdownMenu>
-        </div>
+        {needsSubstitute && (
+          <div>
+            <Label htmlFor="substitute" className="font-comfortaa font-bold text-lg">Substitute Teacher</Label>
+            <DropdownMenu onOpenChange={(open) => { if (open) fetchAvailableTeachers(); }}>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-between mt-1 font-comfortaa font-medium text-xl",
+                    isDisabled && "bg-gray-100 text-gray-500 cursor-not-allowed"
+                  )}
+                  disabled={isDisabled}
+                >
+                  {substituteId
+                    ? `${substituteId}${substituteName ? ` - ${substituteName}` : ''}`
+                    : 'Select substitute teacher...'}
+                  <span className="ml-2">▼</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuPortal>
+                <DropdownMenuContent className="w-full" align="start">
+                  {teachersLoading && (
+                    <DropdownMenuItem disabled className="font-comfortaa italic">Loading...</DropdownMenuItem>
+                  )}
+                  {!teachersLoading && teachersError && (
+                    <DropdownMenuItem disabled className="font-comfortaa text-red-500">{teachersError}</DropdownMenuItem>
+                  )}
+                  {teachersLoaded && !teachersLoading && !teachersError && teachers.length === 0 && (
+                    <DropdownMenuItem disabled className="font-comfortaa">No available teachers</DropdownMenuItem>
+                  )}
+                  {!teachersLoading && !teachersError && teachers.map((t) => (
+                    <DropdownMenuItem
+                      key={(t.id as string) ?? t.email}
+                      className="font-comfortaa"
+                      onClick={() => {
+                        const displayName = t.full_name || t.name || t.email;
+                        if (!t.id) {
+                          console.warn('Selected teacher has no id, using empty substituteId', t);
+                        }
+                        setSubstituteId((t.id as string) || '');
+                        setSubstituteName(displayName);
+                      }}
+                    >
+                      {(t.id as string) || 'N/A'} - {(t.full_name || t.name || t.email)}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenuPortal>
+            </DropdownMenu>
+          </div>
+        )}
 
         <div>
-          <Label htmlFor="notes" className="font-comfortaa font-bold text-lg">Substitution Plan & Note</Label>
+          <Label htmlFor="notes" className="font-comfortaa font-bold text-lg">{needsSubstitute ? 'Substitution Plan & Note' : 'Reason Details'}</Label>
           <Textarea
             id="notes"
-            placeholder="e.g., Ms. Jane Doe will cover my classes. All materials are on shared drive"
+            placeholder={needsSubstitute ? 'e.g., Ms. Jane Doe will cover my classes. All materials are on shared drive' : 'e.g., Doctor appointment, family matter'}
             className={cn(
               "mt-1 font-comfortaa font-medium text-lg",
               isDisabled && "bg-gray-100 text-gray-500 cursor-not-allowed"
