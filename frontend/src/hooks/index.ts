@@ -5,7 +5,7 @@ export { default as useTokenRefresh } from './useTokenRefresh';
 
 // Entity hooks
 export { useCheckIn } from './entities/useCheckIn';
-export { useStudents, useClassStudents } from './entities/useStudent';
+export { useStudents, useClassStudents, useDeleteStudent } from './entities/useStudent';
 export { useCourses, useCreateCourse } from './entities/useCourses';
 export { useIssues, useCreateIssue, useUpdateIssue } from './entities/useIssues';
 export { 

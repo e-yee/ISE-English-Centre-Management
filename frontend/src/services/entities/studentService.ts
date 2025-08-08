@@ -1,12 +1,14 @@
 import { ApiService } from '../base/apiService';
 import { getUserRole } from '../../lib/utils';
+import type { Student } from '@/types/student';
 
-export interface Student {
-  id: string;
+export interface CreateStudentData {
   fullname: string;
   contact_info: string;
-  date_of_birth: string;
+  date_of_birth: string; // YYYY-MM-DD
 }
+
+export type UpdateStudentData = Partial<CreateStudentData>;
 
 class StudentService extends ApiService {
   async getAllStudents(): Promise<Student[]> {
@@ -43,6 +45,18 @@ class StudentService extends ApiService {
         console.log('⚠️ Falling to default, role not matched');
         return [];
     }
+  }
+
+  async createStudent(data: CreateStudentData): Promise<Student> {
+    return this.post<Student>('/student/learningadvisor/add', data);
+  }
+
+  async updateStudent(id: string, data: UpdateStudentData): Promise<{ message: string }> {
+    return this.put<{ message: string }>(`/student/learningadvisor/update?id=${encodeURIComponent(id)}`, data);
+  }
+
+  async deleteStudent(id: string): Promise<{ message: string }> {
+    return this.delete<{ message: string }>(`/student/learningadvisor/delete?id=${encodeURIComponent(id)}`);
   }
 }
 

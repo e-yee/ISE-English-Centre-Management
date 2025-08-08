@@ -1,4 +1,3 @@
--- Active: 1752762928634@@db-english-centre-management-myproject-collegein20s.f.aivencloud.com@18403@englishcentre
 CREATE TABLE
     employee (
         id VARCHAR(10),
@@ -143,16 +142,16 @@ CREATE TABLE
 CREATE TABLE
     makeup_class (
         id VARCHAR(10),
-        student_id VARCHAR(10) NOT NULL,
-        class_id VARCHAR(10) NOT NULL,
-        course_id VARCHAR(10) NOT NULL,
-        course_date DATE NOT NULL,
-        term INT NOT NULL,
+        student_id VARCHAR(10),
+        class_id VARCHAR(10),
+        course_id VARCHAR(10),
+        course_date DATE,
+        term INT,
         teacher_id VARCHAR(10) NOT NULL,
         room_id VARCHAR(10) NOT NULL,
         created_date DATE NOT NULL DEFAULT (CURRENT_DATE),
 
-        PRIMARY KEY (id)
+        PRIMARY KEY (id, student_id, class_id, course_id, course_date, term)
     );
 
 CREATE TABLE

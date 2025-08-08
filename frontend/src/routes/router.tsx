@@ -25,8 +25,8 @@ import CourseClassesPage from '../pages/course/CourseClassesPage';
 import ContractPage from '../pages/contract/ContractPage';
 import IssuesPage from '../pages/issues/IssuesPage';
 import Dashboard from '../pages/dashboard/Dashboard';
-import StudentsPage from '../pages/dashboard/StudentsPage';
-import TeachersPage from '../pages/dashboard/TeachersPage';
+import StudentsPage from '../pages/dashboard/student/StudentsPage';
+import StaffPage from '../pages/dashboard/staff/StaffPage';
 import StatisticsPage from '../pages/dashboard/StatisticsPage';
 
 export const router = createBrowserRouter([
@@ -69,7 +69,7 @@ export const router = createBrowserRouter([
           { path: 'dashboard', element: <Dashboard /> },
           { path: 'dashboard/courses', element: <CoursePage /> },
           { path: 'dashboard/students', element: <StudentsPage /> },
-          { path: 'dashboard/teachers', element: <TeachersPage /> },
+          { path: 'dashboard/staff', element: <StaffPage /> },
           { path: 'dashboard/statistics', element: <StatisticsPage /> },
           { path: 'course-classes/:courseId/:courseDate', element: <CourseClassesPage /> },
           { path: 'contracts/:courseId', element: <ContractPage /> },
