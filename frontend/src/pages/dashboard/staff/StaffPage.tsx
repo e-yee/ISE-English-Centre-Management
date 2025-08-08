@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEmployees } from "@/hooks/entities/useEmployees";
 import ColleagueList from "@/components/colleagues/ColleagueList";
 import StaffProfilePanel from "@/components/staff/StaffProfilePanel";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, ArrowLeft } from "lucide-react";
 import StaffForm, { type CreateStaffData } from "@/components/staff/StaffForm";
 import employeeService from "@/services/entities/employeeService";
 import type { Colleague } from "@/mockData/colleaguesMock";
@@ -18,6 +18,7 @@ interface StaffPageProps {
 const StaffPage: React.FC<StaffPageProps> = ({ className }) => {
   const { user } = useAuth();
   if (user?.role !== "Manager") return <Navigate to="/unauthorized" replace />;
+  const navigate = useNavigate();
 
   const [selectedColleagueId, setSelectedColleagueId] = useState<string | null>(null);
   const [openCreate, setOpenCreate] = useState(false);
@@ -88,7 +89,18 @@ const StaffPage: React.FC<StaffPageProps> = ({ className }) => {
           )}
         >
           <div className="px-6 pt-4 pb-2 flex-shrink-0 flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-purple-600">Staff</h1>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => navigate('/dashboard')}
+                className="bg-white border border-black/20 rounded-[10px] shadow-[2px_2px_3px_0px_rgba(0,0,0,0.15)] px-4 py-2 transition-all duration-200 ease-in-out hover:shadow-[3px_3px_4px_0px_rgba(0,0,0,0.2)] hover:scale-105 focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-1 min-w-[90px]"
+              >
+                <div className="flex items-center">
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  <span className="text-[16px] font-semibold text-black leading-[1em] font-comfortaa whitespace-nowrap">Back</span>
+                </div>
+              </button>
+              <h1 className="text-2xl font-bold text-purple-600">Staff</h1>
+            </div>
             <Button size="sm" onClick={() => setOpenCreate(true)}>
               <Plus className="mr-2 h-4 w-4" /> Add Staff
             </Button>
