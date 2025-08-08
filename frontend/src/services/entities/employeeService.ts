@@ -1,5 +1,5 @@
 import { ApiService } from '../base/apiService';
-import { getUserRole, setUserRole } from '../../lib/utils';
+import { getUserRole } from '../../lib/utils';
 
 export interface Employee {
   id?: string; // Backend schema missing this
@@ -31,6 +31,32 @@ export interface ProfileData {
 }
 
 class EmployeeService extends ApiService {
+  // ===== Manager CRUD =====
+  async managerCreateEmployee(input: {
+    full_name: string;
+    email: string;
+    nickname?: string | null;
+    philosophy?: string | null;
+    achievements?: string | null;
+    role: 'Teacher' | 'Learning Advisor';
+    phone_number?: string | null;
+    teacher_status?: string | null;
+  }): Promise<Employee> {
+    return this.post<Employee>('/employee/manager/add', input);
+  }
+
+  async managerGetEmployees(): Promise<Employee[]> {
+    return this.getAllEmployees();
+  }
+
+  async managerGetEmployeeById(id: string): Promise<Employee> {
+    return this.get<Employee>(`/employee/manager/search?id=${encodeURIComponent(id)}`);
+  }
+
+  async managerDeleteEmployee(id: string): Promise<{ message: string }> {
+    return this.delete<{ message: string }>(`/employee/manager/delete?id=${encodeURIComponent(id)}`);
+  }
+
   async getAvailableTeachers(): Promise<Employee[]> {
     return this.get<Employee[]>('/employee/teacher/');
   }

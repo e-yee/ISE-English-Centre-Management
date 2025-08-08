@@ -10,6 +10,7 @@ interface ExportNotificationProps {
   onClose: () => void
   message?: string
   type?: "success" | "info" | "warning" | "error"
+  title?: string
 }
 
 export function ExportNotification({
@@ -17,6 +18,7 @@ export function ExportNotification({
   onClose,
   message = "Your class report has been exported successfully!",
   type = "success",
+  title = "Success",
 }: ExportNotificationProps) {
   const [progress, setProgress] = useState(100)
 
@@ -117,7 +119,7 @@ export function ExportNotification({
                 <div className={`p-2 rounded-full ${bgColor} ${borderColor} border`}>
                   <Icon className={`h-5 w-5 ${iconColor}`} />
                 </div>
-                <h3 className="font-semibold text-gray-900">Export Complete</h3>
+                <h3 className="font-semibold text-gray-900">{title}</h3>
               </div>
               <Button variant="ghost" size="sm" onClick={onClose} className="h-8 w-8 p-0 hover:bg-gray-100">
                 <X className="h-4 w-4 text-gray-500" />

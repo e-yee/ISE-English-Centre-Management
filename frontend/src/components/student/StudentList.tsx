@@ -21,6 +21,18 @@ const StudentList: React.FC<StudentListProps> = ({ students, selectedStudentId, 
     s.id.toLowerCase().includes(search.toLowerCase())
   );
 
+  const getPrimaryContact = (contact: string): string => {
+    if (!contact) return '';
+    const first = contact
+      .split(/[\n,;]+/)
+      .map((s) => s.trim())
+      .filter(Boolean)[0];
+    if (!first) return '';
+    const parts = first.split(':');
+    if (parts.length === 1) return first;
+    return parts.slice(1).join(':').trim() || first;
+  };
+
   return (
     <div className="h-full flex flex-col max-h-screen">
       <div className="px-6 pt-8 pb-4 flex-shrink-0">
@@ -68,7 +80,7 @@ const StudentList: React.FC<StudentListProps> = ({ students, selectedStudentId, 
                                 ID: {student.id}
                               </span>
                             </div>
-                            <p className="text-sm text-gray-500 truncate">{student.contact_info}</p>
+                            <p className="text-sm text-gray-500 truncate">{getPrimaryContact(student.contact_info)}</p>
                           </div>
                         </div>
                       </CardContent>
@@ -91,3 +103,5 @@ const StudentList: React.FC<StudentListProps> = ({ students, selectedStudentId, 
 };
 
 export default StudentList;
+
+

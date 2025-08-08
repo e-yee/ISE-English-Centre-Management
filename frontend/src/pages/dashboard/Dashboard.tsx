@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/contexts/AuthContext";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -12,7 +12,7 @@ type Role = "Learning Advisor" | "Manager" | "Teacher";
 const MODULES = [
   { key: "courses", title: "Courses", to: "/dashboard/courses", roles: ["Learning Advisor", "Manager"] as Role[] },
   { key: "students", title: "Students", to: "/dashboard/students", roles: ["Learning Advisor", "Manager"] as Role[] },
-  { key: "teachers", title: "Teachers", to: "/dashboard/teachers", roles: ["Manager"] as Role[] },
+  { key: "staff", title: "Staff", to: "/dashboard/staff", roles: ["Manager"] as Role[] },
   { key: "stats", title: "Statistics", to: "/dashboard/statistics", roles: ["Manager"] as Role[] },
 ];
 
@@ -119,7 +119,6 @@ function DashboardCard({
 export default function Dashboard() {
   const { user, isLoading } = useAuth();
   const role = (user?.role || "Teacher") as Role;
-  const nav = useNavigate();
 
   if (isLoading) {
     return (
@@ -150,8 +149,8 @@ export default function Dashboard() {
                 ? "Browse and manage courses"
                 : m.key === "students"
                 ? "Search and manage students"
-                : m.key === "Staffs"
-                ? "Manage staffs "
+                : m.key === "staff"
+                ? "Manage staff"
                 : "KPIs and reports"
             }
             accentFrom={
@@ -159,7 +158,7 @@ export default function Dashboard() {
                 ? "from-emerald-500"
                 : m.key === "students"
                 ? "from-sky-500"
-                : m.key === "teachers"
+                : m.key === "staff"
                 ? "from-rose-500"
                 : "from-indigo-500"
             }
@@ -168,7 +167,7 @@ export default function Dashboard() {
                 ? "to-amber-500"
                 : m.key === "students"
                 ? "to-violet-500"
-                : m.key === "teachers"
+                : m.key === "staff"
                 ? "to-orange-500"
                 : "to-cyan-500"
             }

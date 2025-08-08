@@ -1,5 +1,6 @@
 import { useRoleBasedData, useDataFetching } from '../base/useDataFetching';
-import employeeService from '@/services/entities/employeeService';
+import employeeService, { type ProfileData } from '@/services/entities/employeeService';
+import { useState } from 'react';
 
 export function useEmployees() {
 
@@ -26,3 +27,25 @@ export function useProfile() {
     () => employeeService.getProfile()
   );
 } 
+
+export function useUpdateProfile() {
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const updateProfile = async (data: Partial<ProfileData>): Promise<boolean> => {
+    setIsUpdating(true);
+    setError(null);
+    try {
+      await employeeService.updateProfile(data);
+      return true;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to update profile';
+      setError(message);
+      return false;
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  return { updateProfile, isUpdating, error };
+}

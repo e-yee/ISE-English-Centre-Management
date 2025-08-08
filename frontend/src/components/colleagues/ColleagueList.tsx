@@ -9,9 +9,17 @@ interface ColleagueListProps {
   colleagues: Colleague[];
   selectedColleagueId: string | null;
   onSelect: (id: string) => void;
+  headerTitle?: string | null; // null hides header
+  compact?: boolean; // reduces paddings/heights
 }
 
-const ColleagueList: React.FC<ColleagueListProps> = ({ colleagues, selectedColleagueId, onSelect }) => {
+const ColleagueList: React.FC<ColleagueListProps> = ({
+  colleagues,
+  selectedColleagueId,
+  onSelect,
+  headerTitle = 'Colleagues',
+  compact = false,
+}) => {
   const [search, setSearch] = useState('');
   
   const filtered = colleagues.filter(c =>
@@ -22,22 +30,24 @@ const ColleagueList: React.FC<ColleagueListProps> = ({ colleagues, selectedColle
 
   return (
     <div className="h-full flex flex-col max-h-screen">
-      {/* Title - aligned with sidebar features title, with top spacing */}
-      <div className="px-6 pt-8 pb-4 flex-shrink-0">
-        <h1 className="text-2xl font-bold text-purple-600">Colleagues</h1>
-      </div>
+      {/* Optional Title */}
+      {headerTitle !== null && (
+        <div className={cn("flex-shrink-0", compact ? "px-6 pt-4 pb-2" : "px-6 pt-8 pb-4")}> 
+          <h1 className="text-2xl font-bold text-purple-600">{headerTitle}</h1>
+        </div>
+      )}
 
       {/* Main card container that fits with header */}
       <div className="flex-1 px-6 pb-6 min-h-0">
-        <Card className="h-full max-h-[calc(100vh-200px)]">
+        <Card className={cn("h-full", compact ? "max-h-[calc(100vh-160px)]" : "max-h-[calc(100vh-200px)]") }>
           <CardContent className="p-0 h-full flex flex-col">
             {/* Search Bar - full width */}
-            <div className="p-6 border-b border-gray-200 flex-shrink-0">
+            <div className={cn("border-b border-gray-200 flex-shrink-0", compact ? "p-4" : "p-6") }>
               <div className="w-full">
                 <SearchInput 
                   value={search} 
                   onChange={(e) => setSearch(e.target.value)} 
-                  placeholder="Search colleagues..." 
+                  placeholder={headerTitle ? `Search ${headerTitle.toLowerCase()}...` : 'Search...'} 
                   className="w-full"
                 />
               </div>
@@ -46,7 +56,7 @@ const ColleagueList: React.FC<ColleagueListProps> = ({ colleagues, selectedColle
             {/* Colleague List */}
             <div className="flex-1 overflow-y-auto min-h-0">
               {filtered.length > 0 ? (
-                <div className="p-4 space-y-3">
+                <div className={cn("space-y-3", compact ? "p-3" : "p-4") }>
                   {filtered.map(colleague => (
                     <Card
                       key={colleague.id}

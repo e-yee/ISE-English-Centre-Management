@@ -37,6 +37,38 @@ const StudentProfilePanel: React.FC<StudentProfilePanelProps> = ({ student, onMi
   const [openDelete, setOpenDelete] = useState(false);
   const { deleteStudent, isDeleting, error: deleteError } = useDeleteStudent();
 
+  const contactItems = useMemo(() => {
+    const source = student.contact_info || '';
+    const entries = source
+      .split(/[\,\n;]+/)
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .map((pair) => {
+        const [rawKey, ...rest] = pair.split(':');
+        const key = (rawKey || '').trim().toLowerCase();
+        const value = rest.join(':').trim();
+        return { key, value };
+      })
+      .filter((e) => e.value);
+    const labelMap: Record<string, string> = {
+      parent_phone: 'Parent Phone',
+      parent: 'Parent',
+      phone: 'Phone',
+      mobile: 'Mobile',
+      email: 'Email',
+      guardian_phone: 'Guardian Phone',
+      guardian: 'Guardian',
+      home: 'Home',
+    };
+    return entries.map((e) => ({
+      label: labelMap[e.key] || (e.key ? e.key.replace(/_/g, ' ').replace(/\b\w/g, (m) => m.toUpperCase()) : 'Contact'),
+      value: e.value,
+      type: e.key.includes('email') ? 'email' : 'phone',
+    }));
+  }, [student.contact_info]);
+
+  const primaryContact = contactItems[0]?.value || student.contact_info;
+
   const initial = useMemo(() => ({
     fullname: student.fullname,
     contact_info: student.contact_info,
@@ -132,7 +164,7 @@ const StudentProfilePanel: React.FC<StudentProfilePanelProps> = ({ student, onMi
             <Avatar name={student.fullname} src="" size="xl" className="mr-6 z-10 border-4 border-white shadow-lg" />
             <div className="z-10 pb-4">
               <h1 className="text-3xl font-bold text-gray-900 font-comfortaa mb-2">{student.fullname}</h1>
-              <p className="text-lg text-gray-600">{student.contact_info}</p>
+              <p className="text-lg text-gray-600">{primaryContact}</p>
               <p className="text-sm text-blue-600 font-medium mt-1">Student ID: {student.id}</p>
             </div>
           </div>
@@ -142,7 +174,22 @@ const StudentProfilePanel: React.FC<StudentProfilePanelProps> = ({ student, onMi
       <div className="px-8 grid grid-cols-2 gap-6">
         <div className="space-y-6">
           <AttributeCard title="Contact">
-            <p>{student.contact_info}</p>
+            <div className="space-y-2">
+              {contactItems.length === 0 ? (
+                <p>{student.contact_info}</p>
+              ) : (
+                contactItems.map((item, idx) => (
+                  <div key={idx} className="flex items-center justify-between gap-4">
+                    <span className="text-gray-700 font-medium">{item.label}</span>
+                    {item.type === 'email' ? (
+                      <a href={`mailto:${item.value}`} className="text-blue-600 hover:underline break-all">{item.value}</a>
+                    ) : (
+                      <a href={`tel:${item.value}`} className="text-blue-600 hover:underline break-all">{item.value}</a>
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
           </AttributeCard>
         </div>
 
@@ -225,3 +272,5 @@ const StudentProfilePanel: React.FC<StudentProfilePanelProps> = ({ student, onMi
 };
 
 export default StudentProfilePanel;
+
+
