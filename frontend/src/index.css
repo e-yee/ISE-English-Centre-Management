@@ -230,6 +230,7 @@
 
 .sidebar-menu-item:hover {
   transform: scale(1.05) !important;
+  background-color: #c1d1f5 !important;  
 }
 
 /* Sidebar icon styling - exact Figma specs */
