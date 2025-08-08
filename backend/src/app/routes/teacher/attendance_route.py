@@ -74,23 +74,23 @@ def validate_attendance(teacher_id, class_id, course_id, course_date, term):
 def validate_teacher(teacher_id):
     teacher = db.session.query(Employee).filter_by(id=teacher_id, role="Teacher").first()
     if not teacher:
-        return jsonify({
+        return None, jsonify({
             "message": "Invalid teacher ID"
         }), HTTPStatus.BAD_REQUEST
     
-    class_id = db.session.query(Class).filter_by(teacher_id=teacher_id).first()
+    class_id = db.session.query(Class).filter_by(teacher_id=teacher.id).first()
 
-    if not class_id or class_id.teacher_id != teacher:
-        return jsonify({
+    if not class_id or class_id.teacher_id != teacher.id:
+        return None, jsonify({
             "message": "Teacher is not assigned to this class"
         }), HTTPStatus.BAD_REQUEST
     
     return teacher, None, None
 
-def validate_lerning_advisor(learning_advisor_id):
+def validate_learning_advisor(learning_advisor_id):
     learning_advisor = db.session.query(Employee).filter_by(id=learning_advisor_id, role="Learning Advisor").first()
     if not learning_advisor:
-        return jsonify({
+        return None, jsonify({
             "message": "Invalid learning advisor ID"
         }), HTTPStatus.BAD_REQUEST
     
@@ -99,7 +99,7 @@ def validate_lerning_advisor(learning_advisor_id):
 def validate_student(student_id):
     student = db.session.query(Student).filter_by(id=student_id, role="student").first()
     if not student:
-        return jsonify({
+        return None, jsonify({
             "message": "Invalid student ID"
         }), HTTPStatus.BAD_REQUEST
     
@@ -108,7 +108,7 @@ def validate_student(student_id):
 def validate_class(class_id):
     class_ = db.session.query(Class).filter_by(id=class_id).first()
     if not class_:
-        return jsonify({
+        return None, jsonify({
             "message": "Invalid class ID"
         }), HTTPStatus.BAD_REQUEST
     
@@ -123,7 +123,7 @@ def validate_course(course_id, course_date):
     ).first()
 
     if not course:
-        return jsonify({
+        return None, jsonify({
             "message": "Invalid course ID or date"
         }), HTTPStatus.BAD_REQUEST
     
@@ -132,7 +132,7 @@ def validate_course(course_id, course_date):
 def validate_term(term):
     term = db.session.query(Course).filter_by(term=term).first()
     if not term:
-        return jsonify({
+        return None, jsonify({
             "message": "Invalid term"
         }), HTTPStatus.BAD_REQUEST
     return term, None, None
