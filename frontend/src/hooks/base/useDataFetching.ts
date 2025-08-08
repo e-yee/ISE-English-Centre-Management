@@ -3,7 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 
 // Generic hook for role-based data fetching
 export function useRoleBasedData<T>(
-  queryKey: string[],
+  queryKey: unknown[],
   fetchFn: () => Promise<T>,
   options?: Omit<UseQueryOptions<T>, 'queryKey' | 'queryFn'>
 ) {
@@ -20,7 +20,7 @@ export function useRoleBasedData<T>(
 
 // Generic hook for any data fetching - now includes role in query key
 export function useDataFetching<T>(
-  queryKey: string[],
+  queryKey: unknown[],
   fetchFn: () => Promise<T>,
   options?: Omit<UseQueryOptions<T>, 'queryKey' | 'queryFn'>
 ) {

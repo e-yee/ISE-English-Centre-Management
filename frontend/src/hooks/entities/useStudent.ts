@@ -1,4 +1,5 @@
 import { useDataFetching } from '../base/useDataFetching';
+import { useState } from 'react';
 import studentService from '@/services/entities/studentService';
 
 export function useStudents() {
@@ -36,3 +37,25 @@ export function useClassStudents(classId: string, courseId: string, courseDate: 
     }
   );
 } 
+
+export function useDeleteStudent() {
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const deleteStudent = async (id: string): Promise<boolean> => {
+    setIsDeleting(true);
+    setError(null);
+    try {
+      await studentService.deleteStudent(id);
+      return true;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to delete student';
+      setError(message);
+      return false;
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  return { deleteStudent, isDeleting, error };
+}

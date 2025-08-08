@@ -25,7 +25,7 @@ import CourseClassesPage from '../pages/course/CourseClassesPage';
 import ContractPage from '../pages/contract/ContractPage';
 import IssuesPage from '../pages/issues/IssuesPage';
 import Dashboard from '../pages/dashboard/Dashboard';
-import StudentsPage from '../pages/dashboard/StudentsPage';
+import StudentsPage from '../pages/dashboard/student/StudentsPage';
 import TeachersPage from '../pages/dashboard/TeachersPage';
 import StatisticsPage from '../pages/dashboard/StatisticsPage';
 
