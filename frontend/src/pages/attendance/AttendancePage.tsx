@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
 import FeatureButtonList from '@/components/class/FeatureButtonList';
 import { Button } from '@/components/ui/button';
@@ -8,6 +8,7 @@ import StudentAttendanceCard from '@/components/attendance/StudentAttendanceCard
 import type { StudentData } from '@/mockData/studentListMock';
 import { useLocation } from 'react-router-dom';
 import { useMarkAttendance } from '@/hooks/entities/useAttendance';
+import { Badge } from '@/components/ui/badge';
 
 interface AttendancePageProps {
   className?: string;
@@ -29,21 +30,6 @@ const AttendancePage: React.FC<AttendancePageProps> = ({ className }) => {
   const { mutate: markAttendance, isPending: marking } = useMarkAttendance();
   const [saveSuccess, setSaveSuccess] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
-  const saveBtnRef = useRef<HTMLButtonElement | null>(null);
-  const [bannerWidth, setBannerWidth] = useState<number>(0);
-
-  useEffect(() => {
-    const updateWidth = () => {
-      if (saveBtnRef.current) setBannerWidth(saveBtnRef.current.offsetWidth);
-    };
-    updateWidth();
-    window.addEventListener('resize', updateWidth);
-    return () => window.removeEventListener('resize', updateWidth);
-  }, []);
-  useEffect(() => {
-    // Recompute when button label toggles between SAVING.../SAVE CHANGES
-    if (saveBtnRef.current) setBannerWidth(saveBtnRef.current.offsetWidth);
-  }, [marking]);
 
   // Use students passed from ClassScreen via router state
   const students: StudentData[] = state.students || [];
@@ -124,7 +110,6 @@ const AttendancePage: React.FC<AttendancePageProps> = ({ className }) => {
             </div>
             <div className="flex flex-col items-end gap-2">
               <Button
-                ref={saveBtnRef}
                 className="bg-teal-600 hover:bg-teal-700"
                 disabled={marking || !classId || !courseId || !courseDate || !term}
                 onClick={() => {
@@ -165,20 +150,16 @@ const AttendancePage: React.FC<AttendancePageProps> = ({ className }) => {
                 {marking ? 'SAVING...' : 'SAVE CHANGES'}
               </Button>
               {saveError && (
-                <div style={{ width: bannerWidth }} className="p-2 border border-red-200 bg-red-50 rounded-md">
-                  <div className="flex items-center gap-2">
-                    <AlertCircle className="h-4 w-4 text-red-600" />
-                    <span className="text-xs text-red-800">{saveError}</span>
-                  </div>
-                </div>
+                <Badge variant="destructive" className="gap-1">
+                  <AlertCircle className="h-3 w-3" />
+                  {saveError}
+                </Badge>
               )}
               {saveSuccess && (
-                <div style={{ width: bannerWidth }} className="p-2 border border-green-200 bg-green-50 rounded-md">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-green-600" />
-                    <span className="text-xs text-green-800">{saveSuccess}</span>
-                  </div>
-                </div>
+                <Badge className="gap-1 bg-green-100 text-green-800 border-green-200">
+                  <CheckCircle className="h-3 w-3" />
+                  {saveSuccess}
+                </Badge>
               )}
             </div>
           </div>

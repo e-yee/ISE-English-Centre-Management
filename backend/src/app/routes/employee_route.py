@@ -246,7 +246,7 @@ def manager_delete_employee():
                 
 # Teacher features
 @employee_bp.get("/teacher/")
-@role_required("Teacher")
+@role_required("Teacher", "Learning Advisor", "Manager")
 def get_available_teacher():
     try:            
         available_teacher_list = db.session.query(Employee).filter_by(teacher_status="Available")

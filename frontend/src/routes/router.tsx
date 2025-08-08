@@ -28,6 +28,8 @@ import Dashboard from '../pages/dashboard/Dashboard';
 import StudentsPage from '../pages/dashboard/student/StudentsPage';
 import StaffPage from '../pages/dashboard/staff/StaffPage';
 import StatisticsPage from '../pages/dashboard/StatisticsPage';
+import MakeupClassesPage from '../pages/makeup/MakeupClassesPage';
+import RoomPage from '../pages/room/RoomPage';
 
 export const router = createBrowserRouter([
   {
@@ -73,6 +75,8 @@ export const router = createBrowserRouter([
           { path: 'dashboard/statistics', element: <StatisticsPage /> },
           { path: 'course-classes/:courseId/:courseDate', element: <CourseClassesPage /> },
           { path: 'contracts/:courseId', element: <ContractPage /> },
+          { path: 'makeup-classes', element: <MakeupClassesPage /> },
+          { path: 'room', element: <RoomPage /> },
         ],
       },
     ],

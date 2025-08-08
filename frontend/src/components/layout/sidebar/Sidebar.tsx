@@ -89,6 +89,15 @@ const MainSidebar: React.FC<SidebarProps> = ({ className }) => {
 
   // Role-specific menu items
   const roleSpecificItems: SidebarItem[] = [];
+  const role = getUserRole();
+  if (role === "Learning Advisor") {
+    roleSpecificItems.push({
+      id: "makeup-classes",
+      title: "Makeup Classes",
+      icon: "/src/assets/sidebar/add-course.svg",
+      url: "#",
+    });
+  }
   
   // Combine base items with role-specific items
   const menuItems = [...baseMenuItems, ...roleSpecificItems];
@@ -147,6 +156,12 @@ const MainSidebar: React.FC<SidebarProps> = ({ className }) => {
         navigate("/issues");
       } else {
         console.log("Navigation to /issues (demo mode - navigation disabled)");
+      }
+    } else if (itemId === "makeup-classes") {
+      if (navigate) {
+        navigate("/makeup-classes");
+      } else {
+        console.log("Navigation to /makeup-classes (demo mode - navigation disabled)");
       }
     } else {
       // For other items, just log for now (can be extended later)

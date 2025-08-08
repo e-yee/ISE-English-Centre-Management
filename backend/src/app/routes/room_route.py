@@ -190,7 +190,7 @@ def manager_delete_room():
             return error_response, status_code
         
         db.session.delete(room)
-        db.session.commit
+        db.session.commit()
 
         return jsonify({
             "message": "Room deleted successfully"

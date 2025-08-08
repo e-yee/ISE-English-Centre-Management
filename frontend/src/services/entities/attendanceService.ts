@@ -37,21 +37,9 @@ class AttendanceService extends ApiService {
       enrolment_id: enrolmentId,
       marks,
     };
-    try {
-      const res = await this.patch<{ message: string }>(`/attendance/mark?${query}`, body);
-      const msg = res?.message || 'Attendance updated successfully.';
-      // Surface a simple message without extra UI components
-      if (typeof window !== 'undefined') {
-        window.alert(msg);
-      }
-      return { message: msg };
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to update attendance';
-      if (typeof window !== 'undefined') {
-        window.alert(msg);
-      }
-      throw err;
-    }
+    const res = await this.patch<{ message: string }>(`/attendance/mark?${query}`, body);
+    const message = res?.message || 'Attendance updated successfully.';
+    return { message };
   }
 }
 

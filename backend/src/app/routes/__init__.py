@@ -5,6 +5,7 @@ from .contract_route import contract_bp
 from .course_route import course_bp
 from .student_route import student_bp
 from .class_route import class_bp
+from .room_route import room_bp
 from .manager.dashboard_route import dashboard_bp
 from .checkin_route import checkin_bp
 from .homepage_route import homepage_bp
@@ -30,6 +31,7 @@ def register_blueprints(app):
         homepage_bp,
         student_bp,
         issue_bp,
+        room_bp,
         leave_request_bp
     ]
     

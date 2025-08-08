@@ -136,13 +136,11 @@ def checkout():
 @checkin_bp.get("/status")
 def view_stats():
     try:
-        if not request.is_json:
-            return jsonify({
-                "message": "Invalid input", "error": "Request must be JSON"
-            }), HTTPStatus.BAD_REQUEST
-
-        data = request.get_json()
-        id = data.get("id")
+        # Accept either query param or JSON body for flexibility
+        id = request.args.get("id")
+        if not id and request.is_json:
+            data = request.get_json()
+            id = data.get("id") if isinstance(data, dict) else None
         employee, response, status = validate_id(id)
         if not employee:
             return response, status

@@ -1,4 +1,5 @@
 import { ApiService } from '../base/apiService';
+import { api } from '@/lib/apiClient';
 
 export interface CheckInRequest {
   employee_id: string;
@@ -79,6 +80,17 @@ class CheckinService extends ApiService {
       console.error('❌ CheckInService - Error fetching teacher classes:', error);
       throw error;
     }
+  }
+
+  // Fetch check-in status records for an employee
+  async getStatus(employeeId: string) {
+    return api.get<{
+      id: string;
+      employee_id: string;
+      checkin_time: string;
+      checkout_time: string | null;
+      status: string;
+    }[]>(`/checkin/status?id=${encodeURIComponent(employeeId)}`);
   }
 }
 

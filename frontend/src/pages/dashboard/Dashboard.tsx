@@ -14,6 +14,7 @@ const MODULES = [
   { key: "students", title: "Students", to: "/dashboard/students", roles: ["Learning Advisor", "Manager"] as Role[] },
   { key: "staff", title: "Staff", to: "/dashboard/staff", roles: ["Manager"] as Role[] },
   { key: "stats", title: "Statistics", to: "/dashboard/statistics", roles: ["Manager"] as Role[] },
+  { key: "rooms", title: "Rooms", to: "/room", roles: ["Manager"] as Role[] },
 ];
 
 function LoadingGrid() {

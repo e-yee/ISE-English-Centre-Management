@@ -6,6 +6,8 @@ from ..auth import role_required
 from ..models import Student, Class
 from ..schemas.learning_advisor.student_schema import student_schema
 from ..http_status import HTTPStatus
+from ..models import Enrolment
+
 
 student_bp = Blueprint("student_bp", __name__, url_prefix="/student")
 
@@ -254,7 +256,7 @@ def get_students_by_class():
             }), HTTPStatus.NOT_FOUND
         
         student_list = [student_attendance.student for student_attendance in class_.student_attendance]
-        
+
         return jsonify(student_schema.dump(student_list, many=True)), HTTPStatus.OK
     
     except Exception as e:
