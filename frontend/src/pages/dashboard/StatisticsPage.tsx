@@ -4,40 +4,38 @@ import KPI from "@/components/charts/KPI";
 import HorizontalBar from "@/components/charts/HorizontalBar";
 import StackedBar100 from "@/components/charts/StackedBar100";
 import ColumnBars from "@/components/charts/ColumnBars";
+import { useDashboardOverview, useDashboardRevenue, useDashboardStudentStats } from "@/hooks/entities/useDashboard";
 
 type LabeledValue = { label: string; value: number };
 
 export default function StatisticsPage() {
   const navigate = useNavigate();
 
-  // Mock data for prototyping UI only
-  const overview = useMemo(
-    () => ({
-      totalEmployees: 120,
-      totalTeachers: 45,
-      totalLearningAdvisors: 18,
-      totalStudents: 820,
-      totalRevenue: 1_200_000,
-    }),
-    []
-  );
+  // Overview from API (fallback to 0s while loading)
+  const { data: overviewData } = useDashboardOverview();
+  const overview = {
+    totalEmployees: overviewData?.totalEmployees ?? 0,
+    totalTeachers: overviewData?.totalTeachers ?? 0,
+    totalLearningAdvisors: overviewData?.totalLearningAdvisors ?? 0,
+    totalStudents: overviewData?.totalStudents ?? 0,
+    totalRevenue: overviewData?.totalRevenue ?? 0,
+  };
 
-  const studentStats = useMemo(
-    () => ({
-      ageBuckets: [
-        { label: "Elementary (<12)", value: 310 },
-        { label: "Middle (12–14)", value: 210 },
-        { label: "High (15–17)", value: 150 },
-        { label: "Other (>=18)", value: 80 },
-      ] as LabeledValue[],
-      subjectBuckets: [
-        { label: "Math", value: 520 },
-        { label: "English", value: 300 },
-      ] as LabeledValue[],
-      totalStudents: 820,
-    }),
-    []
-  );
+  // Student stats from API (chart-ready shape already mapped in service)
+  const { data: studentData } = useDashboardStudentStats();
+  const studentStats = {
+    ageBuckets: (studentData?.ageBuckets as LabeledValue[] | undefined) ?? [
+      { label: "Elementary (<12)", value: 0 },
+      { label: "Middle (12–14)", value: 0 },
+      { label: "High (15–17)", value: 0 },
+      { label: "Other (>=18)", value: 0 },
+    ],
+    subjectBuckets: (studentData?.subjectBuckets as LabeledValue[] | undefined) ?? [
+      { label: "Math", value: 0 },
+      { label: "English", value: 0 },
+    ],
+    totalStudents: studentData?.totalStudents ?? 0,
+  };
 
   // reserved for wiring API later; keep minimal now
 
@@ -52,15 +50,13 @@ export default function StatisticsPage() {
     []
   );
 
-  const revenueByYear = useMemo(
-    () => [
-      { year: 2023, revenue: 400_000 },
-      { year: 2024, revenue: 650_000 },
-      { year: 2025, revenue: 1_050_000 },
-      { year: 2026, revenue: 1_200_000 },
-    ],
-    []
-  );
+  // Revenue from API: backend returns an array starting at 2023
+  const { data: revenueData } = useDashboardRevenue();
+  const revenueByYear = useMemo(() => {
+    const startYear = 2023;
+    const arr = revenueData?.revenueByYear ?? [];
+    return arr.map((revenue, i) => ({ year: startYear + i, revenue }));
+  }, [revenueData]);
 
   // Precompute if needed later
 

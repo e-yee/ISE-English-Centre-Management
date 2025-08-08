@@ -28,7 +28,7 @@ export default function ColumnBars({
         <BarChart data={data} margin={{ left: 8, right: 8, top: 8, bottom: 8 }}>
           <XAxis dataKey="x" tick={{ fontSize: 12 }} tickFormatter={xTickFormatter} />
           <YAxis tick={{ fontSize: 12 }} tickFormatter={yTickFormatter} />
-          <Tooltip cursor={false} formatter={(v: any) => v} />
+          <Tooltip cursor={false} formatter={(v: any) => v} contentStyle={{ borderRadius: 8, borderColor: "rgba(0,0,0,0.1)", backgroundColor: "#fff" }} />
           <Bar dataKey="y" fill={color} radius={[6, 6, 0, 0]}>
             {data.map((_, idx) => {
               const fill = typeof highlightIndex === "number" && idx === highlightIndex

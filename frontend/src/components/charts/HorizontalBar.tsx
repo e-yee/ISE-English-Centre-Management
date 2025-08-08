@@ -21,7 +21,17 @@ export default function HorizontalBar({
         <BarChart data={sorted} layout="vertical" margin={{ left: 8, right: 8, top: 8, bottom: 8 }}>
           <XAxis type="number" hide />
           <YAxis type="category" dataKey="label" width={150} tick={{ fontSize: 12 }} />
-          <Tooltip cursor={false} />
+          <Tooltip
+            cursor={false}
+            contentStyle={{
+              borderRadius: 8,
+              borderColor: "rgba(0,0,0,0.25)",
+              borderWidth: 1,
+              borderStyle: "solid",
+              backgroundColor: "#fff",
+              boxShadow: "0 6px 18px rgba(0,0,0,0.15)",
+            }}
+          />
           <Bar dataKey="value" fill={color} radius={[4, 4, 4, 4]}>
             {sorted.map((_, idx) => (
               <Cell key={`cell-${idx}`} fill={palette[idx % palette.length]} />

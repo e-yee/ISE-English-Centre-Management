@@ -22,7 +22,7 @@ export default function StackedBar100({
         <BarChart data={chartData} margin={{ left: 8, right: 8, top: 8, bottom: 8 }}>
           <XAxis dataKey="name" hide />
           <YAxis hide domain={[0, 100]} />
-          <Tooltip cursor={false} formatter={(v: any, k: any) => [`${(v as number).toFixed(0)}%`, k]} />
+          <Tooltip cursor={false} formatter={(v: any, k: any) => [`${(v as number).toFixed(0)}%`, k]} contentStyle={{ borderRadius: 8, borderColor: "rgba(0,0,0,0.1)", backgroundColor: "#fff" }} />
           {parts.map((p) => (
             <Bar key={p.key} dataKey={p.key} stackId="a" fill={p.color || "#111111"} radius={[4, 4, 4, 4]} />
           ))}
