@@ -4,6 +4,7 @@ import StudentTab from "@/components/class/StudentTab";
 import { useSidebar } from "@/components/ui/sidebar";
 import RevealOnScroll from "@/components/ui/RevealOnScroll";
 import type { StudentData } from "@/mockData/studentListMock";
+import { Badge } from "@/components/ui/badge";
 
 interface StudentListProps {
   students?: StudentData[];
@@ -26,6 +27,8 @@ const StudentList: React.FC<StudentListProps> = ({
   // Apply student limit if specified
   const displayedStudents = maxStudents ? students.slice(0, maxStudents) : students;
 
+  const showEmpty = displayedStudents.length === 0;
+
   return (
     <div className={cn(
       // Main container - transparent background, full height with animations
@@ -40,6 +43,11 @@ const StudentList: React.FC<StudentListProps> = ({
         // Custom scrollbar styling
         customScrollbar && "custom-scrollbar"
       )}>
+        {showEmpty && (
+          <div className="w-full flex justify-center items-center">
+            <Badge variant="outline" className="text-gray-600">No students</Badge>
+          </div>
+        )}
         {displayedStudents.map((studentData, index) => {
           const studentComponent = (
             <div

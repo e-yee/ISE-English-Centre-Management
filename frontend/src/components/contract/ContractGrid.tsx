@@ -73,6 +73,11 @@ const ContractGrid: React.FC<ContractGridProps> = ({
     }
   };
 
+  const formatVND = (value: number | null | undefined) => {
+    const amount = typeof value === 'number' && isFinite(value) ? value : 0;
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + 'd';
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -140,7 +145,7 @@ const ContractGrid: React.FC<ContractGridProps> = ({
               </div>
               <div className="flex justify-between items-center py-2 px-3 bg-purple-50 rounded-lg">
                 <span className="text-sm font-medium text-gray-700">Tuition Fee:</span>
-                <span className="text-sm font-bold text-purple-600">${contract.tuition_fee}</span>
+                <span className="text-sm font-bold text-purple-600">{formatVND(contract.tuition_fee)}</span>
               </div>
               <div className="flex justify-between items-center py-2 px-3 bg-gray-50 rounded-lg">
                 <span className="text-sm font-medium text-gray-700">Course Date:</span>

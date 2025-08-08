@@ -175,7 +175,7 @@ const CourseForm: React.FC<CourseFormProps> = ({ open, onOpenChange, onSubmit, i
                 name="fee"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Course Fee ($) *</FormLabel>
+                    <FormLabel>Course Fee (VND) *</FormLabel>
                     <FormControl>
                       <Input type="number" placeholder="e.g., 299" {...field} />
                     </FormControl>

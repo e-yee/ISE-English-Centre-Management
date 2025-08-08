@@ -2,10 +2,15 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useSidebar } from '@/components/ui/sidebar';
+import type { StudentData } from '@/mockData/studentListMock';
 
 interface FeatureButtonListProps {
   className?: string;
   classId?: string; // Optional classId for class-specific routes
+  students?: StudentData[]; // Optional students to pass to attendance
+  courseId?: string;
+  courseDate?: string;
+  term?: number | string;
 }
 
 interface FeatureButton {
@@ -15,7 +20,7 @@ interface FeatureButton {
   onClick?: () => void;
 }
 
-const FeatureButtonList: React.FC<FeatureButtonListProps> = ({ className, classId }) => {
+const FeatureButtonList: React.FC<FeatureButtonListProps> = ({ className, classId, students, courseId, courseDate, term }) => {
   const { state } = useSidebar();
   const isExpanded = state === "expanded";
   const [activeButton, setActiveButton] = useState<string | null>(null);
@@ -48,7 +53,7 @@ const FeatureButtonList: React.FC<FeatureButtonListProps> = ({ className, classI
       id: "daily-attendance",
       title: "Daily Attendance",
       route: "/attendance",
-      onClick: () => navigate("/attendance")
+      onClick: () => navigate("/attendance", { state: { students, classId, courseId, courseDate, term } })
     },
     {
       id: "report",

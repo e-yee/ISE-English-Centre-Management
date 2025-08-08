@@ -65,7 +65,7 @@ const ContractPage: React.FC = () => {
   };
 
   const handleBackToCourses = () => {
-    navigate('/dashboard');
+    navigate('/dashboard/courses');
   };
 
   const handleFormSubmit = async (contractData: CreateContractData | UpdateContractData) => {

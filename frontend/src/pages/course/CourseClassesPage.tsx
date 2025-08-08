@@ -88,7 +88,7 @@ const CourseClassesPage: React.FC = () => {
   };
 
   const handleBackToCourse = () => {
-    navigate('/dashboard');
+    navigate('/dashboard/courses');
   };
 
   // Show loading state
@@ -131,7 +131,7 @@ const CourseClassesPage: React.FC = () => {
             className="flex items-center gap-2"
           >
             <ArrowLeft className="h-4 w-4" />
-            Back to Course
+            Back to Courses
           </Button>
           <h1 className="text-2xl font-semibold">Course Classes - {courseId}</h1>
         </div>

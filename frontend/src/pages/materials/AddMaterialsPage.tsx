@@ -1,6 +1,5 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-import FeatureButtonList from '@/components/class/FeatureButtonList';
 import FileToolbar from '@/components/materials/FileToolbar';
 import FileListView from '@/components/materials/FileListView';
 import FileGridView from '@/components/materials/FileGridView';
@@ -8,7 +7,6 @@ import FileTreeView from '@/components/materials/FileTreeView';
 import { useFileManagement } from '@/hooks/ui/useFileManagement';
 import DriveUploadToast from '@/components/ui/UploadToast';
 import { useUploadStore, useUploadSimulation } from '@/hooks/useUpload';
-import ClassInfo from '@/components/class/ClassInfo';
 import { classListMockData } from '@/mockData/classListMock';
 import { getFormattedStudentCount } from '@/mockData/studentListMock';
 import Breadcrumb from '@/components/materials/Breadcrumb';
@@ -58,13 +56,6 @@ const AddMaterialsPage: React.FC<AddMaterialsPageProps> = ({ className, classId 
   return (
     <div className={cn("h-full overflow-hidden flex flex-col", className)}>
       
-      <div className={cn("pb-3 flex-shrink-0 transition-all duration-300 ease-in-out", "px-4")}>
-        <ClassInfo
-          classData={classData}
-          studentCount={studentCount}
-        />
-      </div>
-
       <div className="flex-1 overflow-hidden p-4">
         <div className="w-full h-full bg-white rounded-lg shadow-md p-6 flex flex-col">
           <Breadcrumb path={currentPath} onNavigate={navigateToFolder} />

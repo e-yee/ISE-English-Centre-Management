@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 import FeatureButtonList from '@/components/class/FeatureButtonList';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Bell, User, ChevronDown } from 'lucide-react';
+import { User, ChevronDown, AlertCircle, CheckCircle } from 'lucide-react';
 import StudentAttendanceCard from '@/components/attendance/StudentAttendanceCard';
-import { getStudentsByClassId } from '@/mockData/studentListMock';
+import type { StudentData } from '@/mockData/studentListMock';
+import { useLocation } from 'react-router-dom';
+import { useMarkAttendance } from '@/hooks/entities/useAttendance';
 
 interface AttendancePageProps {
   className?: string;
@@ -15,11 +16,41 @@ interface AttendancePageProps {
 type AttendanceStatus = 'present' | 'absent' | 'unmarked';
 
 const AttendancePage: React.FC<AttendancePageProps> = ({ className }) => {
+  const location = useLocation();
+  const state = (location.state || {}) as {
+    students?: StudentData[];
+    classId?: string;
+    courseId?: string;
+    courseDate?: string;
+    term?: number | string;
+  };
   const [attendance, setAttendance] = useState<Record<string, AttendanceStatus>>({});
   const [selectedDate, setSelectedDate] = useState("Today");
+  const { mutate: markAttendance, isPending: marking } = useMarkAttendance();
+  const [saveSuccess, setSaveSuccess] = useState<string | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const saveBtnRef = useRef<HTMLButtonElement | null>(null);
+  const [bannerWidth, setBannerWidth] = useState<number>(0);
 
-  // Sample student data - using existing mock data
-  const students = getStudentsByClassId("CL001");
+  useEffect(() => {
+    const updateWidth = () => {
+      if (saveBtnRef.current) setBannerWidth(saveBtnRef.current.offsetWidth);
+    };
+    updateWidth();
+    window.addEventListener('resize', updateWidth);
+    return () => window.removeEventListener('resize', updateWidth);
+  }, []);
+  useEffect(() => {
+    // Recompute when button label toggles between SAVING.../SAVE CHANGES
+    if (saveBtnRef.current) setBannerWidth(saveBtnRef.current.offsetWidth);
+  }, [marking]);
+
+  // Use students passed from ClassScreen via router state
+  const students: StudentData[] = state.students || [];
+  const classId = state.classId || '';
+  const courseId = state.courseId || '';
+  const courseDate = state.courseDate || '';
+  const term = state.term ?? '';
 
   const dateOptions = ["Today", "Yesterday", "Custom Date"];
 
@@ -51,7 +82,13 @@ const AttendancePage: React.FC<AttendancePageProps> = ({ className }) => {
         "pt-4 pb-3 flex-shrink-0 transition-all duration-300 ease-in-out",
         "px-4"
       )}>
-        <FeatureButtonList />
+        <FeatureButtonList
+          classId={classId}
+          students={students}
+          courseId={courseId}
+          courseDate={courseDate}
+          term={term}
+        />
       </div>
 
       {/* Main Content */}
@@ -59,7 +96,7 @@ const AttendancePage: React.FC<AttendancePageProps> = ({ className }) => {
         {/* Class Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
-            <h1 className="text-3xl font-light text-purple-600">Class 1A</h1>
+            <h1 className="text-3xl font-light text-purple-600">Class {classId || ''}</h1>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="w-32 justify-between">
@@ -85,10 +122,67 @@ const AttendancePage: React.FC<AttendancePageProps> = ({ className }) => {
               <User className="h-4 w-4" />
               <span>{totalStudents}</span>
             </div>
-            <Button className="bg-teal-600 hover:bg-teal-700">SAVE CHANGES</Button>
+            <div className="flex flex-col items-end gap-2">
+              <Button
+                ref={saveBtnRef}
+                className="bg-teal-600 hover:bg-teal-700"
+                disabled={marking || !classId || !courseId || !courseDate || !term}
+                onClick={() => {
+                  setSaveSuccess(null);
+                  setSaveError(null);
+                  markAttendance(
+                    {
+                      classId,
+                      courseId,
+                      courseDate,
+                      term,
+                      enrolmentId: '',
+                      attendance,
+                    },
+                    {
+                      onSuccess: (res) => {
+                        setSaveSuccess(res?.message || 'Attendance updated successfully!');
+                        setSaveError(null);
+                        setTimeout(() => setSaveSuccess(null), 2000);
+                      },
+                      onError: (err: unknown) => {
+                        let message = 'Failed to update attendance';
+                        if (err instanceof Error) {
+                          const m = err.message || '';
+                          if (/network/i.test(m) || /failed to fetch/i.test(m) || /localhost/i.test(m)) {
+                            message = 'Unable to reach server. Please check your connection and try again.';
+                          } else {
+                            message = m;
+                          }
+                        }
+                        setSaveError(message);
+                        setSaveSuccess(null);
+                      },
+                    }
+                  );
+                }}
+              >
+                {marking ? 'SAVING...' : 'SAVE CHANGES'}
+              </Button>
+              {saveError && (
+                <div style={{ width: bannerWidth }} className="p-2 border border-red-200 bg-red-50 rounded-md">
+                  <div className="flex items-center gap-2">
+                    <AlertCircle className="h-4 w-4 text-red-600" />
+                    <span className="text-xs text-red-800">{saveError}</span>
+                  </div>
+                </div>
+              )}
+              {saveSuccess && (
+                <div style={{ width: bannerWidth }} className="p-2 border border-green-200 bg-green-50 rounded-md">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <span className="text-xs text-green-800">{saveSuccess}</span>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
-
         {/* Attendance Stats */}
         <div className="flex gap-4 mb-4">
           <div className="bg-green-50 border border-green-200 rounded-lg px-4 py-2">
