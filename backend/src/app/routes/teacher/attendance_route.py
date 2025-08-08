@@ -144,7 +144,7 @@ def view_attendance():
         id = get_jwt().get("employee_id")
         teacher, error_response, status_code = validate_teacher(id)
 
-        la, error_response, status_code = validate_lerning_advisor(id)
+        la, error_response, status_code = validate_learning_advisor(id)
         if not teacher or not la:
             return error_response, status_code
 
@@ -253,11 +253,3 @@ def mark_attendance():
     except Exception as e:
         db.session.rollback()
         return jsonify({"message": "An unexpected error occurred"}), HTTPStatus.INTERNAL_SERVER_ERROR
-        
-
-
-    
-
-    
-
-
