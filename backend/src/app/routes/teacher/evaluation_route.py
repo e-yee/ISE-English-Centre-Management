@@ -149,14 +149,18 @@ def add_evaluation():
         if not user:
             return error_response, status_code
 
-        result, response, status = validate_course(validated["course_id"])
-        if not result:
+        course_id, response, status = validate_course(validated["course_id"])
+        if not course_id:
+            return response, status
+        
+        student, response, status = validate_student(validated["student_id"])
+        if not student:
             return response, status
         
         result, response, status = validate_evaluation(
-            id,
-            validated["student_id"],
-            validated["course_id"],
+            user.id,
+            student.id,
+            course_id,
             validated["course_date"],
             validated["assessment_type"]
         )
@@ -165,21 +169,20 @@ def add_evaluation():
             return response, status
         
         evaluation = Evaluation(
-            student_id=validated["student_id"],
-            course_id=validated["course_id"],
+            student_id=student.id,
+            course_id=course_id.course_id,
             course_date=validated["course_date"],
             assessment_type=validated["assessment_type"],
-            teacher_id=id,
+            teacher_id=user.id,
             grade=validated["grade"],
             comment=validated["comment"],
             enrolment_id=validated["enrolment_id"],
-            evaluation_date=validated["evaluation_date"]
         )
 
         db.session.add(evaluation)
         db.session.commit()
 
-        return jsonify(evaluation_schema.dump(evaluation, many=True)), HTTPStatus.CREATED
+        return jsonify(evaluation_schema.dump(evaluation)), HTTPStatus.CREATED
 
     except ValidationError as ve:
         return jsonify({

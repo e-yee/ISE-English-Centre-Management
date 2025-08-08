@@ -21,7 +21,7 @@ class LeaveRequest(db.Model):
 
     id: Mapped[str] = mapped_column(String(10), primary_key=True)
     employee_id: Mapped[str] = mapped_column(String(10), nullable=False)
-    substitute_id: Mapped[str] = mapped_column(String(10), nullable=False)
+    substitute_id: Mapped[str] = mapped_column(String(10), nullable=True)
     start_date: Mapped[datetime.date] = mapped_column(Date, nullable=False)
     end_date: Mapped[datetime.date] = mapped_column(Date, nullable=False)
     reason: Mapped[str] = mapped_column(String(200), nullable=False)

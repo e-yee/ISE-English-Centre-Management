@@ -10,6 +10,6 @@ class EvaluationSchema(ma.Schema):
     grade = fields.String(required=True)
     comment = fields.String(required=True)
     enrolment_id = fields.String(required=True)
-    evaluation_date = fields.Date(required=True)
+    evaluation_date = fields.Date(required=False)
 
 evaluation_schema = EvaluationSchema()

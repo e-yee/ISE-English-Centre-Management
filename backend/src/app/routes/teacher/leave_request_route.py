@@ -105,7 +105,7 @@ def add_request():
             return jsonify({
                 "message": "Missing or invalid JSON"
             }), HTTPStatus.BAD_REQUEST
-        
+
         data = request.get_json()
         validated = leave_request_schema.load(data)
 
@@ -117,14 +117,10 @@ def add_request():
                 "message": "Unauthorized or employee profile missing"
             }), HTTPStatus.FORBIDDEN
 
-        result, response, status = validate_employee(validated["employee_id"])
-        if not result:
+        teacher, response, status = validate_employee(user.employee_id)
+        if not teacher:
             return response, status
-
-        result, response, status = validate_substitute(validated["employee_id"], validated["substitute_id"])
-        if not result:
-            return response, status
-        
+    
         leave_request = LeaveRequest(
             id=generate_id(),
             employee_id=validated["employee_id"],
