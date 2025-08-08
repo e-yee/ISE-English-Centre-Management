@@ -63,9 +63,9 @@ def validate_room_availability(room_id):
         return None, jsonify({
             "message": "Room not found"
         }), HTTPStatus.NOT_FOUND
-    elif room.status_code != "Free":
+    elif room.status != "Free":
         return None, jsonify({
-            "message": f"Room is in {room.status_code}"
+            "message": f"Room is in {room.status}"
         }), HTTPStatus.CONFLICT
     
     return room, None, None
@@ -256,7 +256,7 @@ def advisor_create_class():
             class_date=class_date
         )
         
-        setattr(room, "status_code", "Occupied")
+        setattr(room, "status", "Occupied")
         db.session.add(class_)
         
         # Add student attendance automatically feature
