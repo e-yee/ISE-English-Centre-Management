@@ -89,7 +89,7 @@ export const useCheckIn = () => {
     try {
       const result = await checkinService.checkIn(employeeId);
       console.log('✅ useCheckIn - Check-in successful:', result);
-      setSuccess(result.message);
+      setSuccess(result.message || 'Checked in successfully.');
       return result;
     } catch (err: any) {
       console.error('❌ useCheckIn - Check-in failed:', err);

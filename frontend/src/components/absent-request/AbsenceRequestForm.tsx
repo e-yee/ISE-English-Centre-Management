@@ -17,6 +17,8 @@ import calendarIcon from '@/assets/class/calendar.svg';
 import { format } from 'date-fns';
 import { useCreateLeaveRequest } from '@/hooks/entities/useLeaveRequest';
 import type { LeaveRequest } from '@/types/leaveRequest';
+import employeeService, { type Employee } from '@/services/entities/employeeService';
+import { getEmployeeIdFromToken } from '@/lib/utils';
 
 interface AbsenceRequestFormProps {
   className?: string;
@@ -31,6 +33,12 @@ const AbsenceRequestForm: React.FC<AbsenceRequestFormProps> = ({ className, stat
   const [absenceType, setAbsenceType] = useState<string>('');
   const [notes, setNotes] = useState<string>('');
   const [substituteId, setSubstituteId] = useState<string>('');
+  const [substituteName, setSubstituteName] = useState<string>('');
+
+  const [teachers, setTeachers] = useState<Employee[]>([]);
+  const [teachersLoading, setTeachersLoading] = useState<boolean>(false);
+  const [teachersError, setTeachersError] = useState<string | null>(null);
+  const [teachersLoaded, setTeachersLoaded] = useState<boolean>(false);
 
   const { createRequest, isLoading, error, success, clearMessages } = useCreateLeaveRequest();
 
@@ -58,6 +66,7 @@ const AbsenceRequestForm: React.FC<AbsenceRequestFormProps> = ({ className, stat
     setAbsenceType('');
     setNotes('');
     setSubstituteId('');
+    setSubstituteName('');
     clearMessages();
   };
 
@@ -77,6 +86,40 @@ const AbsenceRequestForm: React.FC<AbsenceRequestFormProps> = ({ className, stat
     const result = await createRequest(requestData);
     if (result) {
       clearForm();
+    }
+  };
+
+  const fetchAvailableTeachers = async () => {
+    if (isDisabled) return;
+    setTeachersLoading(true);
+    setTeachersError(null);
+    try {
+      let list: Employee[] = [];
+      try {
+        list = await employeeService.getAvailableTeachers();
+      } catch (_err) {
+        // ignore and fallback below
+      }
+      if (!list || list.length === 0) {
+        try {
+          const all = await employeeService.getAllEmployees();
+          list = (all || []).filter(
+            (e) => (e.role === 'Teacher') && (e.teacher_status?.toLowerCase() === 'available')
+          );
+        } catch (err) {
+          setTeachersError('Failed to load available teachers');
+          setTeachers([]);
+          return;
+        }
+      }
+      const myId = getEmployeeIdFromToken();
+      const normalized = (list || [])
+        .map((e) => ({ ...e, id: e.id ?? e.email }))
+        .filter((e) => !myId || e.id !== myId);
+      setTeachers(normalized);
+    } finally {
+      setTeachersLoading(false);
+      setTeachersLoaded(true);
     }
   };
 
@@ -194,18 +237,53 @@ const AbsenceRequestForm: React.FC<AbsenceRequestFormProps> = ({ className, stat
         </div>
 
         <div>
-          <Label htmlFor="substitute" className="font-comfortaa font-bold text-lg">Substitute Teacher ID</Label>
-          <Input
-            id="substitute"
-            placeholder="Enter substitute teacher ID"
-            className={cn(
-              "mt-1 font-comfortaa font-medium text-xl",
-              isDisabled && "bg-gray-100 text-gray-500 cursor-not-allowed"
-            )}
-            disabled={isDisabled}
-            value={substituteId}
-            onChange={(e) => setSubstituteId(e.target.value)}
-          />
+          <Label htmlFor="substitute" className="font-comfortaa font-bold text-lg">Substitute Teacher</Label>
+          <DropdownMenu onOpenChange={(open) => { if (open) fetchAvailableTeachers(); }}>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "w-full justify-between mt-1 font-comfortaa font-medium text-xl",
+                  isDisabled && "bg-gray-100 text-gray-500 cursor-not-allowed"
+                )}
+                disabled={isDisabled}
+              >
+                {substituteId
+                  ? `${substituteId}${substituteName ? ` - ${substituteName}` : ''}`
+                  : 'Select substitute teacher...'}
+                <span className="ml-2">▼</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuPortal>
+              <DropdownMenuContent className="w-full" align="start">
+                {teachersLoading && (
+                  <DropdownMenuItem disabled className="font-comfortaa italic">Loading...</DropdownMenuItem>
+                )}
+                {!teachersLoading && teachersError && (
+                  <DropdownMenuItem disabled className="font-comfortaa text-red-500">{teachersError}</DropdownMenuItem>
+                )}
+                {teachersLoaded && !teachersLoading && !teachersError && teachers.length === 0 && (
+                  <DropdownMenuItem disabled className="font-comfortaa">No available teachers</DropdownMenuItem>
+                )}
+                {!teachersLoading && !teachersError && teachers.map((t) => (
+                  <DropdownMenuItem
+                    key={(t.id as string) ?? t.email}
+                    className="font-comfortaa"
+                    onClick={() => {
+                      const displayName = t.full_name || t.name || t.email;
+                      if (!t.id) {
+                        console.warn('Selected teacher has no id, using empty substituteId', t);
+                      }
+                      setSubstituteId((t.id as string) || '');
+                      setSubstituteName(displayName);
+                    }}
+                  >
+                    {(t.id as string) || 'N/A'} - {(t.full_name || t.name || t.email)}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenuPortal>
+          </DropdownMenu>
         </div>
 
         <div>

@@ -150,8 +150,8 @@ export default function Dashboard() {
                 ? "Browse and manage courses"
                 : m.key === "students"
                 ? "Search and manage students"
-                : m.key === "teachers"
-                ? "Manage teachers and assignments"
+                : m.key === "Staffs"
+                ? "Manage staffs "
                 : "KPIs and reports"
             }
             accentFrom={

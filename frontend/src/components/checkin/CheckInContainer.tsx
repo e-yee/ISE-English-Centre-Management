@@ -37,17 +37,17 @@ const CheckInContainer: React.FC<CheckInContainerProps> = ({
         </div>
       )}
       
-      {/* Success Message */}
-      {success && (
-        <div className="w-full p-3 bg-green-100 border border-green-400 text-green-700 rounded-md text-sm">
-          {success}
-        </div>
-      )}
-      
       <CheckInButton 
         onClick={onCheckIn} 
         disabled={isLoading}
       />
+
+      {/* Success Message Below Button */}
+      {success && (
+        <div className="w-full mt-3 p-3 bg-green-100 border border-green-400 text-green-700 rounded-md text-sm">
+          {success}
+        </div>
+      )}
     </Card>
   );
 };
