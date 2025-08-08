@@ -62,7 +62,11 @@ export function LoginForm({ onForgotPassword, onSubmit, isLoading = false }: Log
               type="text"
               value={formData.username}
               onChange={(e) => handleInputChange("username", e.target.value)}
-              className="w-full bg-transparent border-0 border-b border-black rounded-none px-0 py-1 text-[25px] font-comfortaa text-[#121212] placeholder-[#78746C] focus:ring-0 focus:border-black focus-visible:ring-0 focus-visible:ring-offset-0"
+              className="w-full 
+                         bg-transparent border-0 border-b border-black rounded-none 
+                         px-0 py-0
+                         text-[25px] font-comfortaa text-[#121212] placeholder-[#78746C] 
+                         focus:ring-0 focus:border-black focus:border-b focus-visible:ring-0"
               placeholder=""
               required
               disabled={isLoading}
@@ -93,7 +97,7 @@ export function LoginForm({ onForgotPassword, onSubmit, isLoading = false }: Log
               <button
                 type="button"
                 onClick={onForgotPassword}
-                className="text-[18px] font-comfortaa font-medium text-[rgba(0,0,0,0.65)] hover:underline leading-[1.4]"
+                className="cursor-pointer text-[18px] font-comfortaa font-medium text-[rgba(0,0,0,0.65)] hover:underline leading-[1.4]"
                 disabled={isLoading}
               >
                 Forgot Password?

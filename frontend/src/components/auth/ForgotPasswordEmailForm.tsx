@@ -33,25 +33,23 @@ export function ForgotPasswordEmailForm({
   };
 
   return (
-    <Card className="w-full max-w-lg mx-auto bg-[#EFECE7] border-black border-2 rounded-[30px] shadow-[10px_4px_4px_0px_rgba(0,0,0,0.25)] font-comfortaa">
-      <CardHeader className="text-center pb-6">
+    <Card className="w-full h-full mx-auto bg-[#EFECE7] 
+                     rounded-lg shadow-[10px_4px_4px_0px_rgba(0,0,0,0.25)] 
+                     font-comfortaa
+                     flex flex-col justify-center content-center">
+      <CardHeader className="flex flex-col items-center text-center select-none">
         {/* Logo */}
-        <div className="flex justify-center mb-4">
-          <img src={logoSvg} alt="Logo" className="w-[250px] h-[120px]" />
-          {/*Title*/}
-          <CardTitle className="pt-3 text-[46px] font-comfortaa font-bold text-[#78746C] leading-[1.4] select-none">
+        <div className="">
+          <img src={logoSvg} alt="Logo" className="w-auto h-auto" />
+        </div>    
+        {/*Title*/}  
+        <CardTitle className="text-[36px] text-[#78746C] font-comfortaa font-bold pt-10">
           FORGOT PASSWORD
           </CardTitle>
-        </div>
-
-        {/* Title */}
-        {/* <CardTitle className="text-[42px] font-comfortaa font-bold text-[#78746C] leading-[1.4] select-none">
-          FORGOT PASSWORD
-        </CardTitle> */}
       </CardHeader>
 
-      <CardContent className="space-y-8 px-12 pb-12">
-        <form onSubmit={handleSubmit} className="space-y-8 select-none">
+      <CardContent className="space-y-8 px-26 pb-12">
+        <form onSubmit={handleSubmit} className="space-y-4 select-none">
           {success ? (
             <div className="text-center space-y-4">
               <div className="text-green-600 text-[20px] font-comfortaa">
@@ -63,15 +61,15 @@ export function ForgotPasswordEmailForm({
             </div>
           ) : (
             <>
-              {/* <p className="text-[20px] font-comfortaa text-[#78746C] text-center leading-relaxed">
+              <p className="hidden text-[20px] font-comfortaa text-[#78746C] text-center leading-relaxed">
                 Enter your email address and we'll send you a link to reset your password.
-              </p> */}
+              </p>
 
               {/* Email Field */}
               <div className="space-y-2">
                 <label
                   htmlFor="email"
-                  className="block text-[26px] font-comfortaa font-semibold text-[#121212] text-left"
+                  className="block text-[22px] font-comfortaa font-semibold text-[#121212] text-left"
                 >
                   Email
                 </label>
@@ -91,21 +89,25 @@ export function ForgotPasswordEmailForm({
               </div>
 
               {/* Buttons */}
-              <div className="flex space-x-4 pt-6">
+              <div className="flex flex-row justify-center gap-14">
                 <Button
                   type="button"
                   onClick={onBackToLogin}
-                  className="cursor-pointer flex-1 bg-transparent text-[#121212] hover:bg-[rgba(0,0,0,0.1)] border-2 border-black rounded-[30px] py-4 text-[25px] font-comfortaa font-medium transition-all duration-200"
+                  className="w-1/5
+                             bg-transparent
+                             text-[#121212] text-[18px] font-comfortaa font-medium border-1 border-black
+                             hover:bg-[rgba(0,0,0,0.1)] hover:scale-102 rounded-xl                              
+                             cursor-pointer"
                   disabled={isLoading}
                 >
                   Back
                 </Button>
                 <Button
                   type="submit"
-                  className="flex-1 bg-[rgba(203,175,135,0.3)] text-[#121212] hover:bg-[rgba(203,175,135,0.5)] border-2 border-black rounded-[30px] py-4 text-[25px] font-comfortaa font-semibold backdrop-blur-[100px] transition-all duration-200 disabled:opacity-50"
-                  style={{
-                    background: 'linear-gradient(0deg, rgba(203, 175, 135, 0.3), rgba(203, 175, 135, 0.3)), linear-gradient(0deg, rgba(0, 0, 0, 1), rgba(0, 0, 0, 1))'
-                  }}
+                  className="w-2/3 bg-orange-200 rounded-xl 
+                             text-zinc-500 text-[20px] font-comfortaa font-semibold 
+                             hover:bg-orange-300  hover:text-zinc-700 hover:scale-102                             
+                             disabled:opacity-50 cursor-pointer"
                   disabled={isLoading || !email.trim()}
                 >
                   {isLoading ? "Sending..." : "Send Reset Link"}
