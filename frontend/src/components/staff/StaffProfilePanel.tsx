@@ -14,6 +14,7 @@ interface StaffProfilePanelProps {
   colleague: Colleague;
   onMinimize?: () => void;
   onUpdated?: () => void;
+  role?: string;
 }
 
 const AttributeCard: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
@@ -27,7 +28,7 @@ const AttributeCard: React.FC<{ title: string; children: React.ReactNode }> = ({
   </Card>
 );
 
-const StaffProfilePanel: React.FC<StaffProfilePanelProps> = ({ colleague, onMinimize, onUpdated }) => {
+const StaffProfilePanel: React.FC<StaffProfilePanelProps> = ({ colleague, onMinimize, onUpdated, role }) => {
   const [openDelete, setOpenDelete] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
@@ -87,6 +88,9 @@ const StaffProfilePanel: React.FC<StaffProfilePanelProps> = ({ colleague, onMini
             <div className="z-10 pb-4">
               <h1 className="text-3xl font-bold text-gray-900 font-comfortaa mb-2">{colleague.name}</h1>
               <p className="text-lg text-gray-600">{colleague.email} | {colleague.phone}</p>
+              {role && (
+                <p className="text-sm text-purple-700 font-medium mt-1">Role: {role}</p>
+              )}
               <p className="text-sm text-blue-600 font-medium mt-1">Employee ID: {colleague.id}</p>
             </div>
           </div>

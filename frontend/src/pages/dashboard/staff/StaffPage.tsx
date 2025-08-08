@@ -31,7 +31,7 @@ const StaffPage: React.FC<StaffPageProps> = ({ className }) => {
     email: employee.email,
     phone: employee.phone || employee.phone_number || "",
     avatar: "",
-    nickname: employee.nickname || "",
+    nickname: employee.role || employee.nickname || "",
     achievements: Array.isArray(employee.achievements)
       ? employee.achievements.join(", ")
       : employee.achievements || "",
@@ -45,6 +45,7 @@ const StaffPage: React.FC<StaffPageProps> = ({ className }) => {
   }));
 
   const selectedColleague = colleagues.find((c) => c.id === selectedColleagueId);
+  const selectedEmployee = (employees || []).find((e) => (e.id || e.email) === selectedColleagueId);
 
   if (isLoading) {
     return (
@@ -113,6 +114,7 @@ const StaffPage: React.FC<StaffPageProps> = ({ className }) => {
               colleague={selectedColleague}
               onMinimize={() => setSelectedColleagueId(null)}
               onUpdated={() => refetch()}
+              role={selectedEmployee?.role}
             />
           )}
         </div>
