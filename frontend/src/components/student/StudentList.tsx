@@ -10,9 +10,10 @@ interface StudentListProps {
   selectedStudentId: string | null;
   onSelect: (id: string) => void;
   headerActions?: React.ReactNode;
+  headerTitle?: React.ReactNode | null;
 }
 
-const StudentList: React.FC<StudentListProps> = ({ students, selectedStudentId, onSelect, headerActions }) => {
+const StudentList: React.FC<StudentListProps> = ({ students, selectedStudentId, onSelect, headerActions, headerTitle = 'Students' }) => {
   const [search, setSearch] = useState('');
 
   const filtered = students.filter((s) =>
@@ -37,7 +38,9 @@ const StudentList: React.FC<StudentListProps> = ({ students, selectedStudentId, 
     <div className="h-full flex flex-col max-h-screen">
       <div className="px-6 pt-8 pb-4 flex-shrink-0">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-purple-600">Students</h1>
+          {headerTitle !== null ? (
+            <h1 className="text-2xl font-bold text-purple-600">{headerTitle}</h1>
+          ) : <div />}
           {headerActions ? <div className="flex items-center gap-2">{headerActions}</div> : null}
         </div>
       </div>
