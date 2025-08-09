@@ -102,7 +102,7 @@ const Header: React.FC<HeaderProps> = ({ isRegistered = false }) => {
       <div className="flex items-center pl-6 flex-1">
         <button
           onClick={handleHowToUseClick}
-          className="text-black text-[28px] font-normal font-comfortaa hover:underline transition-all duration-200 mt-2"
+          className="invisible text-black text-[28px] font-normal font-comfortaa hover:underline transition-all duration-200 mt-2"
         >
           How to use?
         </button>
