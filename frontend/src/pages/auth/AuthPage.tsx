@@ -155,7 +155,7 @@ const AuthPage: React.FC = () => {
   };
 
   return (
-    <div className="h-screen w-screen flex flex-row justify-center-safe content-center font-comfortaa bg-auto bg-no-repeat bg-right" style={{
+    <div className="h-screen w-screen flex flex-row justify-start font-comfortaa bg-auto bg-no-repeat bg-right" style={{
         backgroundImage: `url(${classroomBG})`,}}>                   
         {/* Error notification */}
         {error && (
@@ -174,7 +174,7 @@ const AuthPage: React.FC = () => {
         )}          
 
         {/* Form */}
-        <div className="w-1/2 h-full">
+        <div className="w-[41%] h-full">
           {renderCurrentForm()}
         </div>         
 
@@ -182,8 +182,8 @@ const AuthPage: React.FC = () => {
         <div className="w-full h-[85%] rounded-2xl backdrop-blur-lg bg-white/30 border border-white/30 shadow-lg px-10 py-8 text-white"></div>
         </div> */}
 
-        <div className="w-1/2 px-10 py-5">
-          <div className="w-full h-[100%] rounded-lg 
+        <div className="w-1/2 px-10 py-5 grow">
+          <div className="w-auto h-[100%] rounded-lg 
                           backdrop-blur-none bg-white/10 border border-gray-500/40 border-1 
                           shadow-lg px-10 py-8 text-white
                           flex flex-col items-center gap-4">

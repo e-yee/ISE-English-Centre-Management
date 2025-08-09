@@ -33,22 +33,22 @@ export function ForgotPasswordEmailForm({
   };
 
   return (
-    <Card className="w-full h-full mx-auto bg-[#EFECE7] 
+    <Card className="w-full h-full bg-[#EFECE7] 
                      rounded-lg shadow-[10px_4px_4px_0px_rgba(0,0,0,0.25)] 
                      font-comfortaa
-                     flex flex-col justify-center content-center">
+                     flex flex-col justify-start">
       <CardHeader className="flex flex-col items-center text-center select-none">
         {/* Logo */}
         <div className="">
-          <img src={logoSvg} alt="Logo" className="w-auto h-auto" />
+          <img src={logoSvg} alt="Logo" className="w-auto h-[200px]" />
         </div>    
         {/*Title*/}  
-        <CardTitle className="text-[36px] text-[#78746C] font-comfortaa font-bold pt-10">
+        <CardTitle className="text-[36px] text-[#78746C] font-comfortaa font-bold pt-4">
           FORGOT PASSWORD
           </CardTitle>
       </CardHeader>
 
-      <CardContent className="space-y-8 px-26 pb-12">
+      <CardContent className="space-y-8 px-[13%] pb-12">
         <form onSubmit={handleSubmit} className="space-y-4 select-none">
           {success ? (
             <div className="text-center space-y-4">
@@ -104,11 +104,11 @@ export function ForgotPasswordEmailForm({
                 </Button>
                 <Button
                   type="submit"
-                  className="w-2/3 bg-orange-200 rounded-xl 
-                             text-zinc-500 text-[20px] font-comfortaa font-semibold 
-                             hover:bg-orange-300  hover:text-zinc-700 hover:scale-102                             
+                  className="grow bg-amber-100 rounded-xl 
+                             text-gray-500 text-[20px] font-comfortaa font-semibold 
+                             hover:bg-yellow-200 hover:font-bold hover:text-gray-600 hover:scale-102                             
                              disabled:opacity-50 cursor-pointer"
-                  disabled={isLoading || !email.trim()}
+                  disabled={isLoading || !email.trim()}                   
                 >
                   {isLoading ? "Sending..." : "Send Reset Link"}
                 </Button>
