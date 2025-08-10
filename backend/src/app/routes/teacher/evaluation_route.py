@@ -301,6 +301,5 @@ def update_evaluation():
         db.session.rollback()
         return jsonify({
             "message": "An error occurred",
-            "error": str(e)
+            "error": str(e) 
         }), HTTPStatus.INTERNAL_SERVER_ERROR
-    
