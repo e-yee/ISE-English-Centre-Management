@@ -45,8 +45,8 @@ const StudentsPage: React.FC = () => {
   }
 
   return (
-    <div className={cn('h-full overflow-hidden')}>
-      <div className="flex items-center gap-4 mb-6">
+    <div className={cn('h-full flex flex-col min-h-0')}>
+      <div className="flex items-center gap-4 mb-4 flex-shrink-0">
         <button
           onClick={() => navigate('/dashboard')}
           className="bg-white border border-black/20 rounded-[10px] shadow-[2px_2px_3px_0px_rgba(0,0,0,0.15)] px-4 py-2 transition-all duration-200 ease-in-out hover:shadow-[3px_3px_4px_0px_rgba(0,0,0,0.2)] hover:scale-105 focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-1 min-w-[90px]"
@@ -56,21 +56,24 @@ const StudentsPage: React.FC = () => {
             <span className="text-[16px] font-semibold text-black leading-[1em] font-comfortaa whitespace-nowrap">Back</span>
           </div>
         </button>
-        <h1 className="text-2xl font-semibold">Students</h1>
+        <h1 className="text-2xl font-bold text-purple-600">Students</h1>
       </div>
-      <div className={cn('h-full flex transition-all duration-500 ease-in-out', selectedStudentId ? 'detail-view-active' : '')}>
-        <div className={cn('bg-white transition-all duration-500 ease-in-out flex-grow', selectedStudentId ? 'w-[40%] border-r border-gray-200' : 'w-full')}>
-          <StudentList
-            students={students || []}
-            selectedStudentId={selectedStudentId}
-            onSelect={setSelectedStudentId}
-            headerActions={user?.role === 'Learning Advisor' ? (
-              <Button size="sm" onClick={() => setOpenCreate(true)}>
-                <Plus className="mr-2 h-4 w-4" />
-                Add Student
-              </Button>
-            ) : undefined}
-          />
+      <div className={cn('flex-1 min-h-0 relative flex transition-all duration-500 ease-in-out', selectedStudentId ? 'detail-view-active' : '')}>
+        <div className={cn('bg-white transition-all duration-500 ease-in-out min-h-0 overflow-hidden', selectedStudentId ? 'w-[40%] border-r border-gray-200' : 'w-full')}>
+          <div className="h-full overflow-auto">
+            <StudentList
+              students={students || []}
+              selectedStudentId={selectedStudentId}
+              onSelect={setSelectedStudentId}
+              headerTitle={null}
+              headerActions={user?.role === 'Learning Advisor' ? (
+                <Button size="sm" onClick={() => setOpenCreate(true)}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Student
+                </Button>
+              ) : undefined}
+            />
+          </div>
         </div>
 
         <div className={cn('w-[60%] transition-all duration-500 ease-in-out absolute right-0 top-0 bottom-0 bg-white', selectedStudentId ? 'translate-x-0' : 'translate-x-full pointer-events-none')}>

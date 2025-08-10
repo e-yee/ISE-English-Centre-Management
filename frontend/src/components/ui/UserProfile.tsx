@@ -19,7 +19,7 @@ interface ProfileMenuItem {
 const UserProfile: React.FC<UserProfileProps> = ({
   className,
   onProfileClick,
-  onSettingClick,
+  // onSettingClick,
   onLogoutClick,
   isLoading = false,
 }) => {
@@ -31,11 +31,11 @@ const UserProfile: React.FC<UserProfileProps> = ({
       label: "Profile",
       onClick: onProfileClick,
     },
-    {
-      id: "setting",
-      label: "Setting",
-      onClick: onSettingClick,
-    },
+    // {
+    //   id: "setting",
+    //   label: "Setting",
+    //   onClick: onSettingClick,
+    // },
     {
       id: "logout",
       label: "Log out",

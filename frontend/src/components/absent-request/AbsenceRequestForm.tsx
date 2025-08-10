@@ -84,9 +84,9 @@ const AbsenceRequestForm: React.FC<AbsenceRequestFormProps> = ({ className, stat
       reason: `${absenceType}: ${notes}`,
     } as const;
 
-    const requestData: any = needsSubstitute
-      ? { ...baseData, substitute_id: substituteId }
-      : { ...baseData };
+    const requestData: any = { ...baseData };
+    if (needsSubstitute) requestData.substitute_id = substituteId;
+    else if (role === 'Learning Advisor' && substituteId) requestData.substitute_id = substituteId;
 
     const result = await createRequest(requestData);
     if (result) {
@@ -240,6 +240,23 @@ const AbsenceRequestForm: React.FC<AbsenceRequestFormProps> = ({ className, stat
             </Popover>
           </div>
         </div>
+
+        {role === 'Learning Advisor' && (
+          <div>
+            <Label htmlFor="la-substitute" className="font-comfortaa font-bold text-lg">Substitute Employee ID (optional)</Label>
+            <Input
+              id="la-substitute"
+              placeholder="e.g., EM002"
+              className={cn(
+                'mt-1 font-comfortaa font-medium text-lg',
+                isDisabled && 'bg-gray-100 text-gray-500 cursor-not-allowed'
+              )}
+              disabled={isDisabled}
+              value={substituteId}
+              onChange={(e) => setSubstituteId(e.target.value)}
+            />
+          </div>
+        )}
 
         {needsSubstitute && (
           <div>

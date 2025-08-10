@@ -32,9 +32,10 @@ export function LoginForm({ onForgotPassword, onSubmit, isLoading = false }: Log
   };
 
   return (
-    <Card className="rounded-lg w-full h-full bg-[#EFECE7] shadow-[10px_4px_4px_0px_rgba(0,0,0,0.25)] 
+    <Card className="rounded-lg w-full h-full 
+                     bg-[#EFECE7] shadow-[10px_4px_4px_0px_rgba(0,0,0,0.25)] 
                      font-comfortaa
-                     flex flex-col content-center justify-center">
+                     flex flex-col justify-between">
       <CardHeader className="text-center">
         {/* Logo - Made bigger */}
         <div className="flex justify-center">
@@ -42,18 +43,18 @@ export function LoginForm({ onForgotPassword, onSubmit, isLoading = false }: Log
         </div>
 
         {/* Welcome Text - Minimized */}
-        <CardTitle className="text-[60px] font-comfortaa font-semibold text-[#78746C] leading-[1.4] select-none pointer-events-none">
+        <CardTitle className="text-[60px] sm:text-[40px] font-comfortaa font-semibold text-[#78746C] leading-[1.4] select-none pointer-events-none">
           WELCOME
         </CardTitle>
       </CardHeader>
 
-      <CardContent className="space-y-6 px-22">
-        <form onSubmit={handleLogin} className="space-y-6 select-none">
+      <CardContent className="px-[11%]">
+        <form onSubmit={handleLogin} className="space-y-4 select-none">
           {/* Username Field */}
-          <div className="space-y-2">
+          <div className="">
             <label
               htmlFor="username"
-              className="block text-[22px] font-comfortaa font-semibold text-[#000000] text-left leading-[1.4]"
+              className="block text-[22px] font-comfortaa font-bold text-[#000000] text-left leading-[1.4]"
             >
               Username
             </label>
@@ -65,8 +66,9 @@ export function LoginForm({ onForgotPassword, onSubmit, isLoading = false }: Log
               className="w-full 
                          bg-transparent border-0 border-b border-black rounded-none 
                          px-0 py-0
-                         text-[25px] font-comfortaa text-[#121212] placeholder-[#78746C] 
-                         focus:ring-0 focus:border-black focus:border-b focus-visible:ring-0"
+                         text-[28px] font-comfortaa font-semibold text-black placeholder-[#78746C] 
+                         focus:ring-0 focus:border-black focus:border-b focus-visible:ring-0
+                         selection:bg-yellow-100 selection:text-black/70"
               placeholder=""
               required
               disabled={isLoading}
@@ -74,10 +76,10 @@ export function LoginForm({ onForgotPassword, onSubmit, isLoading = false }: Log
           </div>
 
           {/* Password Field */}
-          <div className="space-y-2 relative">
+          <div className="relative">
             <label
               htmlFor="password"
-              className="block text-[22px] font-comfortaa font-semibold text-[#000000] text-left leading-[1.4]"
+              className="block text-[22px] font-comfortaa font-bold text-[#000000] text-left leading-[1.4]"
             >
               Password
             </label>
@@ -86,7 +88,11 @@ export function LoginForm({ onForgotPassword, onSubmit, isLoading = false }: Log
               type="password"
               value={formData.password}
               onChange={(e) => handleInputChange("password", e.target.value)}
-              className="w-full bg-transparent border-0 border-b border-black rounded-none px-0 py-1 text-[25px] font-comfortaa text-[#121212] placeholder-[#78746C] focus:ring-0 focus:border-black focus-visible:ring-0 focus-visible:ring-offset-0"
+              className="w-full 
+                         bg-transparent border-0 border-b border-black rounded-none 
+                         px-0 py-0 text-[28px] font-comfortaa font-semibold text-black placeholder-[#78746C] 
+                         focus:ring-0 focus:border-black focus:border-b focus-visible:ring-0
+                         selection:bg-yellow-100 selection:text-black/70"
               placeholder=""
               required
               disabled={isLoading}
@@ -97,7 +103,7 @@ export function LoginForm({ onForgotPassword, onSubmit, isLoading = false }: Log
               <button
                 type="button"
                 onClick={onForgotPassword}
-                className="cursor-pointer text-[18px] font-comfortaa font-medium text-[rgba(0,0,0,0.65)] hover:underline leading-[1.4]"
+                className="cursor-pointer text-[18px] font-comfortaa font-semibold text-[rgba(0,0,0,0.65)] hover:underline leading-[1.4]"
                 disabled={isLoading}
               >
                 Forgot Password?
@@ -109,9 +115,9 @@ export function LoginForm({ onForgotPassword, onSubmit, isLoading = false }: Log
           <div className="pt-10 pb-[31px] relative flex justify-center">
             <Button
               type="submit"
-              className="cursor-pointer w-3/4 h-[60px] 
-                         bg-[rgba(203,175,135,0.3)] text-[#000000] 
-                         hover:bg-[rgba(203,175,135,0.4)] hover:border-2 hover:border-black 
+              className="cursor-pointer w-[65%] h-[60px] 
+                         bg-[rgba(203,175,135,0.3)] text-gray-500
+                         hover:bg-[rgba(203,175,135,0.4)] hover:border-1 hover:border-black hover:text-black hover:scale-[102%]
                          rounded-3xl font-comfortaa font-semibold"
               style={{
                 backdropFilter: 'blur(50px)',
@@ -119,7 +125,7 @@ export function LoginForm({ onForgotPassword, onSubmit, isLoading = false }: Log
               }}
               disabled={isLoading}
             >
-              <span className="text-[35px] font-semibold leading-[1.4] flex items-center justify-center">
+              <span className="text-[32px] font-semibold leading-[1.4] flex items-center justify-center">
                 {isLoading ? "Logging in..." : "Login"}
               </span>
             </Button>

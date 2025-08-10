@@ -2,9 +2,10 @@ import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import KPI from "@/components/charts/KPI";
 import HorizontalBar from "@/components/charts/HorizontalBar";
-import StackedBar100 from "@/components/charts/StackedBar100";
-import ColumnBars from "@/components/charts/ColumnBars";
+// import ColumnBars from "@/components/charts/ColumnBars";
 import { useDashboardOverview, useDashboardRevenue, useDashboardStudentStats } from "@/hooks/entities/useDashboard";
+import { PieChart, Pie, LineChart, Line, CartesianGrid, XAxis, YAxis } from "recharts";
+import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
 
 type LabeledValue = { label: string; value: number };
 
@@ -20,6 +21,20 @@ export default function StatisticsPage() {
     totalStudents: overviewData?.totalStudents ?? 0,
     totalRevenue: overviewData?.totalRevenue ?? 0,
   };
+
+  const revenueTileValue = useMemo(() => {
+    const full = new Intl.NumberFormat('vi-VN').format(overview.totalRevenue) + 'đ';
+    const compact = new Intl.NumberFormat('vi-VN', {
+      notation: 'compact',
+      maximumFractionDigits: 1,
+    }).format(overview.totalRevenue) + 'đ';
+    return (
+      <div className="flex flex-col gap-1">
+        <div className="text-2xl font-semibold">{full}</div>
+        <div className="text-xs text-black/60">({compact})</div>
+      </div>
+    );
+  }, [overview.totalRevenue]);
 
   // Student stats from API (chart-ready shape already mapped in service)
   const { data: studentData } = useDashboardStudentStats();
@@ -58,6 +73,10 @@ export default function StatisticsPage() {
     return arr.map((revenue, i) => ({ year: startYear + i, revenue }));
   }, [revenueData]);
 
+  const revenueChartConfig: ChartConfig = {
+    revenue: { label: "Revenue", color: "#2563EB" },
+  };
+
   // Precompute if needed later
 
   const latePct = teacherDetail.lateCounts + teacherDetail.onTimeCounts > 0
@@ -68,6 +87,17 @@ export default function StatisticsPage() {
       )
     : 0;
   const onTimePct = 100 - latePct;
+  const punctualityChartConfig: ChartConfig = {
+    late: { label: "Late", color: "#EF4444" },
+    onTime: { label: "On-time", color: "#2563EB" },
+  };
+  const punctualityChartData = useMemo(
+    () => [
+      { status: "late", value: latePct, fill: "var(--color-late)" },
+      { status: "onTime", value: onTimePct, fill: "var(--color-onTime)" },
+    ],
+    [latePct, onTimePct]
+  );
 
   return (
     <div className="p-6 h-[calc(100vh-6rem)] overflow-y-auto">
@@ -82,13 +112,12 @@ export default function StatisticsPage() {
       </div>
 
       {/* KPIs */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-6 gap-4 mb-8">
-        <KPI title="Total Employees" value={overview.totalEmployees} />
-        <KPI title="Teachers" value={overview.totalTeachers} />
-        <KPI title="Learning Advisors" value={overview.totalLearningAdvisors} />
-        <KPI title="Students" value={overview.totalStudents} />
-        <KPI title="Revenue" value={`$${(overview.totalRevenue / 1_000_000).toFixed(1)}M`} />
-        <KPI title="Approved Leaves" value={teacherDetail.leaveCounts} />
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4 mb-8">
+        <KPI title="Total Employees" value={overview.totalEmployees} color="slate" />
+        <KPI title="Teachers" value={overview.totalTeachers} color="blue" />
+        <KPI title="Learning Advisors" value={overview.totalLearningAdvisors} color="violet" />
+        <KPI title="Students" value={overview.totalStudents} color="emerald" />
+        <KPI title="Approved Leaves" value={teacherDetail.leaveCounts} color="amber" />
       </div>
 
       {/* Workforce mix small comparison */}
@@ -114,25 +143,85 @@ export default function StatisticsPage() {
         </Section>
       </div>
 
-      {/* Revenue by year (discrete time series) */}
+      {/* Revenue by year (line with dots) + KPI tile */}
       <Section title="Annual Revenue">
-        <ColumnBars
-          data={revenueByYear.map((r) => ({ x: r.year, y: r.revenue }))}
-          yTickFormatter={(v) => `$${(v / 1_000_000).toFixed(1)}M`}
-          highlightIndex={revenueByYear.length - 1}
-        />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-stretch">
+          <KPI title="Revenue" value={revenueTileValue} className="md:col-span-1 h-full" color="rose" />
+          <div className="md:col-span-2">
+            <ChartContainer config={revenueChartConfig} className="h-[260px] w-full">
+              <LineChart
+                data={revenueByYear}
+                margin={{ left: 20, right: 32, top: 8, bottom: 8 }}
+              >
+                <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="year"
+                  type="category"
+                  padding={{ right: 16 }}
+                  tickLine={false}
+                  axisLine={false}
+                  tickMargin={8}
+                />
+                <YAxis
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={(v: number) =>
+                    new Intl.NumberFormat('vi-VN', {
+                      style: 'currency',
+                      currency: 'VND',
+                      notation: 'compact',
+                      maximumFractionDigits: 1,
+                    }).format(v)
+                  }
+                  width={80}
+                />
+                <ChartTooltip
+                  content={({ active, payload, label }: any) => {
+                    if (!active || !payload?.length) return null;
+                    const item = payload[0];
+                    const value: number = Number(item?.value ?? 0);
+                    const color: string = item?.color || 'var(--color-revenue)';
+                    return (
+                      <div className="rounded-md border bg-white px-3 py-2 text-xs shadow-sm" style={{ borderColor: 'rgba(0,0,0,0.1)' }}>
+                        <div className="mb-1 font-medium">{label}</div>
+                        <div className="flex items-center gap-2">
+                          <span className="inline-block h-2 w-2 rounded-sm" style={{ backgroundColor: color }} />
+                          <span className="font-medium">{
+                            new Intl.NumberFormat('vi-VN', {
+                              style: 'currency',
+                              currency: 'VND',
+                              maximumFractionDigits: 0,
+                            }).format(value)
+                          }</span>
+                        </div>
+                      </div>
+                    );
+                  }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="revenue"
+                  name="Revenue"
+                  stroke="var(--color-revenue)"
+                  strokeWidth={2}
+                  dot={{ r: 3 }}
+                  activeDot={{ r: 5 }}
+                />
+              </LineChart>
+            </ChartContainer>
+          </div>
+        </div>
       </Section>
 
       {/* Teacher details (example) */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
-        <Section title="Punctuality (100%)">
-          <StackedBar100
-            data={{ late: latePct, onTime: onTimePct }}
-            parts={[
-              { key: "late", label: "Late", color: "#EF4444" },
-              { key: "onTime", label: "On-time", color: "#2563EB" },
-            ]}
-          />
+        <Section title={`Punctuality (${onTimePct}%)`}>
+          <ChartContainer config={punctualityChartConfig} className="mx-auto aspect-square max-h-[220px] w-full">
+            <PieChart>
+              <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
+              <Pie data={punctualityChartData} dataKey="value" nameKey="status" stroke="none" />
+            </PieChart>
+          </ChartContainer>
           <div className="text-xs text-black/60 mt-2">{`${latePct}% Late, ${onTimePct}% On-time (Late: ${teacherDetail.lateCounts} | On-time: ${teacherDetail.onTimeCounts})`}</div>
         </Section>
 
