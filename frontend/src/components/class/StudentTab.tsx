@@ -101,9 +101,9 @@ const StudentTab: React.FC<StudentTabProps> = ({ studentData, className }) => {
           isExpanded ? "p-3" : "p-2" // Further reduced padding for more compact size
         )}>
           {/* Student Name and ID Section - Reduced sizes */}
-          <div className="flex items-start mb-3">
+          <div className="flex flex-row items-start mb-3">
             {/* Index Number - Reduced size */}
-            <span className="w-[20px] flex-shrink-0 pr-1 text-right text-[24px] font-semibold text-[rgba(0,0,0,0.75)] leading-[1.2em] font-comfortaa">
+            <span className="w-fit pr-1 text-left text-[24px] font-semibold text-[rgba(0,0,0,0.75)] leading-[1.2em] font-comfortaa">
               {index}.
             </span>
 
@@ -125,7 +125,7 @@ const StudentTab: React.FC<StudentTabProps> = ({ studentData, className }) => {
           <div className="grid grid-cols-2 gap-x-3 gap-y-2">
             {/* Row 1 - Contact and DoB */}
             <div className="space-y-1">
-              <label className="text-[12px] font-normal text-[rgba(0,0,0,0.5)] font-comfortaa leading-[1.2em]">
+              <label className="text-[12px] font-semibold text-black font-comfortaa leading-[1.2em]">
                 Contact:
               </label>
               <div className="relative flex items-center gap-1">
@@ -137,7 +137,7 @@ const StudentTab: React.FC<StudentTabProps> = ({ studentData, className }) => {
                 />
                 <button
                   onClick={handleCopyContact}
-                  className="flex-shrink-0 w-3 h-3 hover:scale-110 transition-transform"
+                  className="cursor-pointer flex-shrink-0 w-3 h-3 hover:scale-110 transition-transform"
                   aria-label="Copy contact"
                   title={copiedContact ? 'Copied!' : 'Copy'}
                 >
@@ -147,7 +147,7 @@ const StudentTab: React.FC<StudentTabProps> = ({ studentData, className }) => {
                     <img
                       src={CopyIcon}
                       alt="Copy"
-                      className="w-full h-full object-contain opacity-50"
+                      className="w-full h-full object-contain opacity-70"
                     />
                   )}
                 </button>
@@ -155,7 +155,7 @@ const StudentTab: React.FC<StudentTabProps> = ({ studentData, className }) => {
             </div>
 
             <div className="space-y-1">
-              <label className="text-[12px] font-normal text-[rgba(0,0,0,0.5)] font-comfortaa leading-[1.2em]">
+              <label className="text-[12px] font-semibold text-black font-comfortaa leading-[1.2em]">
                 DoB:
               </label>
               <div className="relative flex items-center gap-1">
@@ -167,7 +167,7 @@ const StudentTab: React.FC<StudentTabProps> = ({ studentData, className }) => {
                 />
                 <button
                   onClick={handleCopyDob}
-                  className="flex-shrink-0 w-3 h-3 hover:scale-110 transition-transform"
+                  className="cursor-pointer flex-shrink-0 w-3 h-3 hover:scale-110 transition-transform"
                   aria-label="Copy date of birth"
                   title={copiedDob ? 'Copied!' : 'Copy'}
                 >
@@ -177,7 +177,7 @@ const StudentTab: React.FC<StudentTabProps> = ({ studentData, className }) => {
                     <img
                       src={CopyIcon}
                       alt="Copy"
-                      className="w-full h-full object-contain opacity-50"
+                      className="w-full h-full object-contain opacity-70"
                     />
                   )}
                 </button>
@@ -186,7 +186,7 @@ const StudentTab: React.FC<StudentTabProps> = ({ studentData, className }) => {
 
             {/* Row 2 - Presence spans both columns for better balance */}
             <div className="col-span-2 space-y-1">
-              <label className="text-[12px] font-normal text-[rgba(0,0,0,0.5)] font-comfortaa leading-[1.2em]">
+              <label className="text-[12px] font-semibold text-black font-comfortaa leading-[1.2em]">
                 Presence:
               </label>
               <div className="relative flex items-center gap-1">
@@ -198,7 +198,7 @@ const StudentTab: React.FC<StudentTabProps> = ({ studentData, className }) => {
                 />
                 <button
                   onClick={handleCopyPresence}
-                  className="flex-shrink-0 w-3 h-3 hover:scale-110 transition-transform"
+                  className="cursor-pointer flex-shrink-0 w-3 h-3 hover:scale-110 transition-transform"
                   aria-label="Copy presence"
                   title={copiedPresence ? 'Copied!' : 'Copy'}
                 >
@@ -208,7 +208,7 @@ const StudentTab: React.FC<StudentTabProps> = ({ studentData, className }) => {
                     <img
                       src={CopyIcon}
                       alt="Copy"
-                      className="w-full h-full object-contain opacity-50"
+                      className="w-full h-full object-contain opacity-70"
                     />
                   )}
                 </button>

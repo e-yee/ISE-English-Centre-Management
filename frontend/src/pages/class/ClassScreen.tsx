@@ -139,7 +139,7 @@ const ClassScreen: React.FC<ClassScreenProps> = ({ className }) => {
 
       {/* Class Information Section - class name on left, student count on right */}
       <div className={cn(
-        "pb-3 flex-shrink-0 transition-all duration-300 ease-in-out",
+        "pb-0 flex-shrink-0 transition-all duration-300 ease-in-out",
         "px-4",
         "border-b border-black"
       )}>
