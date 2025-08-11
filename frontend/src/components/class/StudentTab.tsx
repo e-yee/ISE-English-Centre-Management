@@ -91,8 +91,9 @@ const StudentTab: React.FC<StudentTabProps> = ({ studentData, className }) => {
       className="w-full"
     >
       <Card className={cn(
-        "student-tab-container bg-white border border-[rgba(0,0,0,0.2)] shadow-[5px_4px_4px_0px_rgba(0,0,0,0.25)] transition-all duration-300 ease-in-out",
-        "w-full min-h-[120px] rounded-[15px]", // Reduced height to match Class component size
+        "student-tab-container bg-white border border-[rgba(0,0,0,0.2)] shadow-[5px_4px_4px_0px_rgba(0,0,0,0.15)] transition-all duration-200 ease-in-out",
+        "w-full min-h-[120px] rounded-[15px]",
+        "hover:shadow-[6px_6px_10px_0px_rgba(0,0,0,0.2)] hover:-translate-y-0.5 hover:bg-gray-50",
         className
       )}>
         <CardContent className={cn(

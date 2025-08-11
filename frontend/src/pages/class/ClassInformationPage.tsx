@@ -66,7 +66,12 @@ const ClassInformationPage: React.FC<ClassInformationPageProps> = ({ className }
         "pt-4 pb-3 flex-shrink-0 transition-all duration-300 ease-in-out",
         "px-4"
       )}>
-        <FeatureButtonList classId={classId} />
+        <FeatureButtonList
+          classId={classId}
+          courseId={classData.course_id}
+          courseDate={classData.course_date}
+          term={classData.term}
+        />
       </div>
 
       {/* Class Information Section - class name on right, following ClassScreen pattern */}
