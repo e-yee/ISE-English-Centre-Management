@@ -80,7 +80,7 @@ const FeatureButtonList: React.FC<FeatureButtonListProps> = ({ className, classI
       className
     )}>
       {/* Horizontal row of feature buttons */}
-      <div className="flex items-center gap-4 justify-start">
+      <div className="flex items-center gap-3 justify-start">
         {featureButtons.map((button) => (
           <button
             key={button.id}
@@ -88,23 +88,19 @@ const FeatureButtonList: React.FC<FeatureButtonListProps> = ({ className, classI
             className={cn(
               // Base styling reduced to match status button size
               "bg-white border border-black/20 rounded-[10px]",
-              "shadow-[2px_2px_3px_0px_rgba(0,0,0,0.15)]",
-              "px-4 py-2 transition-all duration-200 ease-in-out",
-              "hover:shadow-[3px_3px_4px_0px_rgba(0,0,0,0.2)] hover:scale-105",
+              "nth-1:bg-red-400 nth-1:text-white/90 nth-1:hover:bg-red-500 nth-1:hover:text-white",
+              "px-4 h-8 transition-all duration-200 ease-in-out",
+              "hover:bg-[#223A5E] hover:scale-110",
               "focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-1",
+              "text-[14px] font-semibold text-black leading-[1em] font-comfortaa",
+              "whitespace-nowrap hover:text-white",
               // Active state styling
               activeButton === button.id && "bg-gray-100 scale-105",
               // Responsive sizing based on sidebar state - reduced sizes
               isExpanded ? "min-w-[80px]" : "min-w-[90px]"
             )}
           >
-            <span className={cn(
-              // Typography reduced to match status button size
-              "text-[16px] font-semibold text-black leading-[1em] font-comfortaa",
-              "whitespace-nowrap"
-            )}>
-              {button.title}
-            </span>
+            {button.title}            
           </button>
         ))}
       </div>
