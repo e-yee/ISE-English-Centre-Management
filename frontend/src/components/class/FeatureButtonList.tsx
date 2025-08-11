@@ -7,7 +7,6 @@ import type { StudentData } from '@/mockData/studentListMock';
 interface FeatureButtonListProps {
   className?: string;
   classId?: string; // Optional classId for class-specific routes
-  students?: StudentData[]; // Optional students to pass to attendance
   courseId?: string;
   courseDate?: string;
   term?: number | string;
@@ -20,7 +19,7 @@ interface FeatureButton {
   onClick?: () => void;
 }
 
-const FeatureButtonList: React.FC<FeatureButtonListProps> = ({ className, classId, students, courseId, courseDate, term }) => {
+const FeatureButtonList: React.FC<FeatureButtonListProps> = ({ className, classId, courseId, courseDate, term }) => {
   const { state } = useSidebar();
   const isExpanded = state === "expanded";
   const [activeButton, setActiveButton] = useState<string | null>(null);
@@ -52,19 +51,17 @@ const FeatureButtonList: React.FC<FeatureButtonListProps> = ({ className, classI
     {
       id: "daily-attendance",
       title: "Daily Attendance",
-      route: "/attendance",
-      onClick: () => navigate("/attendance", { state: { students, classId, courseId, courseDate, term } })
+      route: classId && courseId && courseDate && term ? `/attendance/${classId}/${courseId}/${courseDate}/${term}` : undefined,
+      onClick: () => navigate(
+        classId && courseId && courseDate && term
+          ? `/attendance/${classId}/${courseId}/${courseDate}/${term}`
+          : '/attendance/1/COURSE/2024-01-01/1'
+      )
     },
     {
       id: "report",
       title: "Report",
       route: "/report",
-      onClick: () => navigate("/report")
-    },
-    {
-      id: "export-report",
-      title: "Export Report",
-      route: "/report", // Using report route, could be enhanced with export functionality
       onClick: () => navigate("/report")
     }
   ];

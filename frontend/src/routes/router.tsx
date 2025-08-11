@@ -62,7 +62,7 @@ export const router = createBrowserRouter([
           { path: 'profile', element: <ProfileSettingPage /> },
           { path: 'class/:classId', element: <ClassScreen /> },
           { path: 'class-info/:classId', element: <ClassInformationPage /> },
-          { path: 'attendance', element: <AttendancePage /> },
+          { path: 'attendance/:classId/:courseId/:courseDate/:term', element: <AttendancePage /> },
           { path: 'materials', element: <AddMaterialsPage /> },
           { path: 'report', element: <ClassReportPage /> },
           { path: 'scoring/:classId', element: <ScoringPage /> },

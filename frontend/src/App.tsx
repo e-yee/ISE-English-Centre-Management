@@ -2,8 +2,7 @@ import { RouterProvider } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { router } from './routes/router';
-import DemoLayout from './components/demo/DemoLayout';
-import ContractPage from './pages/contract/ContractPage';
+import ScoringDemoPage from './pages/scoring/ScoringDemoPage';
 
 // 🔧 EASY TOGGLE: Set to true for production routes, false for demo mode
 const USE_PRODUCTION_ROUTES = true;
@@ -35,9 +34,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <DemoLayout>
-          <ContractPage />
-        </DemoLayout>
+        <ScoringDemoPage />
       </AuthProvider>
     </QueryClientProvider>
   );

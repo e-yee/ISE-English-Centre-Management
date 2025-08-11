@@ -6,9 +6,11 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { User, ChevronDown, AlertCircle, CheckCircle } from 'lucide-react';
 import StudentAttendanceCard from '@/components/attendance/StudentAttendanceCard';
 import type { StudentData } from '@/mockData/studentListMock';
-import { useLocation } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useMarkAttendance } from '@/hooks/entities/useAttendance';
 import { Badge } from '@/components/ui/badge';
+import { useClassStudents } from '@/hooks/entities/useStudent';
+import { useClasses } from '@/hooks/entities/useClasses';
 
 interface AttendancePageProps {
   className?: string;
@@ -17,26 +19,33 @@ interface AttendancePageProps {
 type AttendanceStatus = 'present' | 'absent' | 'unmarked';
 
 const AttendancePage: React.FC<AttendancePageProps> = ({ className }) => {
-  const location = useLocation();
-  const state = (location.state || {}) as {
-    students?: StudentData[];
-    classId?: string;
-    courseId?: string;
-    courseDate?: string;
-    term?: number | string;
-  };
+  const { classId = '', courseId = '', courseDate = '', term = '' } =
+    useParams<{ classId: string; courseId: string; courseDate: string; term: string }>();
   const [attendance, setAttendance] = useState<Record<string, AttendanceStatus>>({});
   const [selectedDate, setSelectedDate] = useState("Today");
   const { mutate: markAttendance, isPending: marking } = useMarkAttendance();
   const [saveSuccess, setSaveSuccess] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
 
-  // Use students passed from ClassScreen via router state
-  const students: StudentData[] = state.students || [];
-  const classId = state.classId || '';
-  const courseId = state.courseId || '';
-  const courseDate = state.courseDate || '';
-  const term = state.term ?? '';
+  // Fetch students via SWR (stale-while-revalidate) using composite key
+  const { data: students = [], isLoading: studentsLoading, error } = useClassStudents(
+    classId,
+    courseId,
+    courseDate,
+    String(term)
+  );
+  const { isLoading: classesLoading } = useClasses();
+  if (!classId || !courseId || !courseDate || !term) {
+    return <div className="flex items-center justify-center h-full">Missing class parameters</div>;
+  }
+
+  if (studentsLoading || classesLoading) {
+    return <div className="flex items-center justify-center h-full">Loading students...</div>;
+  }
+
+  if (error) {
+    return <div className="flex items-center justify-center h-full">Failed to load students</div>;
+  }
 
   const dateOptions = ["Today", "Yesterday", "Custom Date"];
 
@@ -57,9 +66,18 @@ const AttendancePage: React.FC<AttendancePageProps> = ({ className }) => {
     });
   };
 
+  // Map API students to UI card shape expected by StudentAttendanceCard
+  const studentsForCard: StudentData[] = (students as any[]).map((s: any, idx: number) => ({
+    id: s.id,
+    studentId: s.id,
+    name: s.fullname ?? s.name ?? String(s.id),
+    classId: classId,
+    index: idx + 1,
+  }));
+
   const presentCount = Object.values(attendance).filter((status) => status === "present").length;
   const absentCount = Object.values(attendance).filter((status) => status === "absent").length;
-  const totalStudents = students.length;
+  const totalStudents = studentsForCard.length;
 
   return (
     <div className={cn("h-full overflow-hidden flex flex-col", className)}>
@@ -70,7 +88,6 @@ const AttendancePage: React.FC<AttendancePageProps> = ({ className }) => {
       )}>
         <FeatureButtonList
           classId={classId}
-          students={students}
           courseId={courseId}
           courseDate={courseDate}
           term={term}
@@ -189,7 +206,7 @@ const AttendancePage: React.FC<AttendancePageProps> = ({ className }) => {
             size="sm"
             className="text-green-700 border-green-300 hover:bg-green-50 bg-transparent"
             onClick={() => {
-              const allPresentAttendance = students.reduce(
+              const allPresentAttendance = studentsForCard.reduce(
                 (acc, student) => {
                   acc[student.id] = "present";
                   return acc;
@@ -206,7 +223,7 @@ const AttendancePage: React.FC<AttendancePageProps> = ({ className }) => {
             size="sm"
             className="text-red-700 border-red-300 hover:bg-red-50 bg-transparent"
             onClick={() => {
-              const allAbsentAttendance = students.reduce(
+              const allAbsentAttendance = studentsForCard.reduce(
                 (acc, student) => {
                   acc[student.id] = "absent";
                   return acc;
@@ -231,7 +248,7 @@ const AttendancePage: React.FC<AttendancePageProps> = ({ className }) => {
         {/* Student Grid Container - Full width and height */}
         <div className="flex-1 overflow-hidden">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 h-full overflow-y-auto">
-            {students.map((student) => {
+            {studentsForCard.map((student) => {
               const status = attendance[student.id] || "unmarked";
               return (
                 <StudentAttendanceCard

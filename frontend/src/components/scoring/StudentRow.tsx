@@ -11,9 +11,10 @@ interface StudentRowProps {
   student: Student;
   onScoreUpdate: (studentId: string, quarter: string, score: number) => void;
   onNotesUpdate: (studentId: string, notes: string) => void;
+  columns?: { key: keyof Student['scores']; label: string }[];
 }
 
-const StudentRow: React.FC<StudentRowProps> = ({ student, onScoreUpdate, onNotesUpdate }) => {
+const StudentRow: React.FC<StudentRowProps> = ({ student, onScoreUpdate, onNotesUpdate, columns }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [editedScores, setEditedScores] = useState(student.scores);
@@ -51,7 +52,7 @@ const StudentRow: React.FC<StudentRowProps> = ({ student, onScoreUpdate, onNotes
     return Math.round(values.reduce((sum, score) => sum + score, 0) / values.length);
   };
 
-  const getScoreBackground = (score: number, quarter: string) => {
+  const getScoreBackground = (quarter: string) => {
     if (isEditing) return 'bg-gray-100';
     // Alternate background colors for visual distinction
     const quarters = ['Q1', 'Q2', 'Q3', 'Q4', 'Q5'];
@@ -84,20 +85,23 @@ const StudentRow: React.FC<StudentRowProps> = ({ student, onScoreUpdate, onNotes
 
           {/* Right Side - Scores */}
           <div className="flex items-center gap-2">
-            {Object.entries(isEditing ? editedScores : student.scores).map(([quarter, score]) => (
-              <div key={quarter} className="text-center">
+            {(columns
+              ? columns.map(c => [c.key, (isEditing ? editedScores : student.scores)[c.key]] as const)
+              : (Object.entries(isEditing ? editedScores : student.scores) as [keyof Student['scores'], number][]) 
+            ).map(([quarter, score]) => (
+              <div key={String(quarter)} className="text-center">
                 <div className={cn(
                   "px-3 py-1 rounded-md text-sm font-medium font-comfortaa",
-                  getScoreBackground(score, quarter)
+                  getScoreBackground(String(quarter))
                 )}>
-                  <div className="text-xs text-gray-500 font-comfortaa">{quarter}</div>
+                  <div className="text-xs text-gray-500 font-comfortaa">{columns ? columns.find(c => c.key === quarter)?.label : String(quarter)}</div>
                   {isEditing ? (
                     <Input
                       type="number"
                       min="0"
                       max="100"
                       value={score}
-                      onChange={(e) => handleScoreChange(quarter, e.target.value)}
+                      onChange={(e) => handleScoreChange(String(quarter), e.target.value)}
                       className="w-12 h-8 text-center text-sm font-comfortaa p-1"
                     />
                   ) : (

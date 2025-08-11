@@ -1,13 +1,13 @@
 import React, { useState, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { SearchInput } from '@/components/ui/SearchInput';
 import StudentRow from './StudentRow';
 import { getClassData, type Student } from '@/mockData/scoringMock';
 import { Users } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AvatarIcon from '@/assets/class/user.svg';
-import FeatureButtonList from '@/components/class/FeatureButtonList';
+// FeatureButtonList removed in demo mode to avoid Router dependency
 
 interface ScoreListProps {
   classId: string;
@@ -17,6 +17,7 @@ interface ScoreListProps {
 const ScoreList: React.FC<ScoreListProps> = ({ classId, className }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [students, setStudents] = useState<Student[]>([]);
+  const [classType, setClassType] = useState<'english' | 'math'>('english');
 
   // Get class data
   const classData = getClassData(classId);
@@ -37,6 +38,26 @@ const ScoreList: React.FC<ScoreListProps> = ({ classId, className }) => {
       student.id.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [students, searchTerm]);
+
+  const columns = useMemo(() => {
+    // Keep underlying keys Q1..Q5, change only labels per classType
+    if (classType === 'english') {
+      return [
+        { key: 'Q1' as const, label: 'Quiz 1' },
+        { key: 'Q2' as const, label: 'Quiz 2' },
+        { key: 'Q3' as const, label: 'Writing 1' },
+        { key: 'Q4' as const, label: 'Reading 1' },
+        { key: 'Q5' as const, label: 'Quiz 3' },
+      ];
+    }
+    return [
+      { key: 'Q1' as const, label: 'Quiz 1' },
+      { key: 'Q2' as const, label: 'Quiz 2' },
+      { key: 'Q3' as const, label: 'Midterm' },
+      { key: 'Q4' as const, label: 'Final' },
+      { key: 'Q5' as const, label: 'Homework' },
+    ];
+  }, [classType]);
 
   const handleScoreUpdate = (studentId: string, quarter: string, newScore: number) => {
     setStudents(prev =>
@@ -73,13 +94,20 @@ const ScoreList: React.FC<ScoreListProps> = ({ classId, className }) => {
         "px-4"
       )}>
         <div className="flex items-center justify-between">
-          {/* Feature Button List - Left side */}
-          <div className="flex items-center gap-3">
-            <FeatureButtonList classId={classId} />
-          </div>
+          {/* Left side placeholder (FeatureButtonList disabled in demo) */}
+          <div className="flex items-center gap-3" />
 
           {/* Search Input - Right side */}
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-3">
+            <Select value={classType} onValueChange={(v) => setClassType(v as 'english' | 'math')}>
+              <SelectTrigger className="w-40">
+                <SelectValue placeholder="Class type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="english">English</SelectItem>
+                <SelectItem value="math">Math</SelectItem>
+              </SelectContent>
+            </Select>
             <SearchInput
               placeholder="Search students..."
               onSearch={setSearchTerm}
@@ -159,6 +187,7 @@ const ScoreList: React.FC<ScoreListProps> = ({ classId, className }) => {
                 student={student}
                 onScoreUpdate={handleScoreUpdate}
                 onNotesUpdate={handleNotesUpdate}
+                columns={columns}
               />
             ))}
           </div>

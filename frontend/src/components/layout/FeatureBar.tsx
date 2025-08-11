@@ -59,44 +59,6 @@ const FeatureBar: React.FC<FeatureBarProps> = ({ className }) => {
     // Add feature click functionality here
   };
 
-  // ORIGINAL LAYOUT (COMMENTED OUT) - Uncomment to use the old layout
-  /*
-  return (
-    <div
-      className={cn(
-        // Bar container
-        "bg-white border-2 border-black rounded-[40px]",
-        "shadow-[6px_6px_4px_0px_rgba(0,0,0,0.25),inset_5px_5px_4px_0px_rgba(0,0,0,0.25)]",
-        "flex items-center justify-center gap-4 p-4",
-        "w-fit transition-all duration-300 ease-in-out",
-        className
-      )}
-    >
-      {featureItems.map((item) => (
-        <div
-          key={item.id}
-          onClick={() => handleFeatureClick(item.id)}
-          className={cn(
-            // Icon container - no background, just the icon
-            'flex items-center justify-center',
-            'w-[60px] h-[60px]',
-            'cursor-pointer transition-all duration-300 ease-out',
-            'hover:scale-110',
-            // Active state
-            activeFeature === item.id && 'scale-125',
-          )}
-          title={item.title}
-        >
-          <img
-            src={item.icon}
-            alt={item.title}
-            className="w-full h-12"
-          />
-        </div>
-      ))}
-    </div>
-  );
-  */
 
   // NEW LAYOUT - Expands like ClassList with responsive icon positioning
   return (
