@@ -126,7 +126,7 @@ const HomescreenPage: React.FC<HomescreenPageProps> = ({ className }) => {
     <div className={cn("h-full overflow-hidden flex flex-col", className)}>
       {/* Filter Controls Container */}
       <div className={cn(
-        "pt-4 pb-3 flex-shrink-0 transition-all duration-300 ease-in-out",
+        "pt-3 pb-3 flex-shrink-0 transition-all duration-300 ease-in-out",
         "px-4"
       )}>
         <div className="flex items-center justify-between">
@@ -138,10 +138,14 @@ const HomescreenPage: React.FC<HomescreenPageProps> = ({ className }) => {
                 onClick={() => handleStatusSelect(option.value)}
                 variant="outline"
                 className={cn(
-                  "px-4 py-2 rounded-[10px] border border-black/20 font-semibold transition-all duration-200",
+                  "h-8",
+                  "px-4",
+                  "rounded-[10px] border border-black/20",
+                  "font-semibold hover:scale-[110%]",
+                  "transition-all duration-200",
                   selectedStatus === option.value
                     ? "bg-white text-black border-black/20"
-                    : "bg-white text-black/80 hover:bg-black hover:text-white"
+                    : "bg-white text-black/80 hover:bg-[#223A5E] hover:text-white"
                 )}
               >
                 {option.label}
@@ -153,7 +157,7 @@ const HomescreenPage: React.FC<HomescreenPageProps> = ({ className }) => {
           <div className="ml-auto">
             <SearchInput
               onSearch={handleSearch}
-              className="w-80"
+              className="w-[100%] h-8"
             />
           </div>
         </div>

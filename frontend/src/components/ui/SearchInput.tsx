@@ -65,7 +65,7 @@ const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
               "py-2 text-[20px] font-medium font-comfortaa",
               "text-black placeholder:text-black/50",
               // Focus states
-              "focus:outline-none focus:border-black/20 focus:ring-0",
+              "focus:outline-none focus:border-black focus:ring-0",
               // Disabled state
               "disabled:cursor-not-allowed disabled:opacity-50",
               // Add padding for icon if shown
