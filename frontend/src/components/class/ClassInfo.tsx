@@ -199,7 +199,7 @@ const ClassInfo: React.FC<ClassInfoProps> = ({
           )}
         >
           <h1
-            className="text-[60px] font-normal leading-[1.4em] text-center font-comfortaa"
+            className="text-5xl font-semibold text-center font-comfortaa"
             style={{
               background: 'linear-gradient(135deg, #AB2BAF 0%, #471249 100%), linear-gradient(90deg, #E634E1 0%, #E634E1 100%)',
               WebkitBackgroundClip: 'text',
@@ -218,7 +218,7 @@ const ClassInfo: React.FC<ClassInfoProps> = ({
         <div className="relative">
           {/* Content container with solid border */}
           <div
-            className="bg-white rounded-[10px] flex items-center justify-center gap-3 px-4 py-0 border-[2px] border-solid"
+            className="bg-white rounded-[10px] flex items-center justify-center gap-3 px-4 py-1 border-[2px] border-solid"
             style={{
               borderColor: capacityStatus === 'full' ? '#E2445C' : 
                           capacityStatus === 'near-full' ? '#F8D222' : '#4A42AE'
@@ -238,7 +238,7 @@ const ClassInfo: React.FC<ClassInfoProps> = ({
 
             {/* Student Count Text */}
             <span
-              className="text-[40px] font-normal leading-[1.4em] text-center font-comfortaa"
+              className="text-2xl font-normal leading-[1.4em] text-center font-comfortaa"
               style={{
                 color: 'rgba(0, 0, 0, 0.6)'
               }}
