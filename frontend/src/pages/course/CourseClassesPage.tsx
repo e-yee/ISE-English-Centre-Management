@@ -68,6 +68,13 @@ const CourseClassesPage: React.FC = () => {
     }
   }, [classes]);
 
+  // Map backend classes by id to retrieve composite key on click without widening ClassData
+  const classById = React.useMemo(() => {
+    const map = new Map<string, Class>();
+    (classes || []).forEach((c) => map.set(c.id, c));
+    return map;
+  }, [classes]);
+
   // Status options for horizontal buttons
   const statusOptions = [
     { value: "ALL", label: "ALL" },
@@ -89,6 +96,14 @@ const CourseClassesPage: React.FC = () => {
 
   const handleBackToCourse = () => {
     navigate('/dashboard/courses');
+  };
+
+  const handleClassClick = (item: ClassData) => {
+    const original = classById.get(item.id);
+    const cid = original?.course_id || item.courseId;
+    const cdate = original?.course_date || '';
+    const term = original?.term != null ? String(original.term) : '';
+    navigate(`/class/${item.id}?courseId=${encodeURIComponent(cid)}&courseDate=${encodeURIComponent(cdate)}&term=${encodeURIComponent(term)}`);
   };
 
   // Show loading state
@@ -175,7 +190,18 @@ const CourseClassesPage: React.FC = () => {
       {/* Class List Container - Full width and height */}
       <div className="flex-1 overflow-hidden">
         {transformedClasses.length > 0 ? (
-          <ClassList classes={transformedClasses} maxClasses={8} />
+          <>
+            <div className="flex items-center justify-between px-4 pb-2">
+              <h2 className="text-xl font-semibold">Classes</h2>
+              <button
+                className="bg-white border border-black/20 rounded-[10px] shadow-[2px_2px_3px_0px_rgba(0,0,0,0.15)] px-4 py-2 transition-all duration-200 ease-in-out hover:shadow-[3px_3px_4px_0px_rgba(0,0,0,0.2)] hover:scale-105 focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-1"
+                onClick={() => alert('Add Class: coming soon')}
+              >
+                <span className="text-[16px] font-semibold text-black leading-[1em] font-comfortaa whitespace-nowrap">Add Class</span>
+              </button>
+            </div>
+            <ClassList classes={transformedClasses} maxClasses={8} onClassClick={handleClassClick} />
+          </>
         ) : (
           <div className="flex items-center justify-center h-full">
             <div className="text-center">

@@ -12,6 +12,8 @@ interface StudentListProps {
   maxStudents?: number; // Optional limit for displayed students
   enableRevealOnScroll?: boolean; // Option to disable animations if needed
   customScrollbar?: boolean; // Option to use custom scrollbar styling
+  canSelect?: boolean; // Enable click-to-select student
+  onSelect?: (student: StudentData) => void; // Callback when a student is clicked
 }
 
 const StudentList: React.FC<StudentListProps> = ({
@@ -19,7 +21,9 @@ const StudentList: React.FC<StudentListProps> = ({
   className,
   maxStudents,
   enableRevealOnScroll = true,
-  customScrollbar = true
+  customScrollbar = true,
+  canSelect = false,
+  onSelect
 }) => {
   const { state } = useSidebar();
   const isExpanded = state === "expanded";
@@ -54,11 +58,13 @@ const StudentList: React.FC<StudentListProps> = ({
               className={cn(
                 "transition-all duration-300 ease-in-out transform",
                 // Staggered animation effect for sidebar state
-                isExpanded ? "scale-100" : "scale-[1.01]"
+                isExpanded ? "scale-100" : "scale-[1.01]",
+                canSelect && "cursor-pointer"
               )}
-              style={{
-                transitionDelay: `${index * 30}ms`
-              }}
+              style={{ transitionDelay: `${index * 30}ms` }}
+              onClick={canSelect && onSelect ? () => onSelect(studentData) : undefined}
+              role={canSelect ? 'button' : undefined}
+              tabIndex={canSelect ? 0 : -1}
             >
               <StudentTab
                 studentData={studentData}

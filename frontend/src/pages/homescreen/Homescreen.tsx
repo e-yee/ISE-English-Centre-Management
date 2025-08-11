@@ -87,10 +87,12 @@ const HomescreenPage: React.FC<HomescreenPageProps> = ({ className }) => {
     console.log("Selected status:", status);
   };
 
-  const handleClassClick = (classData: ClassData) => {
-    console.log("Class clicked:", classData);
-    // Navigate to class detail page
-    navigate(`/class/${classData.id}`);
+  const handleClassClick = (item: ClassData) => {
+    const original = (classes || []).find((c: any) => c.id === item.id) as Class | undefined;
+    const cid = original?.course_id || item.courseId;
+    const cdate = original?.course_date || '';
+    const term = original?.term != null ? String(original.term) : '';
+    navigate(`/class/${item.id}?courseId=${encodeURIComponent(cid)}&courseDate=${encodeURIComponent(cdate)}&term=${encodeURIComponent(term)}`);
   };
 
   // Show loading state

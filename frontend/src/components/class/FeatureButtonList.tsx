@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { cn } from '@/lib/utils';
+import { cn, getUserRole } from '@/lib/utils';
 import { useSidebar } from '@/components/ui/sidebar';
-import type { StudentData } from '@/mockData/studentListMock';
 
 interface FeatureButtonListProps {
   className?: string;
@@ -24,17 +23,22 @@ const FeatureButtonList: React.FC<FeatureButtonListProps> = ({ className, classI
   const isExpanded = state === "expanded";
   const [activeButton, setActiveButton] = useState<string | null>(null);
   const navigate = useNavigate();
+  const role = getUserRole() || 'Teacher';
 
-  // Determine if we're currently on the class page or a feature page
-  const isOnClassPage = window.location.pathname.includes('/class/') && !window.location.pathname.includes('/class-info/') && !window.location.pathname.includes('/scoring/');
+  // Hide the entire feature bar for Learning Advisor and Manager
+  if (role === 'Learning Advisor' || role === 'Manager') {
+    return null;
+  }
+
+  // Determine if we're currently on the class page or a feature page (not used currently)
 
   // Feature buttons with routing
   const featureButtons: FeatureButton[] = [
     {
       id: "back",
       title: "Back",
-      route: isOnClassPage ? "/home" : (classId ? `/class/${classId}` : "/class/1"),
-      onClick: () => navigate(isOnClassPage ? "/home" : (classId ? `/class/${classId}` : "/class/1"))
+      route: undefined,
+      onClick: () => navigate(-1)
     },
     {
       id: "information",

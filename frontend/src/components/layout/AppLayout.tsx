@@ -18,9 +18,9 @@ const AppLayoutContent: React.FC = () => {
       </div>
 
       {/* Main content area with sidebar */}
-      <div className="relative top-0 h-[calc(100vh-5rem)] ">
-        {/* Sidebar - positioned to touch bottom of header */}
-        <div className="absolute top-16 left-0 h-full">
+      <div className="relative h-screen">
+        {/* Sidebar - positioned to start below header and fill to bottom */}
+        <div className="absolute top-20 left-0 bottom-0">
           <Sidebar />
         </div>
 
