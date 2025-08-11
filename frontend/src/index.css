@@ -124,6 +124,12 @@
   }
 }
 
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0px 1000px transparent inset !important; /* Change 'white' to your bg */
+  -webkit-text-fill-color: black !important; /* Change to your text color */
+  transition: background-color 5000s ease-in-out 0s; /* Prevent flicker */
+}
+
 /* Font family utilities */
 .font-comfortaa {
   font-family: 'Comfortaa', sans-serif;
