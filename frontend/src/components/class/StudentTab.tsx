@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { useSidebar } from '@/components/ui/sidebar';
 import type { StudentData } from '@/mockData/studentListMock';
@@ -6,6 +6,12 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import RevealOnScroll from '@/components/ui/RevealOnScroll';
 import CopyIcon from '@/assets/class/copy.svg';
+
+const TickIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <polyline points="20 6 9 17 4 12" />
+  </svg>
+);
 
 interface StudentTabProps {
   studentData: StudentData;
@@ -17,11 +23,54 @@ const StudentTab: React.FC<StudentTabProps> = ({ studentData, className }) => {
   const isExpanded = state === "expanded";
   const { index, name, studentId, contact, dateOfBirth } = studentData;
 
-  const handleCopy = (text: string | undefined) => {
-    if (text && text.trim()) {
-      navigator.clipboard.writeText(text);
+  const [copiedContact, setCopiedContact] = useState(false);
+  const [copiedDob, setCopiedDob] = useState(false);
+  const [copiedPresence, setCopiedPresence] = useState(false);
+
+  const copyToClipboard = useCallback(async (text: string | undefined) => {
+    if (!text || !text.trim()) return false;
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+        return true;
+      }
+    } catch {}
+    try {
+      const el = document.createElement('textarea');
+      el.value = text;
+      el.style.position = 'fixed';
+      el.style.opacity = '0';
+      document.body.appendChild(el);
+      el.focus();
+      el.select();
+      const ok = document.execCommand('copy');
+      document.body.removeChild(el);
+      return ok;
+    } catch {
+      return false;
     }
-  };
+  }, []);
+
+  const handleCopyContact = useCallback(async () => {
+    const ok = await copyToClipboard(contact);
+    if (!ok) return;
+    setCopiedContact(true);
+    setTimeout(() => setCopiedContact(false), 1200);
+  }, [contact, copyToClipboard]);
+
+  const handleCopyDob = useCallback(async () => {
+    const ok = await copyToClipboard(formatDateOfBirth(dateOfBirth));
+    if (!ok) return;
+    setCopiedDob(true);
+    setTimeout(() => setCopiedDob(false), 1200);
+  }, [dateOfBirth, copyToClipboard]);
+
+  const handleCopyPresence = useCallback(async () => {
+    const ok = await copyToClipboard('Present');
+    if (!ok) return;
+    setCopiedPresence(true);
+    setTimeout(() => setCopiedPresence(false), 1200);
+  }, [copyToClipboard]);
 
   // Format date of birth for display
   const formatDateOfBirth = (dateString: string | undefined) => {
@@ -86,15 +135,20 @@ const StudentTab: React.FC<StudentTabProps> = ({ studentData, className }) => {
                   placeholder=""
                 />
                 <button
-                  onClick={() => handleCopy(contact)}
+                  onClick={handleCopyContact}
                   className="flex-shrink-0 w-3 h-3 hover:scale-110 transition-transform"
                   aria-label="Copy contact"
+                  title={copiedContact ? 'Copied!' : 'Copy'}
                 >
-                  <img
-                    src={CopyIcon}
-                    alt="Copy"
-                    className="w-full h-full object-contain opacity-50"
-                  />
+                  {copiedContact ? (
+                    <TickIcon className="w-full h-full text-green-600 opacity-80" />
+                  ) : (
+                    <img
+                      src={CopyIcon}
+                      alt="Copy"
+                      className="w-full h-full object-contain opacity-50"
+                    />
+                  )}
                 </button>
               </div>
             </div>
@@ -111,15 +165,20 @@ const StudentTab: React.FC<StudentTabProps> = ({ studentData, className }) => {
                   placeholder=""
                 />
                 <button
-                  onClick={() => handleCopy(formatDateOfBirth(dateOfBirth))}
+                  onClick={handleCopyDob}
                   className="flex-shrink-0 w-3 h-3 hover:scale-110 transition-transform"
                   aria-label="Copy date of birth"
+                  title={copiedDob ? 'Copied!' : 'Copy'}
                 >
-                  <img
-                    src={CopyIcon}
-                    alt="Copy"
-                    className="w-full h-full object-contain opacity-50"
-                  />
+                  {copiedDob ? (
+                    <TickIcon className="w-full h-full text-green-600 opacity-80" />
+                  ) : (
+                    <img
+                      src={CopyIcon}
+                      alt="Copy"
+                      className="w-full h-full object-contain opacity-50"
+                    />
+                  )}
                 </button>
               </div>
             </div>
@@ -137,15 +196,20 @@ const StudentTab: React.FC<StudentTabProps> = ({ studentData, className }) => {
                   placeholder=""
                 />
                 <button
-                  onClick={() => handleCopy("Present")}
+                  onClick={handleCopyPresence}
                   className="flex-shrink-0 w-3 h-3 hover:scale-110 transition-transform"
                   aria-label="Copy presence"
+                  title={copiedPresence ? 'Copied!' : 'Copy'}
                 >
-                  <img
-                    src={CopyIcon}
-                    alt="Copy"
-                    className="w-full h-full object-contain opacity-50"
-                  />
+                  {copiedPresence ? (
+                    <TickIcon className="w-full h-full text-green-600 opacity-80" />
+                  ) : (
+                    <img
+                      src={CopyIcon}
+                      alt="Copy"
+                      className="w-full h-full object-contain opacity-50"
+                    />
+                  )}
                 </button>
               </div>
             </div>
