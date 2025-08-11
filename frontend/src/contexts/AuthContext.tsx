@@ -151,31 +151,33 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           employeeId
         });
         
-        // If authenticated but no user data, create user object from JWT token
-        if (authenticated && !user) {
-          const userWithRole = {
-            id: employeeId || userId || 'unknown',
-            username: 'user',
-            email: 'user@example.com',
-            role: role as 'Teacher' | 'Learning Advisor' | 'Manager'
-          };
-          console.log('Creating user object from JWT token:', userWithRole);
-          dispatch({ type: 'SET_USER', payload: userWithRole });
-          dispatch({ type: 'SET_AUTHENTICATED', payload: true });
-        } else if (user) {
-          // Combine user data with role from localStorage
-          const userWithRole = {
-            ...user,
-            id: employeeId || user.id, // Use employee ID if available
-            role: role || user.role || 'Teacher' // Fallback to stored role or default
-          };
-          console.log('Combining user data with role:', userWithRole);
-          dispatch({ type: 'SET_USER', payload: userWithRole });
-          dispatch({ type: 'SET_AUTHENTICATED', payload: true });
-        } else {
-          console.log('No user data available, setting user to null');
+        // Trust token validity first. If token invalid/expired, treat as unauthenticated
+        if (!authenticated) {
+          console.log('Token invalid or expired. Setting unauthenticated state.');
           dispatch({ type: 'SET_USER', payload: null });
           dispatch({ type: 'SET_AUTHENTICATED', payload: false });
+        } else {
+          // Authenticated via token
+          if (!user) {
+            const userWithRole = {
+              id: employeeId || userId || 'unknown',
+              username: 'user',
+              email: 'user@example.com',
+              role: role as 'Teacher' | 'Learning Advisor' | 'Manager'
+            };
+            console.log('Creating user object from JWT token:', userWithRole);
+            dispatch({ type: 'SET_USER', payload: userWithRole });
+          } else {
+            // Combine user data with role from localStorage
+            const userWithRole = {
+              ...user,
+              id: employeeId || user.id,
+              role: role || user.role || 'Teacher'
+            };
+            console.log('Combining user data with role:', userWithRole);
+            dispatch({ type: 'SET_USER', payload: userWithRole });
+          }
+          dispatch({ type: 'SET_AUTHENTICATED', payload: true });
         }
       } catch (error) {
         console.error('Error during auth initialization:', error);

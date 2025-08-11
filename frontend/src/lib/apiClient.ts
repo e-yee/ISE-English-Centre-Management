@@ -1,5 +1,5 @@
 import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosResponse, type AxiosError } from 'axios';
-import { getAccessToken } from './utils';
+import { getAccessToken, clearAuthData } from './utils';
 
 // Configuration constants
 const API_BASE_URL = 'http://localhost:5000'; // Adjust port if needed
@@ -51,9 +51,24 @@ function createApiClient(): AxiosInstance {
       // Return the data directly for successful responses
       return response.data;
     },
-    (error: AxiosError<ApiErrorResponse>) => {
+    async (error: AxiosError<ApiErrorResponse>) => {
       if (error.response) {
         // Server responded with error status
+        if (error.response.status === 401) {
+          try {
+            // Clear local auth immediately on 401
+            clearAuthData();
+          } catch {}
+          // Redirect to login without throwing noisy errors
+          // Use location to avoid hook context here
+          if (typeof window !== 'undefined') {
+            const currentPath = window.location.pathname + window.location.search;
+            const loginUrl = '/auth/login';
+            if (!currentPath.startsWith('/auth')) {
+              window.location.replace(loginUrl);
+            }
+          }
+        }
         const errorMessage = error.response.data?.message || 
                             error.response.data?.error || 
                             `HTTP error! status: ${error.response.status}`;
