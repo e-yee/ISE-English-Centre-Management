@@ -18,11 +18,11 @@ const CheckInCard: React.FC = () => {
 
   return (
     <div 
-      className="flex bg-white rounded-[15px] shadow-lg border border-gray-200 overflow-hidden cursor-pointer hover:shadow-xl transition-shadow duration-200"
+      className="h-fit flex bg-white rounded-[15px] border border-gray-200 cursor-pointer hover:scale-105 hover:shadow-md transition-all duration-300"
       onClick={handleCheckInClick}
     >
       {/* Left side with icon */}
-      <div className="w-[119px] h-[118px] bg-[rgba(239,21,21,0.2)] flex items-center justify-center rounded-l-[15px]">
+      <div className="w-[120px] py-5 bg-[rgba(239,21,21,0.2)] flex items-center justify-center rounded-l-[15px]">
         <img 
           src={checkinIcon} 
           alt="Check In" 
@@ -31,11 +31,11 @@ const CheckInCard: React.FC = () => {
       </div>
       
       {/* Right side with details */}
-      <div className="flex-1 p-6 flex flex-col justify-center">
-        <h3 className="text-[30px] font-semibold text-black mb-2 font-comfortaa">
+      <div className="flex-1 pt-2 pl-2 flex flex-col justify-start">
+        <h3 className="text-2xl font-bold text-black font-comfortaa">
           Check In
         </h3>
-        <p className="text-[16px] font-semibold text-black/50 font-comfortaa">
+        <p className="text-md font-semibold text-black/50 font-comfortaa">
           Daily check in
         </p>
       </div>
@@ -53,24 +53,24 @@ const RecentTimeEntriesCard: React.FC = () => {
 
   return (
     <div 
-      className="flex bg-white rounded-[15px] shadow-lg border border-gray-200 overflow-hidden cursor-pointer hover:shadow-xl transition-shadow duration-200"
+      className="h-fit flex bg-white rounded-[15px] border border-gray-200 cursor-pointer hover:scale-105 hover:shadow-md transition-all duration-300"
       onClick={handleTimeEntriesClick}
     >
       {/* Left side with icon */}
-      <div className="w-[119px] h-[118px] bg-[rgba(171,125,251,0.85)] flex items-center justify-center rounded-l-[15px]">
+      <div className="w-[120px] py-5 bg-[rgba(171,125,251,0.85)] flex items-center justify-center rounded-l-[15px]">
         <img 
           src={listIcon} 
           alt="Recent Time Entries" 
-          className="w-12 h-12 object-contain"
+          className="w-16 h-16 object-contain"
         />
       </div>
       
       {/* Right side with details */}
-      <div className="flex-1 p-6 flex flex-col justify-center">
-        <h3 className="text-[30px] font-semibold text-black mb-2 font-comfortaa text-left">
+      <div className="flex-1 pt-2 pl-2 flex flex-col justify-start">
+        <h3 className="text-xl font-bold text-black font-comfortaa text-left">
           Recent Time Entries
         </h3>
-        <p className="text-[16px] font-semibold text-black/50 font-comfortaa">
+        <p className="text-md font-semibold text-black/50 font-comfortaa">
           Track daily check in
         </p>
       </div>
@@ -82,16 +82,16 @@ const TimeKeepingPage: React.FC<TimeKeepingPageProps> = ({ className }) => {
   return (
     <div className={cn("h-full overflow-y-auto", className)}>
       {/* Main Content Container */}
-      <div className="flex-1 p-8 overflow-y-auto">
+      <div className="flex-1 pt-4 pl-4 h-full overflow-y-auto">
         {/* Large Title */}
-        <div className="text-center mb-8">
-          <h1 className="text-[50px] font-bold bg-gradient-to-r from-[#6641D4] to-[#35226E] bg-clip-text text-transparent font-comfortaa">
+        <div className="text-left">
+          <h1 className="text-[50px] mb-5 font-bold bg-gradient-to-r from-[#6641D4] to-[#35226E] bg-clip-text text-transparent font-comfortaa">
             Check In
           </h1>
         </div>
 
         {/* Cards Container */}
-        <div className="max-w-6xl mx-auto grid grid-cols-2 gap-6">
+        <div className="max-w-3xl h-fit grid grid-cols-2 gap-6">
           <CheckInCard />
           <RecentTimeEntriesCard />
         </div>
