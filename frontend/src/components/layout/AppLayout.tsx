@@ -11,22 +11,22 @@ const AppLayoutContent: React.FC = () => {
   const isExpanded = state === "expanded";
 
   return (
-    <div className="h-screen w-screen bg-gray-50 overflow-hidden font-comfortaa">
+    <div className="relative h-screen w-screen bg-gray-50 overflow-hidden font-comfortaa">
       {/* Header - Always at top, full width */}
-      <div className="w-full h-20">
+      <div className="absolute top-0 left-0 w-full h-20">
         <Header isRegistered={true} />
       </div>
 
       {/* Main content area with sidebar */}
-      <div className="relative h-[calc(100vh-5rem)]">
+      <div className="relative top-0 h-[calc(100vh-5rem)] ">
         {/* Sidebar - positioned to touch bottom of header */}
-        <div className="absolute left-0 top-0 h-full">
+        <div className="absolute top-16 left-0 h-full">
           <Sidebar />
         </div>
 
         {/* Content area - positioned to start from bottom of header */}
         <div className={cn(
-          "absolute top-4 left-0 right-0 bottom-0 transition-all duration-300 ease-in-out overflow-hidden",
+          "absolute top-20 left-0 right-0 bottom-0 transition-all duration-300 ease-in-out overflow-hidden",
           isExpanded ? "ml-[335px]" : "ml-[120px]"
         )}>
           {/* Page content renders here via Outlet */}

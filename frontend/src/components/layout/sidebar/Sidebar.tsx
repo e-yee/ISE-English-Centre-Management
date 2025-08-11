@@ -190,7 +190,7 @@ const MainSidebar: React.FC<SidebarProps> = ({ className }) => {
         <SidebarGroupLabel className="sidebar-features-title">
           FEATURES
         </SidebarGroupLabel>
-        <Separator className="mt-2 bg-black/50" />
+        <Separator className="bg-black/50" />
       </SidebarHeader>
 
       {/* Main content with menu items */}

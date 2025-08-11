@@ -86,13 +86,13 @@ const Header: React.FC<HeaderProps> = ({ isRegistered = false }) => {
 
   // Registered header layout - white background with full features
   return (
-    <header className="bg-white h-24 flex items-center shadow-md z-10 border-b border-black/50">
+    <header className="bg-white h-full flex items-center z-10 border-b border-black/50">
       {/* Left Frame - Logo and Company Name */}
       <div className="flex items-center gap-6 pl-6 pr-6 cursor-pointer" onClick={handleLogoClick}>
         {/* Logo - Remove background, increase size */}
-        <img src="/src/assets/logo.svg" alt="Logo" className="w-20 h-20 object-contain hover:scale-105 transition-transform duration-200" />
+        <img src="/src/assets/logo.svg" alt="Logo" className="w-20 h-16 object-contain hover:scale-105 transition-transform duration-200" />
         {/* Company Name - Increase size */}
-        <img src="/src/assets/name.svg" alt="HAMMER & GRAMMAR" className="h-12 mt-2 hover:scale-105 transition-transform duration-200" />
+        <img src="/src/assets/name.svg" alt="HAMMER & GRAMMAR" className="h-10 mt-2 hover:scale-105 transition-transform duration-200" />
       </div>
 
       {/* Vertical Line Separator */}
