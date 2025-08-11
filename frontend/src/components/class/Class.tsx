@@ -63,20 +63,20 @@ const Class: React.FC<ClassProps> = ({ classData, className, onClick }) => {
   return (
     <Card 
       className={cn(
-        "class-card-container bg-white border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 ease-in-out",
-        "w-full min-h-[160px] rounded-[15px]",
+        "border-none class-card-container bg-white shadow-none hover:shadow-md transition-all duration-300 ease-in-out",
+        "w-full h-auto rounded-[15px] hover:scale-102 hover:bg-gradient-to-r hover:from-indigo-200  hover:to-rose-100",
         className
       )}
       onClick={onClick}
     >
       <CardContent className={cn(
         "transition-all duration-300 ease-in-out",
-        isExpanded ? "p-6" : "p-5"
+        isExpanded ? "pt-2 px-4 pb-2" : "pt-2 px-4 pb-2"
       )}>
         {/* Top Row - Class Name (left), Status Button (center), Room & Time (right) */}
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-3xl font-bold text-black font-comfortaa">
-            <span className="mr-1">{number}</span>
+        <div className="flex justify-between items-center">
+          <h3 className="text-2xl font-bold text-black font-comfortaa">
+            <span className="">{number}</span>
             {name}
           </h3>
 
@@ -84,18 +84,18 @@ const Class: React.FC<ClassProps> = ({ classData, className, onClick }) => {
             <img
               src={StatusIconComponent}
               alt={classData.status}
-              className="w-32 h-10"
+              className="w-28 h-8"
             />
           </div>
 
-          <div className="text-right space-y-0.5">
-            <div className="flex items-center justify-end gap-1">
+          <div className="text-right">
+            <div className="flex items-center justify-start gap-1">
               <img src={MapPinIcon} alt="Room" className="w-4 h-4" />
-              <span className="text-base font-normal text-black font-comfortaa">Room: {classData.room}</span>
+              <span className="text-sm font-bold text-black/50 font-comfortaa">Room: {classData.room}</span>
             </div>
-            <div className="flex items-center justify-end gap-1">
+            <div className="flex items-center justify-start gap-1">
               <img src={ClockIcon} alt="Time" className="w-4 h-4" />
-              <span className="text-base font-normal text-black font-comfortaa">Time: {classData.time}</span>
+              <span className="text-sm font-bold text-black/50 font-comfortaa">Time: {classData.time}</span>
             </div>
           </div>
         </div>
@@ -107,7 +107,7 @@ const Class: React.FC<ClassProps> = ({ classData, className, onClick }) => {
 
         {/* Chevron positioned at the bottom right */}
         <div className="flex justify-end">
-          <img src={ChevronRightIcon} alt="Navigate" className="w-10 h-10" />
+          <img src={ChevronRightIcon} alt="Navigate" className="w-10 h-7" />
         </div>
       </CardContent>
     </Card>
