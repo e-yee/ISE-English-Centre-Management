@@ -20,7 +20,7 @@ const AppLayoutContent: React.FC = () => {
       {/* Main content area with sidebar */}
       <div className="relative h-screen">
         {/* Sidebar - positioned to start below header and fill to bottom */}
-        <div className="absolute top-20 left-0 bottom-0">
+        <div className="absolute top-16 left-0 bottom-0">
           <Sidebar />
         </div>
 
