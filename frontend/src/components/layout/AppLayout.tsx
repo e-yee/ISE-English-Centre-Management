@@ -13,7 +13,7 @@ const AppLayoutContent: React.FC = () => {
   return (
     <div className="relative h-screen w-screen bg-gray-50 overflow-hidden font-comfortaa">
       {/* Header - Always at top, full width */}
-      <div className="absolute top-0 left-0 w-full h-20">
+      <div className="absolute top-0 left-0 w-full h-20 z-50">
         <Header isRegistered={true} />
       </div>
 
