@@ -11,6 +11,12 @@ class RoomService extends ApiService {
     return this.get<Room[]>('/room/manager/');
   }
 
+  async listFree(): Promise<Room[]> {
+    // No dedicated endpoint for "available rooms"; reuse manager list and filter client-side
+    const rooms = await this.list();
+    return rooms.filter((r) => r.status === 'Free');
+  }
+
   async create(data: CreateRoom): Promise<Room> {
     const role = getUserRole();
     if (role !== 'Manager') throw new Error('Only Manager can create room');

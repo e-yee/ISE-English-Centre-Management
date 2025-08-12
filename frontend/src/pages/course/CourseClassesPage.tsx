@@ -1,13 +1,17 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import ClassList from "@/components/class/ClassList";
 import { SearchInput } from "@/components/ui/SearchInput";
 import { Button } from "@/components/ui/button";
+import AddClassForm from "@/components/class/AddClassForm";
+ 
 import { ArrowLeft } from "lucide-react";
 import { useClassesByCourse } from "@/hooks/entities/useClasses";
 import type { ClassData } from "@/types/class";
 import type { Class } from "@/services/entities/classService";
+ 
+ 
 
 // Transform backend Class to frontend ClassData
 const transformClassToClassData = (classItem: Class): ClassData => {
@@ -50,8 +54,10 @@ const CourseClassesPage: React.FC = () => {
   const { courseId, courseDate } = useParams<{ courseId: string; courseDate: string }>();
   const navigate = useNavigate();
   const [selectedStatus, setSelectedStatus] = useState("ALL");
+  const [openAdd, setOpenAdd] = useState(false);
+ 
   
-  const { data: classes, isLoading, error } = useClassesByCourse(courseId || '', courseDate || '');
+  const { data: classes, isLoading, error, refetch } = useClassesByCourse(courseId || '', courseDate || '');
 
   // Transform backend data to frontend format with proper type checking
   const transformedClasses: ClassData[] = React.useMemo(() => {
@@ -74,6 +80,14 @@ const CourseClassesPage: React.FC = () => {
     (classes || []).forEach((c) => map.set(c.id, c));
     return map;
   }, [classes]);
+
+  // local form removed; handled by AddClassForm
+
+  const openAndPrefill = useCallback(async () => {
+    setOpenAdd(true);
+  }, []);
+
+  // moved: form/rooms logic lives in AddClassForm
 
   // Status options for horizontal buttons
   const statusOptions = [
@@ -195,12 +209,19 @@ const CourseClassesPage: React.FC = () => {
               <h2 className="text-xl font-semibold">Classes</h2>
               <button
                 className="bg-white border border-black/20 rounded-[10px] shadow-[2px_2px_3px_0px_rgba(0,0,0,0.15)] px-4 py-2 transition-all duration-200 ease-in-out hover:shadow-[3px_3px_4px_0px_rgba(0,0,0,0.2)] hover:scale-105 focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-1"
-                onClick={() => alert('Add Class: coming soon')}
+                onClick={openAndPrefill}
               >
                 <span className="text-[16px] font-semibold text-black leading-[1em] font-comfortaa whitespace-nowrap">Add Class</span>
               </button>
             </div>
             <ClassList classes={transformedClasses} maxClasses={8} onClassClick={handleClassClick} />
+            <AddClassForm
+              open={openAdd}
+              onOpenChange={setOpenAdd}
+              courseId={courseId || ''}
+              courseDate={courseDate || ''}
+              onSuccess={async () => { await refetch(); }}
+            />
           </>
         ) : (
           <div className="flex items-center justify-center h-full">

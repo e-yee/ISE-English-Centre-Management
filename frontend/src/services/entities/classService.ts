@@ -43,6 +43,17 @@ class ClassService extends ApiService {
     throw new Error('Unauthorized access to classes');
   }
 
+  async createClass(payload: {
+    course_id: string;
+    course_date: string; // YYYY-MM-DD
+    term: number;
+    teacher_id: string;
+    room_id: string;
+    class_date: string; // YYYY-MM-DD HH:MM:SS
+  }): Promise<Class> {
+    return this.post<Class>('/class/learningadvisor/add', payload);
+  }
+
   async getClassesByRole(): Promise<Class[]> {
     console.log('🔍 getClassesByRole called');
     
