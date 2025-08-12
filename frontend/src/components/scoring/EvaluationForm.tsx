@@ -99,7 +99,7 @@ export const EvaluationForm: React.FC<EvaluationFormProps> = ({
   };
 
   return (
-    <Card className={cn('h-full bg-white border border-gray-200 shadow-sm rounded-[15px]', className)}>
+    <Card className={cn('h-full w-full max-w-full overflow-hidden bg-white border border-gray-200 shadow-sm rounded-[15px]', className)}>
       <CardContent className="p-4 h-full">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
