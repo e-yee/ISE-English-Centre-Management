@@ -146,8 +146,8 @@ const HomescreenPage: React.FC<HomescreenPageProps> = ({ className }) => {
                   "font-semibold hover:scale-[110%]",
                   "transition-all duration-200",
                   selectedStatus === option.value
-                    ? "bg-white text-black border-black/20"
-                    : "bg-white text-black/80 hover:bg-[#223A5E] hover:text-white"
+                    ? "bg-gradient-to-r from-[#b597f6] to-[#96c6ea] text-white hover:text-white"
+                    : "bg-white hover:bg-[#223A5E] hover:text-white"
                 )}
               >
                 {option.label}
