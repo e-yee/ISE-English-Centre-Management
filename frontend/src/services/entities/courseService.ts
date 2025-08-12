@@ -22,6 +22,10 @@ class CourseService extends ApiService {
     return this.get<Course[]>('/course/manager/');
   }
   
+  async getCourseForAdvisor(courseId: string, courseDate: string): Promise<Course> {
+    return this.get<Course>(`/course/learningadvisor/search?id=${courseId}&course_date=${courseDate}`);
+  }
+
   async getCourseForManager(courseId: string, courseDate: string): Promise<Course> {
     return this.get<Course>(`/course/manager/search?id=${courseId}&course_date=${courseDate}`);
   }
