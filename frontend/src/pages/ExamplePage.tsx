@@ -17,14 +17,13 @@ import TimeEntriesPage from "./timekeeping/TimeEntriesPage";
 import { List, Grid3X3 } from "lucide-react";
 import ColleaguesPage from "./colleagues/ColleaguesPage";
 import HomescreenPage from "./homescreen/Homescreen";
-import ScoreList from "@/components/scoring/ScoreList";
 
 interface ExamplePageProps {
   className?: string;
 }
 
-// Development progress data
-const developmentItems = [
+// Development progress data (legacy; kept for reference but unused)
+/* const developmentItems = [
   {
     id: "homescreen",
     name: "Homescreen",
@@ -158,15 +157,15 @@ const developmentItems = [
     demoComponent: TimeEntriesPage
   },
   {
-    id: "scoring-page",
-    name: "Scoring",
-    description: "Student scoring and assessment management with editable scores and notes",
+    id: "class-report",
+    name: "Class Report",
+    description: "Class report page with student scores and teacher assessments",
     status: "completed" as const,
     priority: "high" as const,
     category: "Pages",
-    lastUpdated: "2024-01-21",
+    lastUpdated: "2024-01-17",
     demoAvailable: true,
-    demoComponent: () => <ScoreList classId="class-1a" />
+    demoComponent: ClassReportPage
   },
   {
     id: "sidebar",
@@ -229,7 +228,7 @@ const developmentItems = [
     demoAvailable: true,
     demoComponent: ColleaguesPage
   }
-];
+]; */
 
 // Internal component that uses the sidebar context
 const ExamplePageContent: React.FC<ExamplePageProps> = ({ className }) => {
@@ -248,27 +247,10 @@ const ExamplePageContent: React.FC<ExamplePageProps> = ({ className }) => {
   const [showColleaguesDemo, setShowColleaguesDemo] = useState(false);
   const [viewMode, setViewMode] = useState<'cards' | 'list'>('cards');
 
-  // Handle demo viewing from list
-  const handleViewDemo = (item: any) => {
-    if (item.id === 'homescreen') setShowHomescreenDemo(true);
-    else if (item.id === 'auth-page') setShowAuthPage(true);
-    else if (item.id === 'class-screen') setShowClassScreenDemo(true);
-    else if (item.id === 'class-information') setShowClassInformationDemo(true);
-    else if (item.id === 'materials-page') setShowAddMaterialsDemo(true);
-    else if (item.id === 'profile-settings') setShowProfileSettingDemo(true);
-    else if (item.id === 'absent-request') setShowAbsentRequestDemo(true);
-    else if (item.id === 'attendance-page') setShowAttendancePageDemo(true);
-    else if (item.id === 'class-report') setShowClassReportDemo(true);
-    else if (item.id === 'timekeeping-page') setShowTimekeepingDemo(true);
-    else if (item.id === 'checkin-page') setShowCheckInDemo(true);
-    else if (item.id === 'time-entries-page') setShowTimeEntriesDemo(true);
-    else if (item.id === 'colleagues') setShowColleaguesDemo(true);
-  };
+  // Handle demo viewing from list (legacy wiring removed)
+  // const handleViewDemo = (item: any) => { };
 
-  const handleViewDetails = (item: any) => {
-    // For now, just show an alert with item details
-    alert(`Details for ${item.name}:\nStatus: ${item.status}\nPriority: ${item.priority}\nCategory: ${item.category}\nLast Updated: ${item.lastUpdated}`);
-  };
+  // const handleViewDetails = (item: any) => {};
 
   // If showing homescreen demo, render it instead of the example content
   if (showHomescreenDemo) {
@@ -568,11 +550,7 @@ const ExamplePageContent: React.FC<ExamplePageProps> = ({ className }) => {
                 <p className="text-gray-600 mb-6">
                   Track the development status of all components and pages. Click the eye icon to view demos or the external link for details.
                 </p>
-                <DevelopmentProgressList
-                  items={developmentItems}
-                  onViewDemo={handleViewDemo}
-                  onViewDetails={handleViewDetails}
-                />
+                <DevelopmentProgressList />
               </div>
             ) : (
               // Card View (Original)

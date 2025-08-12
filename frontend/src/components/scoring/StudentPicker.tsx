@@ -2,26 +2,24 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/card';
 import { SearchInput } from '@/components/ui/SearchInput';
-import { getClassData, type Student } from '@/mockData/scoringMock';
 
 interface StudentPickerProps {
   classId: string;
   selectedStudentId?: string;
-  onSelect: (student: Student) => void;
+  onSelect: (student: { id: string; name: string }) => void;
   className?: string;
-  items?: Array<Pick<Student, 'id' | 'name'>>;
+  items: Array<{ id: string; name: string }>;
 }
 
 export const StudentPicker: React.FC<StudentPickerProps> = ({
-  classId,
+  classId: _classId,
   selectedStudentId,
   onSelect,
   className,
   items,
 }) => {
   const [search, setSearch] = React.useState('');
-  const classData = items ? null : getClassData(classId);
-  const students = (items as Student[] | undefined) ?? classData?.students ?? [];
+  const students = items;
 
   const filtered = React.useMemo(() => {
     if (!search) return students;

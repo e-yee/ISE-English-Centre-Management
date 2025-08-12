@@ -2,7 +2,6 @@ import { RouterProvider } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { router } from './routes/router';
-import ScoringDemoPage from './pages/scoring/ScoringDemoPage';
 
 // 🔧 EASY TOGGLE: Set to true for production routes, false for demo mode
 const USE_PRODUCTION_ROUTES = true;
@@ -33,9 +32,7 @@ function App() {
   // 🎨 DEMO MODE: Individual page testing without routes
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <ScoringDemoPage />
-      </AuthProvider>
+
     </QueryClientProvider>
   );
 }
