@@ -35,7 +35,7 @@ export function LoginForm({ onForgotPassword, onSubmit, isLoading = false }: Log
     <Card className="rounded-lg w-full h-full 
                      bg-[#EFECE7] shadow-[10px_4px_4px_0px_rgba(0,0,0,0.25)] 
                      font-comfortaa
-                     flex flex-col justify-between">
+                     flex flex-col justify-evenly content-center">
       <CardHeader className="text-center">
         {/* Logo - Made bigger */}
         <div className="flex justify-center">
