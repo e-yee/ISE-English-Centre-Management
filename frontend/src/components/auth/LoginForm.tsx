@@ -5,6 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import logoSvg from "../../assets/logo.svg";
+import userIcon from "../../assets/landing_page/user.svg"
+import keyIcon from "../../assets/landing_page/key.svg"
+import mailIcon from "../../assets/landing_page/envelope.svg"
 
 interface LoginFormProps {
   onForgotPassword: () => void;
@@ -58,21 +61,29 @@ export function LoginForm({ onForgotPassword, onSubmit, isLoading = false }: Log
             >
               Username
             </label>
-            <Input
+            <div className="flex flex-row items-center
+                            border border-black h-9 w-full
+                            rounded-sm">
+              <div className="h-full px-1 rounded-s-sm">
+                <img src={userIcon} alt="User name" className="w-8 h-full py-2"/>                        
+              </div>
+              <div className="w-px h-6 bg-black"></div>
+              <Input
               id="username"
               type="text"
               value={formData.username}
               onChange={(e) => handleInputChange("username", e.target.value)}
-              className="w-full 
-                         bg-transparent border-0 border-b border-black rounded-none 
-                         px-0 py-0
-                         text-[28px] font-comfortaa font-semibold text-black placeholder-[#78746C] 
-                         focus:ring-0 focus:border-black focus:border-b focus-visible:ring-0
-                         selection:bg-yellow-100 selection:text-black/70"
-              placeholder=""
+              className="w-full
+                         bg-transparent border-0 rounded-none 
+                         px-0 pl-1 py-0
+                         text-[28px] font-comfortaa font-semibold text-black placeholder-[#78746C] placeholder:italic
+                         focus:ring-0 focus-visible:ring-0 focus:placeholder:not-italic
+                         selection:bg-yellow-100 selection:text-black/80"
+              placeholder="Username"              
               required
               disabled={isLoading}
-            />
+              />
+            </div>            
           </div>
 
           {/* Password Field */}
@@ -82,21 +93,31 @@ export function LoginForm({ onForgotPassword, onSubmit, isLoading = false }: Log
               className="block text-[22px] font-comfortaa font-bold text-[#000000] text-left leading-[1.4]"
             >
               Password
-            </label>
-            <Input
+            </label>    
+            <div className="flex flex-row items-center
+                            border border-black h-9 w-full
+                            rounded-sm">
+              <div className="h-full px-1 rounded-s-sm">
+                <img src={keyIcon} alt="User name" className="w-8 h-full py-2"/>                        
+              </div>
+              <div className="w-px h-6 bg-black"></div>
+              <Input
               id="password"
               type="password"
               value={formData.password}
               onChange={(e) => handleInputChange("password", e.target.value)}
               className="w-full 
-                         bg-transparent border-0 border-b border-black rounded-none 
-                         px-0 py-0 text-[28px] font-comfortaa font-semibold text-black placeholder-[#78746C] 
-                         focus:ring-0 focus:border-black focus:border-b focus-visible:ring-0
-                         selection:bg-yellow-100 selection:text-black/70"
-              placeholder=""
+                         bg-transparent border-0 rounded-none 
+                         px-0 pl-1 py-0 text-[28px] font-comfortaa font-semibold text-black placeholder-[#78746C] placeholder:italic
+                         focus:ring-0 focus-visible:ring-0 focus:placeholder:not-italic
+                         selection:bg-yellow-100 selection:text-black/80"
+              placeholder="Password"
               required
               disabled={isLoading}
             />
+            </div>
+                                            
+            
 
             {/* Forgot Password Link - Positioned to the right, below password field */}
             <div className="absolute right-0 top-full mt-2">
