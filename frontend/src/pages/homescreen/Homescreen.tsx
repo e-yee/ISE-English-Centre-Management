@@ -143,11 +143,11 @@ const HomescreenPage: React.FC<HomescreenPageProps> = ({ className }) => {
                   "h-8",
                   "px-4",
                   "rounded-[10px] border border-black/20",
-                  "font-semibold hover:scale-[110%]",
+                  "font-semibold ",
                   "transition-all duration-200",
                   selectedStatus === option.value
-                    ? "bg-gradient-to-r from-[#b597f6] to-[#96c6ea] text-white hover:text-white"
-                    : "bg-white hover:bg-[#223A5E] hover:text-white"
+                    ? "bg-gradient-to-r from-[#b597f6] to-[#96c6ea] text-white hover:text-white select-none"
+                    : "cursor-pointer bg-white hover:bg-[#223A5E] hover:text-white hover:scale-[110%]"
                 )}
               >
                 {option.label}
