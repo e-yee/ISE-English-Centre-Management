@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import logoSvg from "../../assets/logo.svg";
+import mailIcon from "../../assets/landing_page/envelope.svg"
 
 interface ForgotPasswordEmailFormProps {
   onBackToLogin: () => void;
@@ -73,20 +74,34 @@ export function ForgotPasswordEmailForm({
                 >
                   Email
                 </label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-transparent border-0 border-b-2 border-black rounded-none px-0 py-2 text-[25px] font-comfortaa text-[#121212] placeholder-[#78746C] focus:ring-0 focus:border-black focus-visible:ring-0 focus-visible:ring-offset-0"
-                  placeholder="Enter your email"
-                  required
-                  disabled={isLoading}
-                />
-                {error && (
-                  <p className="text-red-600 text-[18px] font-comfortaa text-center">{error}</p>
-                )}
-              </div>
+                <div className="flex flex-row items-center
+                            border border-black h-9 w-full
+                            rounded-sm">
+                  <div className="h-full px-1 rounded-s-sm">
+                    <img src={mailIcon} alt="Mail Icon" className="w-8 h-full py-2"/>                        
+                  </div>
+                  <div className="w-px h-6 bg-black"></div>
+                  <Input
+                      id="email"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full
+                         bg-transparent border-0 rounded-none 
+                         px-0 pl-1 py-0
+                         text-[28px] font-comfortaa font-semibold text-black placeholder-[#78746C] placeholder:italic
+                         focus:ring-0 focus-visible:ring-0 focus:placeholder:not-italic
+                         selection:bg-yellow-100 selection:text-black/80"
+                      placeholder="Enter your email"
+                      required
+                      disabled={isLoading}
+                    />
+                    {error && (
+                      <p className="text-red-600 text-[18px] font-comfortaa text-center">{error}</p>
+                    )}
+               </div>
+            </div> 
+                
 
               {/* Buttons */}
               <div className="flex flex-row justify-center gap-14">
@@ -104,9 +119,9 @@ export function ForgotPasswordEmailForm({
                 </Button>
                 <Button
                   type="submit"
-                  className="grow bg-amber-100 rounded-xl 
+                  className="grow bg-amber-200 rounded-xl 
                              text-gray-500 text-[20px] font-comfortaa font-semibold 
-                             hover:bg-yellow-200 hover:font-bold hover:text-gray-600 hover:scale-102                             
+                             hover:bg-yellow-300 hover:font-bold hover:text-gray-600 hover:scale-102                             
                              disabled:opacity-50 cursor-pointer"
                   disabled={isLoading || !email.trim()}                   
                 >
