@@ -198,7 +198,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ className }) => {
           
           {/* Right Column */}
           <div className="flex flex-col">
-            <div className="space-y-3 flex flex-col h-full">
+            <div className="flex flex-col h-full">
               <label className="text-[22px] font-bold text-black">
                 Achievements
               </label>
@@ -242,7 +242,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ className }) => {
           {/* Add Contact Button */}
           <div className="mt-4">
             <Button
-              className="px-[54px] py-3 rounded-[7px] bg-[rgba(207,224,255,0.51)] text-[#3384FF] font-normal text-[20px] hover:bg-[rgba(207,224,255,0.7)] transition-all duration-200"
+              className="cursor-pointer px-[54px] py-3 rounded-[7px] bg-[rgba(207,224,255,0.51)] text-[#3384FF] font-normal text-[20px] hover:bg-[rgba(207,224,255,0.7)] hover:scale-105 transition-all duration-200"
             >
               +Add Contact
             </Button>
