@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import logoSvg from "../../assets/logo.svg";
 import userIcon from "../../assets/landing_page/user.svg"
 import keyIcon from "../../assets/landing_page/key.svg"
-import mailIcon from "../../assets/landing_page/envelope.svg"
 
 interface LoginFormProps {
   onForgotPassword: () => void;
