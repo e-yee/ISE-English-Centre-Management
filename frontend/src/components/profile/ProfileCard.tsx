@@ -112,26 +112,25 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ className }) => {
   }
 
   return (
-    <Card className={cn("bg-white rounded-[15px] overflow-hidden shadow-lg", className)}>
+    <Card className={cn("selection:bg-purple-400 selection:text-white bg-white rounded-[15px]  shadow-lg", className)}>
       {/* Profile Header with Background Image */}
-      <div className="relative h-20 rounded-t-[15px]">
-        <img src={profileBg} alt="Profile Background" className="w-full h-full object-cover rounded-t-[15px]" />
+      <div className="relative h-22 w-full rounded-t-[15px] bg-gradient-to-r from-[#c9def4] via-[#f5ccd4] to-[#b8a4c9]">                
       </div>
 
-      <CardContent className="p-9">
+      <CardContent className="px-9 pb-4 pt-4">
         {/* User Information Section */}
-        <div className="flex items-center gap-7 mb-6">
+        <div className="flex items-center gap-x-4 mb-6">
           {/* Avatar */}
-          <div className="w-24 h-24 rounded-full bg-[#EADDFF] flex items-center justify-center -mt-12">
-            <img src={avatarIcon} alt="Avatar" className="w-12 h-12" />
+          <div className="w-26 h-26 rounded-full bg-[#EADDFF] flex items-center justify-center">
+            <img src={avatarIcon} alt="Avatar" className="w-16 h-16" />
           </div>
 
           {/* User Details */}
           <div className="flex-1">
-            <h2 className="text-[30px] font-bold text-black mb-2">
+            <h2 className="text-[28px] font-bold text-black">
               {profile.name}
             </h2>
-            <p className="text-[24px] font-semibold text-gray-600">
+            <p className="text-[20px] font-semibold text-gray-600 select-all">
               {profile.email}
             </p>
           </div>
@@ -140,10 +139,10 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ className }) => {
           <Button
             onClick={isEditing ? handleSave : handleEdit}
             className={cn(
-              "px-9 py-5 rounded-[15px] font-bold text-[28px] transition-all duration-200",
+              "cursor-pointer px-9 py-5 rounded-[15px] font-bold text-white text-[24px] transition-all duration-200",
               isEditing 
-                ? "bg-green-500 hover:bg-green-600 text-white" 
-                : "bg-[#AACEEC] hover:bg-blue-400 text-black"
+                ? "bg-green-500 hover:bg-green-600" 
+                : "bg-[#AACEEC] hover:bg-blue-400"
             )}
           >
             {isEditing ? "Save" : "Edit"}
@@ -153,7 +152,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ className }) => {
         {/* Editable Fields Section */}
         <div className="grid grid-cols-2 gap-x-8">
           {/* Left Column */}
-          <div className="space-y-4">
+          <div className="space-y-2">
             {/* Nickname Field */}
             <div className="space-y-3">
               <label className="text-[22px] font-bold text-black">
@@ -167,7 +166,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ className }) => {
                   placeholder="Your nick name"
                 />
               ) : (
-                <div className="h-[43px] rounded-[10px] border-2 border-gray-300 bg-gray-100/30 px-5 flex items-center">
+                <div className="h-[43px] rounded-[10px] border-2 border-gray-300 bg-gray-100/30 pl-3 flex items-center">
                   <span className="font-bold text-[16px] text-gray-500">
                     {profile.nickname}
                   </span>
