@@ -13,9 +13,10 @@ from .evaluation import Evaluation
 from .student_attendace import StudentAttendance
 from .makeup_class import MakeupClass
 from .token_blocklist import TokenBlocklist
+from .pdf import PDF
 
 __all__ = [
     "Employee", "Room", "Student", "Account", "Course", "Issue",
     "LeaveRequest", "StaffCheckin", "Class", "Contract",
-    "Enrolment", "Evaluation", "StudentAttendance", "MakeupClass", "TokenBlocklist"
+    "Enrolment", "Evaluation", "StudentAttendance", "MakeupClass", "TokenBlocklist", "PDF"
 ]

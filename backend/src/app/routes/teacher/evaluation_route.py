@@ -5,7 +5,7 @@ from marshmallow import ValidationError
 from ...http_status import HTTPStatus
 from sqlalchemy.exc import IntegrityError, OperationalError
 from ...schemas.evaluation_schema import evaluation_schema
-from ...models import Evaluation, Account, Student, Employee, Enrolment, StudentAttendance
+from ...models import Evaluation, PDF, Student, Employee, Enrolment, StudentAttendance
 from extensions import db
 import datetime
 
@@ -346,3 +346,24 @@ def update_evaluation():
             "message": "An error occurred",
             "error": str(e) 
         }), HTTPStatus.INTERNAL_SERVER_ERROR
+    
+
+@evaluation_bp.post("/export")
+@role_required("Teacher", "Learning Advisor")
+def export_evaluation():
+    try:
+        if not request.is_json:
+            return jsonify({"message": "Invalid JSON"}), HTTPStatus.BAD_REQUEST
+
+        data = request.get_json()
+        # Process the data and generate the PDF
+        pdf = PDF()
+        pdf.add_page()
+        pdf.chapter_title("Evaluation Report")
+        pdf.chapter_body("This is the body of the evaluation report.")
+        pdf.output("evaluation_report.pdf")
+
+        return jsonify({"message": "Evaluation report exported successfully."}), HTTPStatus.OK
+
+    except Exception as e:
+        return jsonify({"message": "An error occurred", "error": str(e)}), HTTPStatus.INTERNAL_SERVER_ERROR
