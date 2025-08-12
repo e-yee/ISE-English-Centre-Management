@@ -49,8 +49,16 @@ const FeatureButtonList: React.FC<FeatureButtonListProps> = ({ className, classI
     {
       id: "scoring",
       title: "Scoring", 
-      route: classId ? `/scoring/${classId}` : "/scoring/1", // Use class-specific scoring route
-      onClick: () => navigate(classId ? `/scoring/${classId}` : "/scoring/1")
+      route:
+        classId && courseId && courseDate && term
+          ? `/scoring/${classId}/${courseId}/${courseDate}/${term}`
+          : undefined,
+      onClick: () =>
+        navigate(
+          classId && courseId && courseDate && term
+            ? `/scoring/${classId}/${courseId}/${courseDate}/${term}`
+            : '/scoring/1/COURSE/2024-01-01/1'
+        )
     },
     {
       id: "daily-attendance",

@@ -139,10 +139,10 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ className }) => {
           <Button
             onClick={isEditing ? handleSave : handleEdit}
             className={cn(
-              "cursor-pointer px-9 py-5 rounded-[15px] font-bold text-white text-[24px] transition-all duration-200",
+              "cursor-pointer px-9 py-5 rounded-[15px] font-bold text-white text-[24px] transition-all",
               isEditing 
-                ? "bg-green-500 hover:bg-green-600" 
-                : "bg-[#AACEEC] hover:bg-blue-400"
+                ? "bg-green-500 hover:bg-green-600 hover:scale-92" 
+                : "bg-[#AACEEC] hover:bg-blue-400 hover:shadow-xl hover:border hover:border-blue-500 hover:border-2"
             )}
           >
             {isEditing ? "Save" : "Edit"}

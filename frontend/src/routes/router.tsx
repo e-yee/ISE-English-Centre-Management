@@ -63,9 +63,9 @@ export const router = createBrowserRouter([
           { path: 'class/:classId', element: <ClassScreen /> },
           { path: 'class-info/:classId', element: <ClassInformationPage /> },
           { path: 'attendance/:classId/:courseId/:courseDate/:term', element: <AttendancePage /> },
+          { path: 'scoring/:classId/:courseId/:courseDate/:term', element: <ScoringPage /> },
           { path: 'materials', element: <AddMaterialsPage /> },
           { path: 'report', element: <ClassReportPage /> },
-          { path: 'scoring/:classId', element: <ScoringPage /> },
           { path: 'issues', element: <IssuesPage /> },
           // --- Manager/Learning Advisor Routes ---
           { path: 'dashboard', element: <Dashboard /> },
