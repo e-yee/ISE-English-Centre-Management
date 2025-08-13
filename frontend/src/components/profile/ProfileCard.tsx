@@ -234,7 +234,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ className }) => {
             </div>
             
             {/* Email Address */}
-            <span className="text-[20px] font-bold text-gray-600">
+            <span className="select-all text-[20px] font-bold text-gray-600">
               {profile.email}
             </span>
           </div>
