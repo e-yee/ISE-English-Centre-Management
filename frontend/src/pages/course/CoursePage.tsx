@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { AlertCircle } from 'lucide-react';
 import CourseGrid from '@/components/course/CourseGrid';
@@ -16,6 +16,7 @@ import { getUserRole } from '@/lib/utils';
 
 const CoursePage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
@@ -24,6 +25,19 @@ const CoursePage: React.FC = () => {
   
   // Create course hook
   const { createCourse, isCreating, error: createError } = useCreateCourse();
+
+  // If navigated from contracts with a course id, preselect that course when data is ready
+  useEffect(() => {
+    const state = location.state as { selectedCourseId?: string } | null;
+    if (!selectedCourse && state?.selectedCourseId && courses && courses.length > 0) {
+      const course = courses.find(c => c.id === state.selectedCourseId) || null;
+      if (course) {
+        setSelectedCourse(course);
+        // Clear state so user can go back to the courses grid afterward
+        navigate(location.pathname, { replace: true, state: null });
+      }
+    }
+  }, [location.state, courses, selectedCourse, navigate, location.pathname]);
 
   const handleCourseSelect = (course: Course) => {
     setSelectedCourse(course);
@@ -64,12 +78,14 @@ const CoursePage: React.FC = () => {
         <div className="pt-4 pb-3 flex-shrink-0 transition-all duration-300 ease-in-out px-4">
           <div className="flex items-center gap-4 justify-between">
             <div className="flex items-center gap-4">
-              <button
-                onClick={() => navigate(-1)}
-                className="bg-white border border-black/20 rounded-[10px] shadow-[2px_2px_3px_0px_rgba(0,0,0,0.15)] px-4 py-2 transition-all duration-200 ease-in-out hover:shadow-[3px_3px_4px_0px_rgba(0,0,0,0.2)] hover:scale-105 focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-1 min-w-[90px]"
-              >
-                <span className="text-[16px] font-semibold text-black leading-[1em] font-comfortaa whitespace-nowrap">Back</span>
-              </button>
+              {!selectedCourse && (
+                <button
+                  onClick={() => navigate('/dashboard')}
+                  className="bg-white border border-black/20 rounded-[10px] shadow-[2px_2px_3px_0px_rgba(0,0,0,0.15)] px-4 py-2 transition-all duration-200 ease-in-out hover:shadow-[3px_3px_4px_0px_rgba(0,0,0,0.2)] hover:scale-105 focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-1 min-w-[90px]"
+                >
+                  <span className="text-[16px] font-semibold text-black leading-[1em] font-comfortaa whitespace-nowrap">Back</span>
+                </button>
+              )}
               <div>
             <h1
               className="text-[60px] font-normal leading-[1.4em] text-center font-comfortaa"

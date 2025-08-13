@@ -3,16 +3,16 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+// import { Textarea } from '@/components/ui/textarea';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+// import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { format } from 'date-fns';
-import { CalendarIcon, FileText, AlertCircle } from 'lucide-react';
+import { CalendarIcon, FileText, AlertCircle, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { CreateContractData, UpdateContractData } from '@/types/contract';
 import type { Course } from '@/types/course';
@@ -24,6 +24,7 @@ const contractFormSchema = z.object({
   course_date: z.date().refine((date) => {
     return date <= new Date()
   }, "Course date must be today or in the past"),
+	payment_status: z.enum(['In Progress', 'Paid']),
 });
 
 type FormData = z.infer<typeof contractFormSchema>;
@@ -36,6 +37,11 @@ interface ContractFormProps {
   isCreating?: boolean;
   error?: string | null;
   editingContract?: Contract | null;
+  /**
+   * Prefilled course date (yyyy-MM-dd). When provided in create mode, the date picker is initialized to this
+   * value and disabled to prevent changing it.
+   */
+  courseDate?: string;
 }
 
 const ContractForm: React.FC<ContractFormProps> = ({ 
@@ -45,14 +51,18 @@ const ContractForm: React.FC<ContractFormProps> = ({
   selectedCourse,
   isCreating = false,
   error = null,
-  editingContract = null
+  editingContract = null,
+  courseDate
 }) => {
   const form = useForm<FormData>({
-    resolver: zodResolver(contractFormSchema),
+    resolver: zodResolver(contractFormSchema) as any,
     defaultValues: {
       student_id: editingContract?.student_id || "",
       course_id: selectedCourse?.id || "",
-      course_date: editingContract?.course_date ? new Date(editingContract.course_date) : new Date(),
+      course_date: editingContract?.course_date
+        ? new Date(editingContract.course_date)
+        : (courseDate ? new Date(courseDate) : new Date()),
+      payment_status: ((editingContract?.payment_status as any) ?? 'In Progress') as 'In Progress' | 'Paid',
     }
   });
 
@@ -64,17 +74,23 @@ const ContractForm: React.FC<ContractFormProps> = ({
     if (editingContract) {
       form.setValue('student_id', editingContract.student_id);
       form.setValue('course_date', new Date(editingContract.course_date));
+      form.setValue('payment_status', editingContract.payment_status as any);
+    } else if (courseDate) {
+      form.setValue('course_date', new Date(courseDate));
     }
-  }, [selectedCourse, editingContract, form]);
+  }, [selectedCourse, editingContract, courseDate, form]);
 
-  const handleSubmit = (data: FormData) => {
+  const [successMsg, setSuccessMsg] = React.useState<string | null>(null);
+
+  const handleSubmit = async (data: FormData) => {
     if (editingContract) {
       // Update mode
       const updateData: UpdateContractData = {
         student_id: data.student_id,
         course_date: format(data.course_date, 'yyyy-MM-dd'),
       };
-      onSubmit(updateData);
+      await onSubmit(updateData);
+      setSuccessMsg('Contract updated successfully');
     } else {
       // Create mode
       const contractData: CreateContractData = {
@@ -82,7 +98,8 @@ const ContractForm: React.FC<ContractFormProps> = ({
         course_id: data.course_id,
         course_date: format(data.course_date, 'yyyy-MM-dd'),
       };
-      onSubmit(contractData);
+      await onSubmit(contractData);
+      setSuccessMsg('Contract created successfully');
     }
     form.reset();
   };
@@ -108,12 +125,20 @@ const ContractForm: React.FC<ContractFormProps> = ({
         </DialogHeader>
         
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(handleSubmit as any)} className="space-y-6">
             {/* Error Alert */}
             {error && (
               <Alert variant="destructive">
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+            {/* Success Alert */}
+            {successMsg && (
+              <Alert className="border-green-300 bg-green-50 text-green-800 dark:border-green-700 dark:bg-green-950/30 dark:text-green-200">
+                <Check className="h-4 w-4" />
+                <AlertTitle>Success</AlertTitle>
+                <AlertDescription>{successMsg}</AlertDescription>
               </Alert>
             )}
 
@@ -176,7 +201,7 @@ const ContractForm: React.FC<ContractFormProps> = ({
                               "w-full pl-3 text-left font-normal",
                               !field.value && "text-muted-foreground"
                             )}
-                            disabled={isCreating}
+                            disabled={!!courseDate || isCreating}
                           >
                             {field.value ? (
                               format(field.value, "PPP")
@@ -192,17 +217,48 @@ const ContractForm: React.FC<ContractFormProps> = ({
                           mode="single"
                           selected={field.value}
                           onSelect={field.onChange}
-                          disabled={(date) => date > new Date()}
+                          disabled={(date) => !!courseDate || date > new Date()}
                           initialFocus
                         />
                       </PopoverContent>
                     </Popover>
                     <FormDescription>
-                      Select the date when this course was created
+                      {courseDate ? 'Using prefilled course date' : 'Select the date when this course was created'}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
+              />
+
+              {/* Payment Method (checkbox -> Paid when checked, In Progress when unchecked) */}
+              <FormField
+                control={form.control}
+                name="payment_status"
+                render={({ field }) => {
+                  const isPaid = field.value === 'Paid';
+                  return (
+                    <FormItem>
+                      <FormLabel>Payment Method</FormLabel>
+                      <FormControl>
+                        <button
+                          type="button"
+                          onClick={() => field.onChange(isPaid ? 'In Progress' : 'Paid')}
+                          className={cn(
+                            'w-full flex items-center justify-between px-3 py-2 border rounded-md transition-colors',
+                            isPaid ? 'border-green-500 bg-green-50 text-green-800' : 'border-gray-300 bg-white'
+                          )}
+                        >
+                          <span className="text-sm">{isPaid ? 'Paid' : 'In Progress'}</span>
+                          {isPaid && <Check className="h-4 w-4" />}
+                        </button>
+                      </FormControl>
+                      <FormDescription>
+                        Tick to mark as Paid; unticked means In Progress.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
               />
             </div>
 
