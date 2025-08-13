@@ -86,9 +86,16 @@ const AbsentRequestPage: React.FC<AbsentRequestPageProps> = ({ className }) => {
 
   // Manager Approval Component
   const ManagerApprovalInterface = ({ pendingRequests }: { pendingRequests: LeaveRequest[] }) => {
+    const [activeId, setActiveId] = React.useState<string | null>(null);
+    const [activeAction, setActiveAction] = React.useState<'approve' | 'reject' | null>(null);
+
     const handleApprove = async (id: string, approved: boolean) => {
+      setActiveId(id);
+      setActiveAction(approved ? 'approve' : 'reject');
       const status = approved ? 'Approved' : 'Not Approved';
       await approveRequest(id, status);
+      setActiveId(null);
+      setActiveAction(null);
     };
 
     if (pendingRequests.length === 0) {
@@ -179,17 +186,17 @@ const AbsentRequestPage: React.FC<AbsentRequestPageProps> = ({ className }) => {
                     <div className="flex space-x-4">
                       <Button
                         onClick={() => handleApprove(request.id, true)}
-                        disabled={isApproving}
+                        disabled={isApproving && activeId === request.id}
                         className="bg-green-500 hover:bg-green-600 text-white font-comfortaa font-semibold"
                       >
-                        {isApproving ? 'APPROVING...' : 'APPROVE'}
+                        {isApproving && activeId === request.id && activeAction === 'approve' ? 'APPROVING...' : 'APPROVE'}
                       </Button>
                       <Button
                         onClick={() => handleApprove(request.id, false)}
-                        disabled={isApproving}
+                        disabled={isApproving && activeId === request.id}
                         className="bg-red-500 hover:bg-red-600 text-white font-comfortaa font-semibold"
                       >
-                        {isApproving ? 'REJECTING...' : 'REJECT'}
+                        {isApproving && activeId === request.id && activeAction === 'reject' ? 'REJECTING...' : 'REJECT'}
                       </Button>
                     </div>
                   </div>

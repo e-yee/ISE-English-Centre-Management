@@ -45,6 +45,10 @@ const LeaveRequestList: React.FC<LeaveRequestListProps> = ({ requests, className
     );
   }
 
+  const sortedRequests = React.useMemo(() => {
+    return [...requests].sort((a, b) => b.createdDate.getTime() - a.createdDate.getTime());
+  }, [requests]);
+
   return (
     <div className={cn('space-y-6', className)}>
       <div className="flex items-center space-x-4 mb-6">
@@ -55,8 +59,8 @@ const LeaveRequestList: React.FC<LeaveRequestListProps> = ({ requests, className
       </div>
       
       <div className="space-y-4">
-        {requests.map((request) => (
-          <Card key={request.id} className="shadow-md hover:shadow-lg transition-shadow duration-200 border-0 bg-white">
+        {sortedRequests.map((request) => (
+          <Card key={`${request.id}-${request.createdDate.getTime()}`} className="shadow-md hover:shadow-lg transition-shadow duration-200 border-0 bg-white">
             <CardContent className="p-6">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
