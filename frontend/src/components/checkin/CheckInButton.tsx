@@ -6,17 +6,19 @@ interface CheckInButtonProps {
   onClick?: () => void;
   className?: string;
   disabled?: boolean;
+  loading?: boolean;
 }
 
 const CheckInButton: React.FC<CheckInButtonProps> = ({ 
   onClick, 
   className, 
-  disabled = false 
+  disabled = false,
+  loading = false 
 }) => {
   return (
     <Button
       onClick={onClick}
-      disabled={disabled}
+      disabled={disabled || loading}
       className={cn(
         "bg-gradient-to-r from-[#7093DD] to-[#7093DD] text-white font-bold text-xl",
         "px-8 py-2 rounded-[90px] border-0 shadow-lg",
@@ -25,7 +27,7 @@ const CheckInButton: React.FC<CheckInButtonProps> = ({
         className
       )}
     >
-      {disabled ? "Checking In..." : "Check In"}
+      {loading ? "Checking In..." : disabled ? "Checked In" : "Check In"}
     </Button>
   );
 };

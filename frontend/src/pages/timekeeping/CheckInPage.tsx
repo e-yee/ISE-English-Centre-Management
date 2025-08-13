@@ -31,6 +31,8 @@ const CheckInPage: React.FC<CheckInPageProps> = ({ className }) => {
     error, 
     success, 
     clearMessages,
+    hasCheckedInToday,
+    checkCheckedInToday,
     teacherClasses,
     isLoadingClasses,
     classesError,
@@ -52,6 +54,13 @@ const CheckInPage: React.FC<CheckInPageProps> = ({ className }) => {
       fetchTeacherClasses();
     }
   }, [user?.id, fetchTeacherClasses, isManagerOrAdvisor]);
+
+  // Read-only check: has the user already checked in today?
+  useEffect(() => {
+    if (user?.id) {
+      checkCheckedInToday(user.id);
+    }
+  }, [user?.id, checkCheckedInToday]);
 
   const handleCheckIn = async () => {
     console.log('🔍 CheckInPage - Check-in button clicked');
@@ -110,6 +119,7 @@ const CheckInPage: React.FC<CheckInPageProps> = ({ className }) => {
               isLoading={isLoading}
               error={error}
               success={success}
+              disabled={hasCheckedInToday}
             />
           </div>
 
