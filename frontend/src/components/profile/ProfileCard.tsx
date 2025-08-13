@@ -239,10 +239,10 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ className }) => {
             </span>
           </div>
           
-          {/* Add Contact Button */}
+          {/* Add Contact Button - hidden */}
           <div className="mt-4">
             <Button
-              className="cursor-pointer px-[54px] py-3 rounded-[7px] bg-[rgba(207,224,255,0.51)] text-[#3384FF] font-normal text-[20px] hover:bg-[rgba(207,224,255,0.7)] hover:scale-105 transition-all duration-200"
+              className="hidden cursor-pointer px-[54px] py-3 rounded-[7px] bg-[rgba(207,224,255,0.51)] text-[#3384FF] font-normal text-[20px] hover:bg-[rgba(207,224,255,0.7)] hover:scale-105 transition-all duration-200"
             >
               +Add Contact
             </Button>
