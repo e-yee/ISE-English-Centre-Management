@@ -110,9 +110,9 @@ const Header: React.FC<HeaderProps> = ({ isRegistered = false }) => {
 
       {/* Right Frame - All icons */}
       <div className="flex items-center gap-4 px-6">
-        {/* Search */}
+        {/* Search - hidden */}
         <button
-          className="flex items-center justify-center hover:scale-105 transition-transform duration-200"
+          className="hidden flex items-center justify-center hover:scale-105 transition-transform duration-200"
           aria-label="Search"
         >
           <img src="/src/assets/header/search.svg" alt="Search" className="w-6 h-6" />
