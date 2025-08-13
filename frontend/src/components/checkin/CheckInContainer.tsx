@@ -11,6 +11,7 @@ interface CheckInContainerProps {
   isLoading?: boolean;
   error?: string | null;
   success?: string | null;
+  disabled?: boolean;
 }
 
 const CheckInContainer: React.FC<CheckInContainerProps> = ({
@@ -19,7 +20,8 @@ const CheckInContainer: React.FC<CheckInContainerProps> = ({
   onCheckIn,
   isLoading = false,
   error = null,
-  success = null
+  success = null,
+  disabled = false
 }) => {
   return (
     <Card className={cn(
@@ -39,7 +41,8 @@ const CheckInContainer: React.FC<CheckInContainerProps> = ({
       
       <CheckInButton 
         onClick={onCheckIn} 
-        disabled={isLoading}
+        disabled={disabled}
+        loading={isLoading}
       />
 
       {/* Success Message Below Button */}

@@ -136,7 +136,7 @@ export const EvaluationForm: React.FC<EvaluationFormProps> = ({
             <div className="space-y-2">
               <Label>Grade</Label>
               <Input
-                placeholder="e.g., A, A+, 95"
+                placeholder="e.g., A, A+"
                 value={grade}
                 onChange={(e) => setGrade(e.target.value.slice(0, 2))}
               />

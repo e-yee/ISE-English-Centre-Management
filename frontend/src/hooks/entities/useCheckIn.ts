@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import checkinService from '@/services/entities/checkinService';
 import type { CheckInResponse, TeacherClass } from '@/services/entities/checkinService';
 
@@ -74,6 +74,7 @@ export const useCheckIn = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [hasCheckedInToday, setHasCheckedInToday] = useState(false);
   
   // Teacher classes state
   const [teacherClasses, setTeacherClasses] = useState<TransformedClass[]>([]);
@@ -163,6 +164,22 @@ export const useCheckIn = () => {
     }
   }, []); // Empty dependency array since it doesn't depend on any state
 
+  // Check if user has already checked in today (read-only)
+  const checkCheckedInToday = useCallback(async (employeeId: string) => {
+    try {
+      const records = await checkinService.getStatus(employeeId);
+      const today = new Date().toISOString().slice(0, 10);
+      const checked = Array.isArray(records) && records.some((r: any) => {
+        const date = (r?.checkin_time ?? '').slice(0, 10);
+        return date === today;
+      });
+      setHasCheckedInToday(checked);
+    } catch {
+      // If status cannot be fetched, default to not checked
+      setHasCheckedInToday(false);
+    }
+  }, []);
+
   const clearMessages = () => {
     setError(null);
     setSuccess(null);
@@ -175,6 +192,8 @@ export const useCheckIn = () => {
     error,
     success,
     clearMessages,
+    hasCheckedInToday,
+    checkCheckedInToday,
     // Teacher classes functionality
     teacherClasses,
     isLoadingClasses,
