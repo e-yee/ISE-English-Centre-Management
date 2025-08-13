@@ -7,7 +7,6 @@ import ContractGrid from '@/components/contract/ContractGrid';
 import { useContracts, useCreateContract, useUpdateContract } from '@/hooks/entities/useContracts';
 import { useCourses } from '@/hooks/entities/useCourses';
 import type { Contract, CreateContractData, ContractResponse, UpdateContractData } from '@/types/contract';
-import type { Course } from '@/types/course';
 import { getUserRole } from '@/lib/utils';
 
 const ContractPage: React.FC = () => {
@@ -65,7 +64,7 @@ const ContractPage: React.FC = () => {
   };
 
   const handleBackToCourses = () => {
-    navigate('/dashboard/courses');
+    navigate('/dashboard/courses', { state: { selectedCourseId: courseId } });
   };
 
   const handleFormSubmit = async (contractData: CreateContractData | UpdateContractData) => {

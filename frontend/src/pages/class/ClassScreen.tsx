@@ -9,6 +9,7 @@ import { useClassStudents } from '@/hooks/entities/useStudent';
 import { useClasses } from '@/hooks/entities/useClasses';
 import type { ClassData } from '@/types/class';
 import type { StudentData } from '@/mockData/studentListMock';
+import AddStudentToClassForm from '@/components/student/AddStudentToClassForm';
 
 interface ClassScreenProps {
   className?: string;
@@ -106,6 +107,7 @@ const ClassScreen: React.FC<ClassScreenProps> = ({ className }) => {
 
   const transformedStudents = students ? students.map(transformStudentToStudentData) : [];
   const [selectedStudent, setSelectedStudent] = React.useState<StudentData | null>(null);
+  const [addStudentOpen, setAddStudentOpen] = React.useState(false);
   
   // Calculate actual student count from real data
   const actualStudentCount = transformedStudents.length;
@@ -154,7 +156,7 @@ const ClassScreen: React.FC<ClassScreenProps> = ({ className }) => {
           )}
           {role === 'Learning Advisor' && (
             <button
-              onClick={() => alert('Add Student: coming soon')}
+              onClick={() => setAddStudentOpen(true)}
               className="bg-white border border-black/20 rounded-[10px] shadow-[2px_2px_3px_0px_rgba(0,0,0,0.15)] px-4 py-2 transition-all duration-200 ease-in-out hover:shadow-[3px_3px_4px_0px_rgba(0,0,0,0.2)] hover:scale-105 focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-1"
             >
               <span className="text-[16px] font-semibold text-black leading-[1em] font-comfortaa whitespace-nowrap">Add Student</span>
@@ -201,6 +203,18 @@ const ClassScreen: React.FC<ClassScreenProps> = ({ className }) => {
           </div>
         )}
       </div>
+      {/* Add Student Modal for Learning Advisor */}
+      {role === 'Learning Advisor' && (
+        <AddStudentToClassForm
+          open={addStudentOpen}
+          onOpenChange={setAddStudentOpen}
+          classId={classId || ''}
+          courseId={effCourseId}
+          courseDate={effCourseDate}
+          term={effTerm}
+          onSuccess={() => { /* list will refresh via query invalidation in hook */ }}
+        />
+      )}
     </div>
   );
 };
