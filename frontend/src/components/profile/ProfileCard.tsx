@@ -3,9 +3,9 @@ import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import avatarIcon from "@/assets/header/avatar.svg";
 import mailIcon from "@/assets/header/mail.svg";
-import profileBg from "@/assets/frame.svg";
 import { useProfile } from "@/hooks/entities/useEmployees";
 import employeeService from "@/services/entities/employeeService";
 
@@ -24,6 +24,7 @@ interface UserProfile {
 const ProfileCard: React.FC<ProfileCardProps> = ({ className }) => {
   const { data: profileData, isLoading, error, refetch } = useProfile();
   const [isEditing, setIsEditing] = useState(false);
+  const [saved, setSaved] = useState(false);
   const [profile, setProfile] = useState<UserProfile>({
     name: "Your name",
     email: "your.email@example.com",
@@ -60,13 +61,16 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ className }) => {
         full_name: editProfile.name,
         nickname: editProfile.nickname === "Your nick name" ? null : editProfile.nickname,
         philosophy: editProfile.philosophy === "Your philosophy..." ? null : editProfile.philosophy,
-        achievements: editProfile.achievements === "Your achievements" ? null : editProfile.achievements
+        achievements: editProfile.achievements === "Your achievements" ? null : editProfile.achievements,
+        email: editProfile.email
       };
 
       await employeeService.updateProfile(updateData);
       setProfile(editProfile);
       setIsEditing(false);
       refetch(); // Refresh data from server
+      setSaved(true);
+      window.setTimeout(() => setSaved(false), 2000);
     } catch (error) {
       console.error('Failed to update profile:', error);
       // You might want to show an error toast here
@@ -148,6 +152,12 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ className }) => {
             {isEditing ? "Save" : "Edit"}
           </Button>
         </div>
+
+        {saved && (
+          <div className="mb-4">
+            <Badge className="bg-green-500 text-white border-transparent">Profile updated</Badge>
+          </div>
+        )}
 
         {/* Editable Fields Section */}
         <div className="grid grid-cols-2 gap-x-8">
@@ -234,9 +244,18 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ className }) => {
             </div>
             
             {/* Email Address */}
-            <span className="text-[20px] font-bold text-gray-600">
-              {profile.email}
-            </span>
+            {isEditing ? (
+              <Input
+                value={editProfile.email}
+                onChange={(e) => handleInputChange('email', e.target.value)}
+                className="h-[43px] rounded-[10px] border-2 border-gray-300 bg-gray-100/30 px-5 font-bold text-[16px]"
+                placeholder="your.email@example.com"
+              />
+            ) : (
+              <span className="text-[20px] font-bold text-gray-600">
+                {profile.email}
+              </span>
+            )}
           </div>
           
           {/* Add Contact Button */}
