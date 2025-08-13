@@ -76,9 +76,9 @@ export function LoginForm({ onForgotPassword, onSubmit, isLoading = false }: Log
                          bg-transparent border-0 rounded-none 
                          px-0 pl-1 py-0
                          text-[28px] font-comfortaa font-semibold text-black placeholder-[#78746C] placeholder:italic
-                         focus:ring-0 focus-visible:ring-0 focus:placeholder:not-italic
+                         focus:ring-0 focus-visible:ring-0 focus:placeholder:not-italic text-center
                          selection:bg-yellow-100 selection:text-black/80"
-              placeholder="Username"              
+              placeholder=""              
               required
               disabled={isLoading}
               />
@@ -110,7 +110,7 @@ export function LoginForm({ onForgotPassword, onSubmit, isLoading = false }: Log
                          px-0 pl-1 py-0 text-[28px] font-comfortaa font-semibold text-black placeholder-[#78746C] placeholder:italic
                          focus:ring-0 focus-visible:ring-0 focus:placeholder:not-italic
                          selection:bg-yellow-100 selection:text-black/80"
-              placeholder="Password"
+              placeholder=""
               required
               disabled={isLoading}
             />

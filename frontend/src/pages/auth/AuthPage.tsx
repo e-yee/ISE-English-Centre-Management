@@ -178,10 +178,7 @@ const AuthPage: React.FC = () => {
           {renderCurrentForm()}
         </div>         
 
-        {/* <div className="w-1/2 flex items-center justify-center p-10">
-        <div className="w-full h-[85%] rounded-2xl backdrop-blur-lg bg-white/30 border border-white/30 shadow-lg px-10 py-8 text-white"></div>
-        </div> */}
-
+        {/*Right side*/}
         <div className="w-1/2 px-10 py-5 grow">
           <div className="w-auto h-[100%] rounded-lg 
                           backdrop-blur-none bg-white/10 border border-gray-500/40 border-1 
@@ -191,18 +188,6 @@ const AuthPage: React.FC = () => {
             <p className="self-start text-[20px] font-thin">Welcome back! We are glad to have you here - let's get you logged in</p>            
           </div>
         </div>
-
-        {/* Right Half - Background Image */}
-        {/* <div
-          className="w-1/2 bg-auto bg-center bg-no-repeat"
-          style={{
-            backgroundImage: `url(${classroomBG})`,
-          }}
-        >
-        </div> */}
-          {/* Optional overlay for better image presentation */}
-          {/* <div className="w-full h-full bg-black/5"></div> */}
-              
     </div>
   );
 };
