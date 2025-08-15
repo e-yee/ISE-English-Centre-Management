@@ -12,7 +12,7 @@ interface ColleagueProfilePanelProps {
 const AttributeCard: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
     <Card>
       <CardContent className="p-4">
-        <label className="block text-sm font-semibold text-gray-700 mb-2">{title}</label>
+        <label className="block text-sm font-bold text-gray-700 mb-2">{title}</label>
         <div className="text-sm text-gray-600 bg-gray-50 p-3 rounded-md max-h-[120px] overflow-y-auto">
           {children}
         </div>
@@ -38,7 +38,7 @@ const ColleagueProfilePanel: React.FC<ColleagueProfilePanelProps> = ({ colleague
       {onMinimize && (
         <button
           onClick={onMinimize}
-          className="absolute top-4 right-4 z-20 p-2 hover:bg-gray-100 rounded-full transition-colors"
+          className="absolute top-4 right-4 z-20 p-2 hover:bg-fuchsia-200 rounded-full transition-colors"
           title="Minimize panel"
         >
           <img 
@@ -49,30 +49,25 @@ const ColleagueProfilePanel: React.FC<ColleagueProfilePanelProps> = ({ colleague
         </button>
       )}
       {/* Profile Header with Background Frame */}
-      <div className="relative mb-8 pb-16">
-        <div className="absolute top-0 left-0 w-full h-40 bg-gradient-to-b from-blue-100 to-blue-50 rounded-t-lg overflow-hidden">
-          <img 
-            src="/src/assets/frame.svg" 
-            alt="Background frame" 
-            className="w-full h-full object-cover opacity-50"
-          />
+      <div className="relative mb-5">
+        <div className="absolute top-0 left-0 w-full h-40 bg-gradient-to-b from-blue-100 to-rose-100 rounded-t-lg overflow-hidden">          
         </div>
-        <div className="relative pt-21 px-6">
+        <div className="relative pt-14 px-6 pl-2">
           <div className="flex items-end">
             <Avatar 
               name={colleague.name}
               src={colleague.avatar}
               size="xl"
-              className="mr-6 z-10 border-4 border-white shadow-lg"
+              className="mr-2 z-10 border-4 border-white shadow-lg"
             />
-            <div className="z-10 pb-4">
-              <h1 className="text-3xl font-bold text-gray-900 font-comfortaa mb-2">
+            <div className="z-10 pb-6">
+              <h1 className="text-3xl font-bold text-gray-900 font-comfortaa">
                 {colleague.name}
               </h1>
               <p className="text-lg text-gray-600">
                 {colleague.email} | {colleague.phone}
               </p>
-              <p className="text-sm text-blue-600 font-medium mt-1">
+              <p className="text-sm text-blue-600 font-medium">
                 Employee ID: {colleague.id}
               </p>
             </div>
