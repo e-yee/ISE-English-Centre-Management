@@ -4,6 +4,7 @@ import type { Colleague } from '../../mockData/colleaguesMock';
 import { SearchInput } from '../ui/SearchInput';
 import { Card, CardContent } from '../ui/card';
 import Avatar from '../ui/Avatar';
+import infoIcon from "@/assets/colleagues/info.svg";
 
 interface ColleagueListProps {
   colleagues: Colleague[];
@@ -27,6 +28,10 @@ const ColleagueList: React.FC<ColleagueListProps> = ({
     c.email.toLowerCase().includes(search.toLowerCase()) ||
     c.nickname.toLowerCase().includes(search.toLowerCase())
   );
+
+  const handle_long_string = (ltr : string) => {
+    return ltr.length > 20 ? ltr.substring(0, 25) + '...' : ltr
+  }
 
   return (
     <div className="h-full flex flex-col max-h-screen">
@@ -54,21 +59,50 @@ const ColleagueList: React.FC<ColleagueListProps> = ({
             </div>
 
             {/* Colleague List */}
-            <div className="flex-1 overflow-y-auto min-h-0">
+            <div className="overflow-y-auto min-h-0">
               {filtered.length > 0 ? (
-                <div className={cn("space-y-3", compact ? "p-3" : "p-4") }>
+                <div className={cn("grid grid-cols-4 gap-4", compact ? "p-3" : "p-4") }>
                   {filtered.map(colleague => (
                     <Card
                       key={colleague.id}
                       className={cn(
-                        "cursor-pointer transition-all duration-200 hover:shadow-md border-2",
+                        "rounded-xl h-fit cursor-pointer transition-all duration-200 border border-2 border-gray-200 hover:shadow-md",
                         selectedColleagueId === colleague.id
-                          ? "border-purple-500 bg-purple-50 shadow-md"
-                          : "border-transparent hover:border-gray-200 bg-gray-50"
+                          ? "border-purple-500 bg-purple-50 shadow-md scale-102"
+                          : "hover:border-black bg-gray-50 hover:scale-105"
                       )}
                       onClick={() => onSelect(colleague.id)}
                     >
-                      <CardContent className="p-4">
+                      <CardContent className='h-full p-0 py-2'>
+                        <div className='h-[70%] mx-2 pt-2 flex justify-center items-center bg-rose-200 rounded-lg'>
+                          <Avatar 
+                            name={colleague.name}
+                            src={colleague.avatar}
+                            size="size90"                          
+                          />
+                        </div>
+                        <div className='flex flex-row w-full h-fit items-center justify-between my-1'>
+                          <div className='w-[40%] bg-black h-[2px] rounded-full'></div>
+                          <img src={infoIcon} alt='Info Icon' className='w-6 h-6' />
+                          <div className='w-[40%] bg-black h-[2px] rounded-full'></div>
+                        </div>
+
+                        <div className='flex flex-col items-center gap-y-1'>
+                          <h3 className="font-bold text-black truncate">
+                                {colleague.name}
+                          </h3>
+                          <span className="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full">
+                                ID: {colleague.id}
+                          </span>
+                          {colleague.nickname && (
+                            <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
+                              {handle_long_string(colleague.nickname)}
+                            </span>
+                          )}
+                        </div>
+
+                      </CardContent>
+                      {/* <CardContent className="p-4">
                         <div className="flex items-center space-x-4">
                           <Avatar 
                             name={colleague.name}
@@ -99,7 +133,10 @@ const ColleagueList: React.FC<ColleagueListProps> = ({
                             )}
                           </div>
                         </div>
-                      </CardContent>
+
+                          
+
+                      </CardContent> */}
                     </Card>
                   ))}
                 </div>

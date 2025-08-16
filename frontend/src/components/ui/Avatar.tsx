@@ -1,11 +1,12 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
+import avatarIcon from "@/assets/header/avatar.svg";
 
 interface AvatarProps {
   name: string;
   src?: string;
   color?: string;
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+  size?: 'sm' | 'md' | 'lg' | 'xl' | 'size90' | 'full';
   className?: string;
 }
 
@@ -16,7 +17,7 @@ const Avatar: React.FC<AvatarProps> = ({
   size = 'md',
   className 
 }) => {
-  // Generate color from name if not provided
+  //Generate color from name if not provided
   const getColorFromName = (name: string): { bg: string; path: string } => {
     const colorPairs = [
       { bg: '#EADDFF', path: '#4F378A' }, // Purple (original)
@@ -53,7 +54,9 @@ const Avatar: React.FC<AvatarProps> = ({
     sm: 'w-8 h-8',
     md: 'w-12 h-12',
     lg: 'w-16 h-16',
-    xl: 'w-32 h-32'
+    xl: 'w-32 h-32',
+    size90: 'w-[90%] h-[90%]',
+    full: 'w-full h-full'
   };
 
   const avatarSrc = src || getColoredAvatar(name);

@@ -4,7 +4,7 @@ import ColleagueList from "@/components/colleagues/ColleagueList";
 import ColleagueProfilePanel from "@/components/colleagues/ColleagueProfilePanel";
 import { useEmployees } from "@/hooks/entities/useEmployees";
 import type { Colleague } from "@/mockData/colleaguesMock";
-
+import avatarIcon from "@/assets/header/avatar.svg"; // Avatar here
 interface ColleaguesPageProps {
   className?: string;
 }
@@ -22,7 +22,7 @@ const ColleaguesPage: React.FC<ColleaguesPageProps> = ({ className }) => {
     name: employee.name || employee.full_name,
     email: employee.email,
     phone: employee.phone || employee.phone_number || '',
-    avatar: '', // Let Avatar component generate colored avatars
+    avatar: avatarIcon, // MUST REPLACE
     nickname: employee.nickname || '',
     achievements: Array.isArray(employee.achievements) ? employee.achievements.join(', ') : employee.achievements || '',
     philosophy: employee.philosophy || '',
