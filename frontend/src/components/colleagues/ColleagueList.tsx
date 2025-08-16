@@ -23,6 +23,21 @@ const ColleagueList: React.FC<ColleagueListProps> = ({
 }) => {
   const [search, setSearch] = useState('');
   
+  // Function to generate different background colors for each profile
+  const getProfileBackgroundColor = (name: string): string => {
+    const colors = [
+      'bg-blue-200', 'bg-green-200', 'bg-purple-200', 'bg-yellow-200',
+      'bg-pink-200', 'bg-indigo-200', 'bg-red-200', 'bg-teal-200',
+      'bg-orange-200', 'bg-cyan-200', 'bg-lime-200', 'bg-amber-200'
+    ];
+    
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return colors[Math.abs(hash) % colors.length];
+  };
+  
   const filtered = colleagues.filter(c =>
     c.name.toLowerCase().includes(search.toLowerCase()) ||
     c.email.toLowerCase().includes(search.toLowerCase()) ||
@@ -74,7 +89,7 @@ const ColleagueList: React.FC<ColleagueListProps> = ({
                       onClick={() => onSelect(colleague.id)}
                     >
                       <CardContent className='h-full p-0 py-2'>
-                        <div className='h-[70%] mx-2 pt-2 flex justify-center items-center bg-rose-200 rounded-lg'>
+                        <div className={`h-[70%] mx-2 pt-2 flex justify-center items-center ${getProfileBackgroundColor(colleague.name)} rounded-lg`}>
                           <Avatar 
                             name={colleague.name}
                             src={colleague.avatar}
