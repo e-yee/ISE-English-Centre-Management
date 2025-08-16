@@ -118,7 +118,9 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ className }) => {
   return (
     <Card className={cn("selection:bg-purple-400 selection:text-white bg-white rounded-[15px]  shadow-lg", className)}>
       {/* Profile Header with Background Image */}
-      <div className="relative h-22 w-full rounded-t-[15px] bg-gradient-to-r from-[#c9def4] via-[#f5ccd4] to-[#b8a4c9]">                
+      <div className="flex flex-col justify-center items-center relative h-24 w-full rounded-t-[15px] bg-gradient-to-r from-[#c9def4] via-[#f5ccd4] to-[#b8a4c9]">                
+        <h1 className="mt-2 font-bold text-5xl text-indigo-400 hover:scale-110 select:scale-120 duration-500 ease-in-out">Welcome back!</h1>
+        <p className="font-semibold text-md animate-bounce duration-900 ease-in-out">Hope you have a wonderful day.</p>
       </div>
 
       <CardContent className="px-9 pb-4 pt-4">
