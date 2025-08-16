@@ -59,7 +59,7 @@ const ColleagueList: React.FC<ColleagueListProps> = ({
 
       {/* Main card container that fits with header */}
       <div className="flex-1 px-6 pb-6 min-h-0">
-        <Card className={cn("h-full", compact ? "max-h-[calc(100vh-160px)]" : "max-h-[calc(100vh-200px)]") }>
+        <Card className={cn("h-full") }> {/*, compact ? "max-h-[calc(100vh-160px)]" : "max-h-[calc(100vh-200px)]"*/}
           <CardContent className="p-0 h-full flex flex-col">
             {/* Search Bar - full width */}
             <div className={cn("border-b border-gray-200 flex-shrink-0", compact ? "p-4" : "p-6") }>
