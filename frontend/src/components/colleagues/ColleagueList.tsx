@@ -69,7 +69,7 @@ const ColleagueList: React.FC<ColleagueListProps> = ({
                         "rounded-xl h-fit cursor-pointer transition-all duration-200 border border-2 border-gray-200 hover:shadow-md",
                         selectedColleagueId === colleague.id
                           ? "border-purple-500 bg-purple-50 shadow-md scale-102"
-                          : "hover:border-black bg-gray-50 hover:scale-105"
+                          : "hover:border-l-[#ff1b6b] hover:border-t-[#ff1b6b] hover:border-r-[#45caff] hover:border-b-[#45caff] bg-gray-50 hover:scale-105"
                       )}
                       onClick={() => onSelect(colleague.id)}
                     >
