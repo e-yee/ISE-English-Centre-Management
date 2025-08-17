@@ -40,7 +40,7 @@ const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
             <button
               type="submit"
               className={cn(
-                "absolute left-4 flex items-center justify-center z-10",
+                "absolute left-4 flex items-center justify-center",
                 "hover:scale-105 transition-transform duration-200",
                 "focus:outline-none focus:scale-105"
               )}
