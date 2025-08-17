@@ -117,7 +117,7 @@ const StaffPage: React.FC<StaffPageProps> = ({ className }) => {
         {/* Profile Panel */}
         <div
           className={cn(
-            "w-[60%] transition-all duration-500 ease-in-out absolute right-0 top-0 bottom-0 bg-white",
+            "w-[100%] transition-all duration-500 ease-in-out absolute right-0 top-0 bottom-0 bg-white",
             selectedColleagueId ? "translate-x-0" : "translate-x-full pointer-events-none"
           )}
         >
