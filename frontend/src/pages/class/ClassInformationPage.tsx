@@ -76,21 +76,15 @@ const ClassInformationPage: React.FC<ClassInformationPageProps> = ({ className }
 
       {/* Class Information Section - class name on right, following ClassScreen pattern */}
       <div className={cn(
-        "pb-3 flex-shrink-0 transition-all duration-300 ease-in-out",
+        "pt-2 flex-shrink-0 transition-all duration-300 ease-in-out",
         "px-8"
       )}>
         <div className="flex items-center w-full">
           {/* Left side - Class Name */}
           <div className="flex items-center flex-1">
             <h1
-              className="text-[60px] font-normal leading-[1.4em] font-comfortaa"
-              style={{
-                background: 'linear-gradient(135deg, #AB2BAF 0%, #471249 100%), linear-gradient(90deg, #E634E1 0%, #E634E1 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text'
-              }}
-            >
+              className="text-5xl font-normal leading-[1.4em] font-comfortaa 
+                         text-violet-600">
               {transformedClassData.className}
             </h1>
           </div>
