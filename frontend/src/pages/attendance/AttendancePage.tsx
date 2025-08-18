@@ -99,10 +99,13 @@ const AttendancePage: React.FC<AttendancePageProps> = ({ className }) => {
         {/* Class Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
-            <h1 className="text-3xl font-light text-purple-600">Class {classId || ''}</h1>
+            <h1 className="text-4xl font-bold 
+                           text-violet-600">
+              Class {classId || ''}
+            </h1>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="w-32 justify-between">
+                <Button variant="outline" className="w-40 justify-between">
                   {selectedDate}
                   <ChevronDown className="h-4 w-4" />
                 </Button>
@@ -121,9 +124,9 @@ const AttendancePage: React.FC<AttendancePageProps> = ({ className }) => {
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 text-sm text-gray-600">
-              <User className="h-4 w-4" />
-              <span>{totalStudents}</span>
+            <div className="flex flex-row items-center gap-1 text-sm text-gray-600">
+              <User className="h-6 w-6" />
+              <span className="text-xl mt-1">{totalStudents}</span>
             </div>
             <div className="flex flex-col items-end gap-2">
               <Button
