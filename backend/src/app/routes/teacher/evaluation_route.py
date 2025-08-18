@@ -1,13 +1,14 @@
-from flask import Blueprint, request, jsonify
-from flask_jwt_extended import get_jwt_identity, get_jwt
+from flask import Blueprint, request, jsonify, send_file
+from flask_jwt_extended import get_jwt
 from app.auth import role_required
 from marshmallow import ValidationError
 from ...http_status import HTTPStatus
 from sqlalchemy.exc import IntegrityError, OperationalError
 from ...schemas.evaluation_schema import evaluation_schema
-from ...models import Evaluation, PDF, Student, Employee, Enrolment, StudentAttendance
+from ...models import Evaluation, Student, Employee, Enrolment, StudentAttendance, Course
+from ...models.pdf import generate_report
 from extensions import db
-import datetime
+import datetime, os
 
 evaluation_bp = Blueprint("evaluation_bp", __name__, url_prefix="/evaluation")
 
@@ -91,7 +92,7 @@ def validate_teacher(teacher_id):
     return teacher, None, None
 
 def validate_course(course_id):
-    course = db.session.query(Evaluation).filter_by(course_id=course_id).first()
+    course = db.session.query(Course).filter_by(id=course_id).first()
 
     if not course:
         return None, jsonify({
@@ -357,13 +358,53 @@ def export_evaluation():
 
         data = request.get_json()
         # Process the data and generate the PDF
-        pdf = PDF()
-        pdf.add_page()
-        pdf.chapter_title("Evaluation Report")
-        pdf.chapter_body("This is the body of the evaluation report.")
-        pdf.output("evaluation_report.pdf")
+        student_id, response, status = get_student_id()
+        if not student_id:
+            return response, status
+        
+        student_id, response, status = validate_student(student_id)
+        if not student_id:
+            return response, status
 
-        return jsonify({"message": "Evaluation report exported successfully."}), HTTPStatus.OK
+        course_id, response, status = get_course_id()
+        if not course_id:
+            return response, status
+
+        course_id, response, status = validate_course(course_id)
+        if not course_id:
+            return response, status
+        
+        teacher_id, response, status = get_teacher_id()
+        if not teacher_id:
+            return response, status
+
+        teacher_id, response, status = validate_teacher(teacher_id)
+        if not teacher_id:
+            return response, status
+        
+        pdf_data = jsonify({
+            "student_id": student_id,
+            "course_id": course_id,
+            "teacher_id": teacher_id,
+            "student_name": student_id.fullname,
+            "course_name": course_id.name,
+            "teacher_name": teacher_id.full_name
+        })
+
+        logo_path = "frontend/src/assets/logo.svg"
+        output_path = os.path.join("backend/assets", f"evaluation_report_{pdf_data["student_id"]}.pdf")
+
+        if not os.path.exists("backend/assets"):
+            os.makedirs("backend/assets")
+
+        generate_report(pdf_data, output_path, logo_path)
+
+        return send_file(
+            output_path, 
+            as_attachment=True,
+            download_name=f"evaluation_report_{pdf_data['student_id']}.pdf",
+            mimetype="application/pdf"
+        )
 
     except Exception as e:
         return jsonify({"message": "An error occurred", "error": str(e)}), HTTPStatus.INTERNAL_SERVER_ERROR
