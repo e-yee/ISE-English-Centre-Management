@@ -64,7 +64,7 @@ const Class: React.FC<ClassProps> = ({ classData, className, onClick }) => {
     <Card 
       className={cn(
         "border-none class-card-container bg-white shadow-none hover:shadow-md transition-all duration-300 ease-in-out",
-        "w-full h-auto rounded-[15px] hover:scale-102 hover:bg-gradient-to-r hover:from-indigo-200  hover:to-rose-100",
+        "w-full h-auto rounded-sm hover:scale-102 hover:bg-gradient-to-r hover:from-indigo-200 hover:to-rose-100",        
         className
       )}
       onClick={onClick}
