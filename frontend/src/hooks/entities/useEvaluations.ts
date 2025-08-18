@@ -53,4 +53,22 @@ export function useEvaluations(args: UseEvaluationsArgs = {}) {
   return { data: data ?? [], loading: isLoading, error, refetch, create, update } as const;
 }
 
+// Class report: fetch students with their evaluations for a class/course/date
+export function useClassReport(
+  classId: string,
+  courseId: string,
+  courseDate: string,
+  term: string,
+  enabled: boolean = true
+) {
+  const params = { classId, courseId, courseDate, term };
+  const queryKey = ['class-report', params];
+  const { data, isLoading, error, refetch } = useDataFetching(
+    queryKey,
+    async () => evaluationService.getClassStudentsWithEvaluations(classId, courseId, courseDate, term),
+    { enabled: enabled && !!classId && !!courseId && !!courseDate && !!term }
+  );
+  return { data: data ?? [], loading: isLoading, error, refetch } as const;
+}
+
 

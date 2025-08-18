@@ -1,38 +1,108 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { cn } from '@/lib/utils';
 import FeatureButtonList from '@/components/class/FeatureButtonList';
-import { classReportMockData } from '@/mockData/classReportMock';
 import type { StudentReportData } from '@/mockData/classReportMock';
 import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import AvatarIcon from '@/assets/class/user.svg';
 import { ExportNotification } from '@/components/notifications/ExportNotification';
+import { useParams } from 'react-router-dom';
+import { useClassReport } from '@/hooks/entities/useEvaluations';
+import StudentReportCard from '@/components/class-report/StudentReportCard';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface ClassReportPageProps {
   className?: string;
 }
 
 const ClassReportPage: React.FC<ClassReportPageProps> = ({ className }) => {
-  const [students, setStudents] = useState<StudentReportData[]>(classReportMockData.students);
+  const { classId = '', courseId = '', courseDate = '', term = '' } =
+    useParams<{ classId: string; courseId: string; courseDate: string; term: string }>();
+
+  const { data: reportData = [], loading } = useClassReport(
+    classId,
+    courseId,
+    courseDate,
+    term,
+    !!classId && !!courseId && !!courseDate && !!term
+  );
+
+  const adaptGrade = (grade: string | number | null | undefined) => {
+    if (grade === null || grade === undefined) return 0;
+    const n = Number(grade);
+    if (!Number.isNaN(n)) return Math.max(0, Math.min(100, n));
+    const g = String(grade).trim().toUpperCase();
+    if (g === 'A') return 95;
+    if (g === 'B') return 85;
+    if (g === 'C') return 75;
+    if (g === 'D') return 65;
+    if (g === 'F') return 55;
+    return 0;
+  };
+
+  const pickLatestByType = (evals: any[], type: string) => {
+    const filtered = evals.filter(e => e.assessment_type === type);
+    filtered.sort((a, b) => {
+      const da = a.evaluation_date ? Date.parse(a.evaluation_date) : -Infinity;
+      const db = b.evaluation_date ? Date.parse(b.evaluation_date) : -Infinity;
+      if (db !== da) return db - da;
+      return adaptGrade(b.grade) - adaptGrade(a.grade);
+    });
+    return filtered[0];
+  };
+
+  const average = (nums: number[]) => {
+    if (!nums.length) return 0;
+    return Math.round(nums.reduce((a, b) => a + b, 0) / nums.length);
+  };
+
+  const adaptedStudents = useMemo<StudentReportData[]>(() => {
+    return reportData.map((row: any, idx: number) => {
+      const evals: any[] = Array.isArray(row.evaluations) ? row.evaluations : [];
+
+      const homeworkTypes = ['Quiz 1', 'Quiz 2', 'Quiz 3', 'Quiz 4'];
+      const midtermTypes = ['Reading Assessment 1', 'Writing Project 1'];
+      const finalTypes = ['Reading Assessment 2', 'Writing Project 2'];
+
+      const pickAndGrade = (types: string[]) => {
+        const grades = types
+          .map(t => pickLatestByType(evals, t))
+          .filter(Boolean)
+          .map(e => adaptGrade(e.grade));
+        return average(grades);
+      };
+
+      const scores = {
+        homework: pickAndGrade(homeworkTypes),
+        midterm: pickAndGrade(midtermTypes),
+        final: pickAndGrade(finalTypes),
+      };
+
+      const latest = [...evals].sort((a, b) => {
+        const da = a.evaluation_date ? Date.parse(a.evaluation_date) : -Infinity;
+        const db = b.evaluation_date ? Date.parse(b.evaluation_date) : -Infinity;
+        return db - da;
+      })[0];
+
+      return {
+        id: row.student?.id ?? String(idx + 1),
+        name: row.student?.fullname ?? row.student?.id ?? String(idx + 1),
+        studentId: row.student?.id ?? String(idx + 1),
+        index: idx + 1,
+        scores,
+        assessment: latest?.comment ?? '',
+      } as StudentReportData;
+    });
+  }, [reportData]);
+
+  const [students, setStudents] = useState<StudentReportData[]>([]);
   const [showNotification, setShowNotification] = useState(false);
 
-  const handleScoreChange = (studentId: string, type: keyof StudentReportData['scores'], value: number) => {
-    setStudents(prev => prev.map(student => 
-      student.id === studentId 
-        ? { ...student, scores: { ...student.scores, [type]: value } }
-        : student
-    ));
-  };
+  React.useEffect(() => {
+    setStudents(adaptedStudents);
+  }, [adaptedStudents]);
 
-  const handleAssessmentChange = (studentId: string, value: string) => {
-    setStudents(prev => prev.map(student => 
-      student.id === studentId 
-        ? { ...student, assessment: value }
-        : student
-    ));
-  };
+  // Read-only view for report page; no local mutators required
 
   const handleExport = () => {
     console.log('Export functionality will be implemented later');
@@ -56,7 +126,12 @@ const ClassReportPage: React.FC<ClassReportPageProps> = ({ className }) => {
         "pt-4 pb-3 flex-shrink-0 transition-all duration-300 ease-in-out",
         "px-4"
       )}>
-        <FeatureButtonList />
+        <FeatureButtonList
+          classId={classId}
+          courseId={courseId}
+          courseDate={courseDate}
+          term={term}
+        />
       </div>
 
       {/* Main Content Container */}
@@ -79,7 +154,7 @@ const ClassReportPage: React.FC<ClassReportPageProps> = ({ className }) => {
                     className="text-[40px] font-normal leading-[1.4em] font-comfortaa
                                text-violet-600"                    
                   >
-                    {classReportMockData.className}
+                    Class {classId}
                   </div>
                 </div>
 
@@ -115,7 +190,7 @@ const ClassReportPage: React.FC<ClassReportPageProps> = ({ className }) => {
                           color: 'rgba(0, 0, 0, 0.6)'
                         }}
                       >
-                        {classReportMockData.studentCount}
+                        {students.length}
                       </span>
                     </div>
                   </div>
@@ -123,132 +198,35 @@ const ClassReportPage: React.FC<ClassReportPageProps> = ({ className }) => {
               </div>
 
               {/* Student Report Cards - List Layout */}
-              <div className="space-y-4">
-                {students.map((student) => (
-                  <StudentReportCard
-                    key={student.id}
-                    student={student}
-                    onScoreChange={(type, value) => handleScoreChange(student.id, type, value)}
-                    onAssessmentChange={(value) => handleAssessmentChange(student.id, value)}
-                  />
-                ))}
-              </div>
+              {loading ? (
+                <div className="space-y-4">
+                  {[...Array(3)].map((_, i) => (
+                    <div key={i} className="space-y-3">
+                      <Skeleton className="h-8 w-64" />
+                      <Skeleton className="h-6 w-40" />
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <Skeleton className="h-28 w-full" />
+                        <Skeleton className="h-28 w-full" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {students.map((student) => (
+                    <StudentReportCard
+                      key={student.id}
+                      student={student}
+                      evaluations={(reportData.find((r: any) => r.student?.id === student.studentId)?.evaluations) || []}
+                    />
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
       </div>
     </div>
-  );
-};
-
-// New StudentReportCard component following StudentTab.tsx sizing
-interface StudentReportCardProps {
-  student: StudentReportData;
-  onScoreChange: (type: keyof StudentReportData['scores'], value: number) => void;
-  onAssessmentChange: (value: string) => void;
-}
-
-const StudentReportCard: React.FC<StudentReportCardProps> = ({
-  student,
-  onScoreChange,
-  onAssessmentChange
-}) => {
-  const { index, name, studentId, scores, assessment } = student;
-
-  const handleScoreChange = (type: keyof typeof scores, value: string) => {
-    const numValue = parseInt(value) || 0;
-    onScoreChange(type, numValue);
-  };
-
-  return (
-    <Card className="bg-white border border-black rounded-[15px] shadow-[5px_4px_4px_0px_rgba(0,0,0,0.25)] transition-all duration-300 ease-in-out">
-      <CardContent className="p-4">
-        {/* Student Information Section - Top */}
-        <div className="mb-4">
-          <div className="text-[24px] font-semibold text-black leading-[1.4em] font-comfortaa">
-            {index}. {name}
-          </div>
-          <div className="text-[18px] font-semibold text-black/50 leading-[1.4em] font-comfortaa">
-            ID: {studentId}
-          </div>
-        </div>
-
-        {/* Scores and Assessment Section - Below student info */}
-        <div className="flex gap-6">
-          {/* Scores Section - Left side */}
-          <div className="flex flex-col gap-3">
-            <div className="flex flex-row items-center gap-2">
-              <span className="text-[16px] font-semibold text-black leading-[1.4em] font-comfortaa">
-                Homework:
-              </span>
-              <div className='flex flex-row justify-end w-full'>
-                <Input
-                  type="number"
-                  value={scores.homework}
-                  onChange={(e) => handleScoreChange('homework', e.target.value)}
-                  className="h-7 w-16 rounded-[8px] border border-black/20 bg-[rgba(102,102,102,0.5)] text-[14px] font-normal text-black font-comfortaa text-center"
-                  placeholder="0"
-                  min="0"
-                  max="100"
-                  readOnly
-                />
-              </div>
-            </div>
-
-            <div className="flex flex-row items-center gap-2">
-              <span className="text-[16px] font-semibold text-black leading-[1.4em] font-comfortaa">
-                Midterm:
-              </span>
-              <div className='flex flex-row justify-end w-full'>
-                <Input
-                  type="number"
-                  value={scores.midterm}
-                  onChange={(e) => handleScoreChange('midterm', e.target.value)}
-                  className="h-7 w-16 rounded-[8px] border border-black/20 bg-[rgba(102,102,102,0.5)] px-2 text-[14px] font-normal text-black font-comfortaa text-center"
-                  placeholder="0"
-                  min="0"
-                  max="100"
-                  readOnly
-                />
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <span className="text-[16px] font-semibold text-black leading-[1.4em] font-comfortaa">
-                Final:
-              </span>
-              <div className='flex flex-row justify-end w-full'>
-                <Input
-                  type="number"
-                  value={scores.final}
-                  onChange={(e) => handleScoreChange('final', e.target.value)}
-                  className="h-7 w-16 rounded-[8px] border border-black/20 bg-[rgba(102,102,102,0.5)] px-2 text-[14px] font-normal text-black font-comfortaa text-center"
-                  placeholder="0"
-                  min="0"
-                  max="100"
-                  readOnly
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Teacher Assessment Section - Right side, aligned with Homework */}
-          <div className="flex-1">
-            {/* MANUAL ADJUSTMENT: To move Teacher Assessment up/down, change this margin-top */}
-            <div className="text-[18px] font-semibold text-black leading-[1.4em] font-comfortaa mb-2 mt-[-35px]">
-              Teacher Assessment
-            </div>
-            {/* MANUAL ADJUSTMENT: To move textarea up/down, change margin-top or padding-top */}
-            <Textarea
-              value={assessment}
-              onChange={(e) => onAssessmentChange(e.target.value)}
-              placeholder="Write your assessment here..."
-              className="w-full h-[100px] rounded-[15px] border border-black bg-[rgba(154,142,142,0.2)] px-3 py-2 text-[14px] font-semibold text-black/50 font-comfortaa resize-none focus:outline-none focus:border-black focus:ring-0"
-            />
-          </div>
-        </div>
-      </CardContent>
-    </Card>
   );
 };
 

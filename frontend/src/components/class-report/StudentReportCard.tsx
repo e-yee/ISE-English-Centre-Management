@@ -1,25 +1,57 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import type { StudentReportCardProps } from '@/mockData/classReportMock';
+// import { Textarea } from '@/components/ui/textarea';
 
-const StudentReportCard: React.FC<StudentReportCardProps> = ({
-  student,
-  onScoreChange,
-  onAssessmentChange,
-  className
-}) => {
-  const { index, name, studentId, scores, assessment } = student;
+interface EvaluationRow {
+  assessment_type: string;
+  grade: string | number;
+  comment?: string;
+  evaluation_date?: string;
+}
 
-  const handleScoreChange = (type: keyof typeof scores, value: string) => {
-    const numValue = parseInt(value) || 0;
-    onScoreChange(type, numValue);
+interface StudentReportCardProps {
+  student: {
+    index: number;
+    name: string;
+    studentId: string;
+    assessment?: string;
+  };
+  evaluations?: EvaluationRow[];
+  className?: string;
+}
+
+const StudentReportCard: React.FC<StudentReportCardProps> = ({ student, evaluations = [], className }) => {
+  const { index, name, studentId } = student as any;
+
+  const normalizeLetter = (val: string | number | undefined): string | null => {
+    if (val === undefined || val === null) return null;
+    const s = String(val).trim().toUpperCase();
+    // If looks like a letter grade pattern return it
+    if (/^(A\+|A|A-|B\+|B|B-|C\+|C|C-|D\+|D|D-|F)$/.test(s)) return s;
+    const n = Number(s);
+    if (n === null) return null;
+    if (n >= 97) return 'A+';
+    if (n >= 93) return 'A';
+    if (n >= 90) return 'A-';
+    if (n >= 87) return 'B+';
+    if (n >= 83) return 'B';
+    if (n >= 80) return 'B-';
+    if (n >= 77) return 'C+';
+    if (n >= 73) return 'C';
+    if (n >= 70) return 'C-';
+    if (n >= 67) return 'D+';
+    if (n >= 63) return 'D';
+    if (n >= 60) return 'D-';
+    return 'F';
   };
 
-  const handleAssessmentChange = (value: string) => {
-    onAssessmentChange(value);
+  const getGradeClasses = (letter: string) => {
+    const l = letter.toUpperCase();
+    if (l.startsWith('A')) return 'bg-green-100 text-green-700 border border-green-200';
+    if (l.startsWith('B')) return 'bg-blue-100 text-blue-700 border border-blue-200';
+    if (l.startsWith('C')) return 'bg-yellow-100 text-yellow-800 border border-yellow-200';
+    return 'bg-red-100 text-red-700 border border-red-200';
   };
 
   return (
@@ -39,65 +71,33 @@ const StudentReportCard: React.FC<StudentReportCardProps> = ({
           </div>
         </div>
 
-        {/* Scores Section */}
-        <div className="flex flex-col gap-3 mb-6">
-          <div className="flex items-center gap-4">
-            <span className="text-[20px] font-semibold text-black leading-[1.4em] font-comfortaa w-24">
-              Homework:
-            </span>
-            <Input
-              type="number"
-              value={scores.homework}
-              onChange={(e) => handleScoreChange('homework', e.target.value)}
-              className="flex-1 h-8 rounded-[8px] border border-black/20 bg-gray-500/50 px-3 text-[16px] font-normal text-black font-comfortaa text-center"
-              placeholder="0"
-              min="0"
-              max="100"
-            />
-          </div>
-
-          <div className="flex items-center gap-4">
-            <span className="text-[20px] font-semibold text-black leading-[1.4em] font-comfortaa w-24">
-              Midterm:
-            </span>
-            <Input
-              type="number"
-              value={scores.midterm}
-              onChange={(e) => handleScoreChange('midterm', e.target.value)}
-              className="flex-1 h-8 rounded-[8px] border border-black/20 bg-gray-500/50 px-3 text-[16px] font-normal text-black font-comfortaa text-center"
-              placeholder="0"
-              min="0"
-              max="100"
-            />
-          </div>
-
-          <div className="flex items-center gap-4">
-            <span className="text-[20px] font-semibold text-black leading-[1.4em] font-comfortaa w-24">
-              Final:
-            </span>
-            <Input
-              type="number"
-              value={scores.final}
-              onChange={(e) => handleScoreChange('final', e.target.value)}
-              className="flex-1 h-8 rounded-[8px] border border-black/20 bg-gray-500/50 px-3 text-[16px] font-normal text-black font-comfortaa text-center"
-              placeholder="0"
-              min="0"
-              max="100"
-            />
-          </div>
-        </div>
-
-        {/* Teacher Assessment Section */}
-        <div className="space-y-3">
-          <div className="text-[20px] font-semibold text-black leading-[1.4em] font-comfortaa">
-            Teacher Assessment
-          </div>
-          <Textarea
-            value={assessment}
-            onChange={(e) => handleAssessmentChange(e.target.value)}
-            placeholder="Write your assessment here..."
-            className="w-full h-32 rounded-[15px] border border-black/20 bg-gray-200/20 px-4 py-3 text-[16px] font-semibold text-black/50 font-comfortaa resize-none focus:outline-none focus:border-black focus:ring-0"
-          />
+        {/* Dynamic Assessment Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          {evaluations.map((ev, i) => {
+            const letter = normalizeLetter(ev.grade);
+            return (
+              <div key={`${ev.assessment_type}-${i}`} className="border border-black/20 rounded-[12px] p-4 bg-white">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="text-[18px] font-semibold text-black leading-[1.4em] font-comfortaa">
+                    {ev.assessment_type}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {letter && (
+                      <span className={cn('px-3 py-1 text-[16px] rounded-full font-semibold', getGradeClasses(letter))}>
+                        {letter}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <div className="text-[14px] text-black/70 leading-snug">
+                  {ev.comment && ev.comment.trim().length > 0 ? ev.comment : '(No comment)'}
+                </div>
+              </div>
+            );
+          })}
+          {evaluations.length === 0 && (
+            <div className="text-[16px] text-gray-500">No evaluations</div>
+          )}
         </div>
       </CardContent>
     </Card>

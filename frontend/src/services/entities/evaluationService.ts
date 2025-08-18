@@ -53,6 +53,19 @@ class EvaluationService extends ApiService {
     const qs = this.buildQuery(keys as any);
     return this.put(`/evaluation/update${qs}`, patch);
   }
+
+  // Class report: students info + their evaluations for a class/course/date
+  async getClassStudentsWithEvaluations(
+    classId: string,
+    courseId: string,
+    courseDate: string,
+    term: string
+  ): Promise<Array<{ student: { id: string; fullname: string; contact_info?: string; date_of_birth?: string }, evaluations: Evaluation[] }>> {
+    const endpoint = `/evaluation/by-class?class_id=${encodeURIComponent(classId)}&course_id=${encodeURIComponent(courseId)}&course_date=${encodeURIComponent(courseDate)}&term=${encodeURIComponent(term)}`;
+    const res = await this.get<any>(endpoint);
+    // Backend wraps as { message, data }; tolerate both shapes
+    return Array.isArray(res) ? res : (res?.data ?? []);
+  }
 }
 
 export default new EvaluationService();

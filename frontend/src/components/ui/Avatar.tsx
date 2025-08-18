@@ -1,6 +1,5 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-import avatarIcon from "@/assets/header/avatar.svg";
 
 interface AvatarProps {
   name: string;
