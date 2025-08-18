@@ -3,7 +3,6 @@ import { cn } from '@/lib/utils';
 import FeatureButtonList from '@/components/class/FeatureButtonList';
 import type { StudentReportData } from '@/mockData/classReportMock';
 import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import AvatarIcon from '@/assets/class/user.svg';
 import { ExportNotification } from '@/components/notifications/ExportNotification';
 import { useParams } from 'react-router-dom';
@@ -104,11 +103,6 @@ const ClassReportPage: React.FC<ClassReportPageProps> = ({ className }) => {
 
   // Read-only view for report page; no local mutators required
 
-  const handleExport = () => {
-    console.log('Export functionality will be implemented later');
-    setShowNotification(true);
-  };
-
   const handleCloseNotification = () => {
     setShowNotification(false);
   };
@@ -158,16 +152,8 @@ const ClassReportPage: React.FC<ClassReportPageProps> = ({ className }) => {
                   </div>
                 </div>
 
-                {/* Right Section - Export Button and Student Count */}
+                {/* Right Section - Student Count */}
                 <div className="flex items-center gap-6">
-                  {/* Export Button */}
-                  <Button
-                    className="cursor-pointer bg-[#7C8FD5] hover:shadow-lg hover:scale-95 hover:bg-indigo-600 text-white px-3 py-2 rounded-[10px] font-semibold text-[18px] font-comfortaa transition-colors duration-200"
-                    onClick={handleExport}
-                  >
-                    Export
-                  </Button>
-
                   {/* Student Count - Reduced size */}
                   <div className="relative">
                     <div
@@ -217,6 +203,7 @@ const ClassReportPage: React.FC<ClassReportPageProps> = ({ className }) => {
                     <StudentReportCard
                       key={student.id}
                       student={student}
+                      courseId={courseId}
                       evaluations={(reportData.find((r: any) => r.student?.id === student.studentId)?.evaluations) || []}
                     />
                   ))}

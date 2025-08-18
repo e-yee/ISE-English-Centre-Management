@@ -1,6 +1,9 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import evaluationService from '@/services/entities/evaluationService';
+import { useAuth } from '@/contexts';
 // import { Textarea } from '@/components/ui/textarea';
 
 interface EvaluationRow {
@@ -19,10 +22,29 @@ interface StudentReportCardProps {
   };
   evaluations?: EvaluationRow[];
   className?: string;
+  courseId?: string; // needed for export
 }
 
-const StudentReportCard: React.FC<StudentReportCardProps> = ({ student, evaluations = [], className }) => {
+const StudentReportCard: React.FC<StudentReportCardProps> = ({ student, evaluations = [], className, courseId }) => {
   const { index, name, studentId } = student as any;
+  const { user } = useAuth();
+
+  const handleExport = async () => {
+    try {
+      if (!courseId || !studentId || !user?.id) return;
+      const blob = await evaluationService.exportEvaluationReport(studentId, courseId, user.id);
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `evaluation_report_${studentId}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (e) {
+      console.error('Export failed', e);
+    }
+  };
 
   const normalizeLetter = (val: string | number | undefined): string | null => {
     if (val === undefined || val === null) return null;
@@ -71,6 +93,12 @@ const StudentReportCard: React.FC<StudentReportCardProps> = ({ student, evaluati
           </div>
         </div>
 
+        {/* Export + Grid */}
+        <div className="flex justify-end mb-3">
+          <Button disabled={!courseId} onClick={handleExport} className="bg-[#7C8FD5] hover:bg-indigo-600">
+            Export
+          </Button>
+        </div>
         {/* Dynamic Assessment Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           {evaluations.map((ev, i) => {

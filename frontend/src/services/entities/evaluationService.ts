@@ -1,4 +1,5 @@
 import { ApiService } from '../base/apiService';
+import { api } from '@/lib/apiClient';
 
 export type AssessmentType =
   | 'Quiz 1'
@@ -65,6 +66,13 @@ class EvaluationService extends ApiService {
     const res = await this.get<any>(endpoint);
     // Backend wraps as { message, data }; tolerate both shapes
     return Array.isArray(res) ? res : (res?.data ?? []);
+  }
+
+  // Export a single student's evaluation report as a PDF (Blob)
+  async exportEvaluationReport(studentId: string, courseId: string, teacherId: string): Promise<Blob> {
+    const endpoint = `/evaluation/export?student_id=${encodeURIComponent(studentId)}&course_id=${encodeURIComponent(courseId)}&teacher_id=${encodeURIComponent(teacherId)}`;
+    // Empty JSON body to satisfy backend's JSON check
+    return api.post<Blob>(endpoint, {}, { responseType: 'blob' });
   }
 }
 
