@@ -101,13 +101,13 @@ export const EvaluationForm: React.FC<EvaluationFormProps> = ({
   return (
     <Card className={cn('h-full w-full max-w-full overflow-hidden bg-white border border-gray-200 shadow-sm rounded-[15px]', className)}>
       <CardContent className="p-4 h-full">
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="">
           <div>
             <div className="text-lg font-semibold text-gray-900">{studentName || 'Select a student'}</div>
             <div className="text-xs text-gray-500">{studentId}</div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
             <div className="space-y-2">
               <Label>Assessment type</Label>
               <Select value={assessmentType} onValueChange={(v) => setAssessmentType(v as AssessmentType)}>
@@ -149,7 +149,7 @@ export const EvaluationForm: React.FC<EvaluationFormProps> = ({
 
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="outline" onClick={() => { setGrade(''); setComment(''); }}>Reset</Button>
-            <Button type="submit" disabled={!canSubmit || submitting}>Save</Button>
+            <Button className="bg-green-400" type="submit" disabled={!canSubmit || submitting}>Save</Button>
           </div>
         </form>
       </CardContent>
