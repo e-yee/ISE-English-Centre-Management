@@ -196,14 +196,7 @@ const ClassInfo: React.FC<ClassInfoProps> = ({
           )}
         >
           <h1
-            className="text-5xl font-semibold text-center font-comfortaa"
-            style={{
-              background: 'linear-gradient(135deg, #AB2BAF 0%, #471249 100%), linear-gradient(90deg, #E634E1 0%, #E634E1 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text'
-            }}
-          >
+            className="text-5xl text-violet-600 font-semibold text-center font-comfortaa">
             {classData.className.replace(/^\d+\./, '')} {/* Remove number prefix for display */}
           </h1>
         </div>
@@ -215,11 +208,7 @@ const ClassInfo: React.FC<ClassInfoProps> = ({
         <div className="relative">
           {/* Content container with solid border */}
           <div
-            className="bg-white rounded-[10px] flex items-center justify-center gap-3 px-4 py-1 border-[2px] border-solid"
-            style={{
-              borderColor: capacityStatus === 'full' ? '#E2445C' : 
-                          capacityStatus === 'near-full' ? '#F8D222' : '#4A42AE'
-            }}
+            className="bg-white rounded-[10px] flex items-center justify-center gap-3 px-4 py-1 border-[2px] border-violet-600 border-solid"
           >
             {/* User Icon */}
             <div className="w-6 h-6 flex-shrink-0">
