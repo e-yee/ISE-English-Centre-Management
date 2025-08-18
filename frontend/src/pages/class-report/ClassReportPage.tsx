@@ -70,19 +70,14 @@ const ClassReportPage: React.FC<ClassReportPageProps> = ({ className }) => {
                 {/* Left Section - Report Badge and Class Name */}
                 <div className="flex items-center gap-4">
                   {/* Report Badge - Changed to black */}
-                  <div className="text-black px-4 py-2 rounded-[15px] font-semibold text-[30px] font-comfortaa border-2 border-black">
+                  <div className="text-gray-500 px-1 rounded-[15px] font-semibold text-[30px] font-comfortaa border-2 border-gray-500">
                     Report
                   </div>
 
                   {/* Class Name - Reduced size */}
                   <div 
-                    className="text-[40px] font-normal leading-[1.4em] font-comfortaa"
-                    style={{
-                      background: 'linear-gradient(135deg, #AB2BAF 0%, #471249 100%), linear-gradient(90deg, #E634E1 0%, #E634E1 100%)',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                      backgroundClip: 'text'
-                    }}
+                    className="text-[40px] font-normal leading-[1.4em] font-comfortaa
+                               text-violet-600"                    
                   >
                     {classReportMockData.className}
                   </div>
@@ -92,7 +87,7 @@ const ClassReportPage: React.FC<ClassReportPageProps> = ({ className }) => {
                 <div className="flex items-center gap-6">
                   {/* Export Button */}
                   <Button
-                    className="bg-[#7C8FD5] hover:bg-[#6A7BC3] text-white px-3 py-2 rounded-[10px] font-semibold text-[18px] font-comfortaa transition-colors duration-200"
+                    className="cursor-pointer bg-[#7C8FD5] hover:shadow-lg hover:scale-95 hover:bg-indigo-600 text-white px-3 py-2 rounded-[10px] font-semibold text-[18px] font-comfortaa transition-colors duration-200"
                     onClick={handleExport}
                   >
                     Export
@@ -181,53 +176,59 @@ const StudentReportCard: React.FC<StudentReportCardProps> = ({
         {/* Scores and Assessment Section - Below student info */}
         <div className="flex gap-6">
           {/* Scores Section - Left side */}
-          <div className="flex flex-col gap-3 w-[200px]">
-            <div className="flex items-center gap-2">
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-row items-center gap-2">
               <span className="text-[16px] font-semibold text-black leading-[1.4em] font-comfortaa">
                 Homework:
               </span>
-              <Input
-                type="number"
-                value={scores.homework}
-                onChange={(e) => handleScoreChange('homework', e.target.value)}
-                className="flex-1 h-7 rounded-[8px] border border-black/20 bg-[rgba(102,102,102,0.5)] px-2 text-[14px] font-normal text-black font-comfortaa text-center"
-                placeholder="0"
-                min="0"
-                max="100"
-                readOnly
-              />
+              <div className='flex flex-row justify-end w-full'>
+                <Input
+                  type="number"
+                  value={scores.homework}
+                  onChange={(e) => handleScoreChange('homework', e.target.value)}
+                  className="h-7 w-16 rounded-[8px] border border-black/20 bg-[rgba(102,102,102,0.5)] text-[14px] font-normal text-black font-comfortaa text-center"
+                  placeholder="0"
+                  min="0"
+                  max="100"
+                  readOnly
+                />
+              </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex flex-row items-center gap-2">
               <span className="text-[16px] font-semibold text-black leading-[1.4em] font-comfortaa">
                 Midterm:
               </span>
-              <Input
-                type="number"
-                value={scores.midterm}
-                onChange={(e) => handleScoreChange('midterm', e.target.value)}
-                className="flex-1 h-7 rounded-[8px] border border-black/20 bg-[rgba(102,102,102,0.5)] px-2 text-[14px] font-normal text-black font-comfortaa text-center"
-                placeholder="0"
-                min="0"
-                max="100"
-                readOnly
-              />
+              <div className='flex flex-row justify-end w-full'>
+                <Input
+                  type="number"
+                  value={scores.midterm}
+                  onChange={(e) => handleScoreChange('midterm', e.target.value)}
+                  className="h-7 w-16 rounded-[8px] border border-black/20 bg-[rgba(102,102,102,0.5)] px-2 text-[14px] font-normal text-black font-comfortaa text-center"
+                  placeholder="0"
+                  min="0"
+                  max="100"
+                  readOnly
+                />
+              </div>
             </div>
 
             <div className="flex items-center gap-2">
               <span className="text-[16px] font-semibold text-black leading-[1.4em] font-comfortaa">
                 Final:
               </span>
-              <Input
-                type="number"
-                value={scores.final}
-                onChange={(e) => handleScoreChange('final', e.target.value)}
-                className="flex-1 h-7 rounded-[8px] border border-black/20 bg-[rgba(102,102,102,0.5)] px-2 text-[14px] font-normal text-black font-comfortaa text-center"
-                placeholder="0"
-                min="0"
-                max="100"
-                readOnly
-              />
+              <div className='flex flex-row justify-end w-full'>
+                <Input
+                  type="number"
+                  value={scores.final}
+                  onChange={(e) => handleScoreChange('final', e.target.value)}
+                  className="h-7 w-16 rounded-[8px] border border-black/20 bg-[rgba(102,102,102,0.5)] px-2 text-[14px] font-normal text-black font-comfortaa text-center"
+                  placeholder="0"
+                  min="0"
+                  max="100"
+                  readOnly
+                />
+              </div>
             </div>
           </div>
 
