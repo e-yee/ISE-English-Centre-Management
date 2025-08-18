@@ -30,89 +30,72 @@ def validate_id(id):
     
     return employee, None, None
 
-
 @checkin_bp.post("/in")
 def checkin():
     if not request.is_json:
         return jsonify({"message": "Missing or invalid JSON"}), HTTPStatus.BAD_REQUEST
-     
+    
     try:
         data = request.get_json()
         validated = checkin_schema.load(data)
 
-        employee = db.session.get(Employee, validated["employee_id"])
+        employee, response, status = validate_id(validated["employee_id"])
         if not employee:
-            return jsonify({"message": "Employee not found"}), HTTPStatus.NOT_FOUND
+            return response, status
+        
+        current_datetime = datetime.datetime.now()
+        today = current_datetime.date()
+        status = "Checked In" 
 
-        if employee.role == "Learning Advisor" or employee.role == "Manager":
+        if employee.role in ["Learning Advisor", "Manager"]:
             required_time = datetime.time(9, 0, 0)
             leave_time = datetime.time(20, 0, 0)
-            time = datetime.datetime.now().time()
 
-            if time < required_time or time > leave_time:
+            if not (required_time <= current_datetime.time() <= leave_time):
                 return jsonify({"message": "Check-in time must be between 9:00 AM and 8:00 PM"}), HTTPStatus.BAD_REQUEST
             
-            # Convert to datetime for timedelta comparison
-            today = datetime.datetime.now().date()
             required_datetime = datetime.datetime.combine(today, required_time)
-            current_datetime = datetime.datetime.combine(today, time)
-            
+
             if current_datetime > required_datetime + datetime.timedelta(minutes=15):
-                status = "Late"    
-            else:
-                status = "Checked In"           
-        elif employee.role == "Teacher":
-            classes = db.session.query(Class).filter_by(teacher_id=validated["employee_id"]).all()
-            if not classes:
-                return jsonify({"message": "No classes found for this teacher"}), HTTPStatus.NOT_FOUND
-            
-            # Get today's date
-            today = datetime.datetime.now().date()
-            current_time = datetime.datetime.now().time()
-
-            # Find classes for today
-            today_classes = []
-            for item in classes:
-                # Check if class is today
-                if item.class_date.date() == today:
-                    today_classes.append(item)
-
-            if not today_classes:
-                return jsonify({"message": "No classes found for today"}), HTTPStatus.NOT_FOUND
-            
-            # Sort classes by start time
-            today_classes.sort(key=lambda x: x.class_date.time())
-            first_class = today_classes[0]
-            first_class_start_time = first_class.class_date.time()
-
-            if time >= first_class_start_time + datetime.timedelta(minutes=15):
                 status = "Late"
-            elif time <= first_class_start_time:
-                status = "Checked In"
-            else:
-                status = "Checked In"
+        
+        elif employee.role == "Teacher":
+            from sqlalchemy import func
+            today_classes = db.session.query(Class).filter(
+                Class.teacher_id == employee.id,
+                func.date(Class.class_date) == today
+            ).order_by(Class.class_date).all()
+            
+            if not today_classes:
+                return jsonify({"message": "No classes scheduled for you today"}), HTTPStatus.NOT_FOUND
+            
+            first_class = today_classes[0]
+            first_class_start_datetime = first_class.class_date 
 
+            if current_datetime > first_class_start_datetime + datetime.timedelta(minutes=15):
+                status = "Late"
 
+        # --- Create the record ---
         checkin_record = StaffCheckin(
             id=generate_id(),
-            employee_id=validated["employee_id"],
+            employee_id=employee.id,
             status=status,
-            checkin_time=datetime.datetime.now(),
+            checkin_time=current_datetime,
         )
 
         db.session.add(checkin_record)
         db.session.commit()
 
-        return jsonify(checkin_schema.dump(checkin_record, many=False)), HTTPStatus.CREATED
+        return jsonify(checkin_schema.dump(checkin_record)), HTTPStatus.CREATED
 
     except ValidationError as ve:
         return jsonify({"message": "Invalid input", "error": ve.messages}), HTTPStatus.BAD_REQUEST
-
     except IntegrityError as ie:
+        db.session.rollback()
         return jsonify({"message": "Database error", "error": str(ie.orig)}), HTTPStatus.INTERNAL_SERVER_ERROR
-
     except Exception as e:
-        return jsonify({"message": "Unexpected error occured", "error": str(e)}), HTTPStatus.INTERNAL_SERVER_ERROR
+        db.session.rollback()
+        return jsonify({"message": "An unexpected error occurred", "error": str(e)}), HTTPStatus.INTERNAL_SERVER_ERROR
 
 @checkin_bp.put("/out")
 def checkout():
