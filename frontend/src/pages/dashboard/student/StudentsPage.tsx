@@ -46,17 +46,17 @@ const StudentsPage: React.FC = () => {
 
   return (
     <div className={cn('h-full flex flex-col min-h-0')}>
-      <div className="flex items-center gap-4 mb-4 flex-shrink-0">
+      <div className="flex items-center gap-4 my-4 ml-2 flex-shrink-0">
         <button
           onClick={() => navigate('/dashboard')}
-          className="bg-white border border-black/20 rounded-[10px] shadow-[2px_2px_3px_0px_rgba(0,0,0,0.15)] px-4 py-2 transition-all duration-200 ease-in-out hover:shadow-[3px_3px_4px_0px_rgba(0,0,0,0.2)] hover:scale-105 focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-1 min-w-[90px]"
+          className="cursor-pointer bg-white border border-black/20 rounded-[10px] shadow-sm px-4 py-2 transition-all duration-200 ease-in-out hover:scale-95 focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-1 min-w-[90px]"
         >
           <div className="flex items-center">
             <ArrowLeft className="h-4 w-4 mr-2" />
             <span className="text-[16px] font-semibold text-black leading-[1em] font-comfortaa whitespace-nowrap">Back</span>
           </div>
         </button>
-        <h1 className="text-2xl font-bold text-purple-600">Students</h1>
+        <h1 className="text-4xl font-bold text-purple-600">Students</h1>
       </div>
       <div className={cn('flex-1 min-h-0 relative flex transition-all duration-500 ease-in-out', selectedStudentId ? 'detail-view-active' : '')}>
         <div className={cn('bg-white transition-all duration-500 ease-in-out min-h-0 overflow-hidden', selectedStudentId ? 'w-[40%] border-r border-gray-200' : 'w-full')}>
