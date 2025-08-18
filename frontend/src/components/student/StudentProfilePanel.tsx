@@ -20,7 +20,7 @@ interface StudentProfilePanelProps {
 const AttributeCard: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
   <Card>
     <CardContent className="p-4">
-      <label className="block text-sm font-semibold text-gray-700 mb-2">{title}</label>
+      <label className="block text-sm font-semibold text-purple-600 mb-2">{title}</label>
       <div className="text-sm text-gray-600 bg-gray-50 p-3 rounded-md max-h-[120px] overflow-y-auto">{children}</div>
     </CardContent>
   </Card>
@@ -137,17 +137,17 @@ const StudentProfilePanel: React.FC<StudentProfilePanelProps> = ({ student, onMi
   }
 
   return (
-    <div className="h-full overflow-y-auto relative">
+    <div className="selection:bg-purple-400 selection:text-white h-full overflow-y-auto relative">
       <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
         {canEdit && (
-          <Button size="icon" variant="outline" title="Edit" onClick={() => setOpenEdit(true)}>
+          <Button className='hover:scale-95' size="icon" variant="outline" title="Edit" onClick={() => setOpenEdit(true)}>
             <Pencil className="w-4 h-4" />
           </Button>
         )}
         {onMinimize && (
           <button
             onClick={onMinimize}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+            className="cursor-pointer p-2 rounded-full hover:bg-fuchsia-200 transition-colors"
             title="Minimize panel"
           >
             <img src="/src/assets/colleague_minimize.svg" alt="Minimize" className="w-6 h-6" />
@@ -155,17 +155,22 @@ const StudentProfilePanel: React.FC<StudentProfilePanelProps> = ({ student, onMi
         )}
       </div>
 
-      <div className="relative mb-8 pb-16">
-        <div className="absolute top-0 left-0 w-full h-40 bg-gradient-to-b from-blue-100 to-blue-50 rounded-t-lg overflow-hidden">
-          <img src="/src/assets/frame.svg" alt="Background frame" className="w-full h-full object-cover opacity-50" />
+      <div className="relative mb-4">
+        <div className="absolute top-0 left-0 w-full h-30 bg-gradient-to-b from-blue-200 to-violet-200 rounded-t-lg overflow-hidden">          
         </div>
-        <div className="relative pt-21 px-6">
+        <div className="relative pt-11 px-6">
           <div className="flex items-end">
-            <Avatar name={student.fullname} src="" size="xl" className="mr-6 z-10 border-4 border-white shadow-lg" />
-            <div className="z-10 pb-4">
-              <h1 className="text-3xl font-bold text-gray-900 font-comfortaa mb-2">{student.fullname}</h1>
-              <p className="text-lg text-gray-600">{primaryContact}</p>
-              <p className="text-sm text-blue-600 font-medium mt-1">Student ID: {student.id}</p>
+            <Avatar name={student.fullname} src="" size="xl" className="mr-3 z-10 border-4 border-white shadow-lg" />
+            <div className="z-10 pb-7">
+              <h1 className="text-3xl font-bold text-gray-900 font-comfortaa">{student.fullname}</h1>
+              <div className="ml-1 flex flex-row gap-2 text-sm text-blue-500">
+                <p className="underline font-bold select-none">Primary Contact:</p>
+                <p className="select-all">{primaryContact}</p>
+              </div>              
+              <div className="ml-1 flex flex-row gap-2 text-sm text-blue-500">
+                <p className="underline font-bold select-none">Student ID:</p>
+                <p className="select-all">{student.id}</p>
+              </div>              
             </div>
           </div>
         </div>
@@ -205,7 +210,7 @@ const StudentProfilePanel: React.FC<StudentProfilePanelProps> = ({ student, onMi
           <Button
             variant="destructive"
             onClick={() => setOpenDelete(true)}
-            className="gap-2"
+            className="gap-2 hover:bg-red-700"
             title="Delete student"
           >
             <Trash2 className="w-4 h-4" /> Delete
