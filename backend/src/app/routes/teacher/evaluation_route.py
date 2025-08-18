@@ -5,7 +5,7 @@ from marshmallow import ValidationError
 from ...http_status import HTTPStatus
 from sqlalchemy.exc import IntegrityError, OperationalError
 from ...schemas.evaluation_schema import evaluation_schema
-from ...models import Evaluation, Student, Employee, Enrolment, StudentAttendance, Course, Class
+from ...models import Evaluation, Student, Employee, Enrolment, StudentAttendance, Course
 from ...models.pdf import generate_report
 from extensions import db
 import datetime, os
@@ -100,100 +100,6 @@ def validate_course(course_id):
         }), HTTPStatus.NOT_FOUND
     
     return course, None, None
-
-@evaluation_bp.get("/by-class")
-@role_required("Teacher", "Learning Advisor", "Manager")
-def get_class_students_with_evaluations():
-    try:
-        class_id = request.args.get("class_id")
-        if not class_id:
-            return jsonify({
-                "message": "Missing class ID in query params"
-            }), HTTPStatus.BAD_REQUEST
-
-        course_id = request.args.get("course_id")
-        if not course_id:
-            return jsonify({
-                "message": "Missing course ID in query params"
-            }), HTTPStatus.BAD_REQUEST
-
-        course_date_str = request.args.get("course_date")
-        if not course_date_str:
-            return jsonify({
-                "message": "Missing course date in query params"
-            }), HTTPStatus.BAD_REQUEST
-        try:
-            course_date = datetime.date.fromisoformat(course_date_str)
-        except ValueError:
-            return jsonify({
-                "message": "Invalid course_date format; expected YYYY-MM-DD"
-            }), HTTPStatus.BAD_REQUEST
-
-        term = request.args.get("term")
-        if not term:
-            return jsonify({
-                "message": "Missing class term in query params"
-            }), HTTPStatus.BAD_REQUEST
-
-        class_ = db.session.get(Class, (class_id, course_id, course_date_str, term))
-        if not class_:
-            return jsonify({
-                "message": "Class not found"
-            }), HTTPStatus.NOT_FOUND
-
-        # Collect students in this class
-        students = [sa.student for sa in class_.student_attendance]
-
-        # If the caller is a Teacher, restrict to their evaluations; otherwise include all
-        jwt_employee_id = get_jwt().get("employee_id")
-        teacher_obj, _, _ = validate_teacher(jwt_employee_id)
-        teacher_filter_id = teacher_obj.id if teacher_obj else None
-
-        result = []
-        for s in students:
-            query = (
-                db.session.query(Evaluation)
-                .filter_by(student_id=s.id, course_id=course_id, course_date=course_date)
-            )
-            if teacher_filter_id:
-                query = query.filter_by(teacher_id=teacher_filter_id)
-            evals = query.all()
-
-            eval_payload = [
-                {
-                    "student_id": e.student_id,
-                    "course_id": e.course_id,
-                    "course_date": e.course_date.isoformat() if e.course_date else None,
-                    "assessment_type": e.assessment_type,
-                    "teacher_id": e.teacher_id,
-                    "grade": e.grade,
-                    "comment": e.comment,
-                    "enrolment_id": e.enrolment_id,
-                    "evaluation_date": e.evaluation_date.isoformat() if e.evaluation_date else None,
-                }
-                for e in evals
-            ]
-
-            result.append({
-                "student": {
-                    "id": s.id,
-                    "fullname": s.fullname,
-                    "contact_info": s.contact_info,
-                    "date_of_birth": s.date_of_birth.isoformat() if s.date_of_birth else None,
-                },
-                "evaluations": eval_payload,
-            })
-
-        return jsonify({
-            "message": "Class students with evaluations retrieved successfully",
-            "data": result,
-        }), HTTPStatus.OK
-
-    except Exception as e:
-        return jsonify({
-            "message": "An error occurred",
-            "error": str(e)
-        }), HTTPStatus.INTERNAL_SERVER_ERROR
 
 @evaluation_bp.get("/")
 @role_required("Teacher")
