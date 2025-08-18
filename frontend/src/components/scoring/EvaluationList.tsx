@@ -22,13 +22,13 @@ export const EvaluationList: React.FC<EvaluationListProps> = ({ items, className
     <Card className={cn('w-full max-w-full overflow-hidden bg-white border border-gray-200 shadow-sm rounded-[15px]', className)}>
       <CardContent className="p-4">
         <div className="overflow-x-auto w-full max-h-[80vh] overflow-y-auto">
-          <table className="w-full text-sm">
+          <table className="w-full table-fixed text-sm">
             <thead>
               <tr className="text-left text-gray-500 text-lg">
                 <th className="py-2 pr-4">Assessment</th>
                 <th className="py-2 pr-4">Evaluated on</th>
                 <th className="py-2 pr-4">Grade</th>
-                <th className="py-2 pl-4">Comment</th>
+                <th className="py-2 pr-4">Comment</th>
               </tr>
             </thead>
             <tbody>
@@ -41,7 +41,7 @@ export const EvaluationList: React.FC<EvaluationListProps> = ({ items, className
                   <td className="py-2 pr-4">{it.assessment_type}</td>
                   <td className="py-2 pr-4">{it.evaluation_date || it.course_date}</td>
                   <td className="py-2 pr-4">{it.grade}</td>
-                  <td className="py-2 pl-4 max-w-[420px] truncate" title={it.comment}>{it.comment}</td>
+                  <td className="py-2 pr-4 max-w-[420px] truncate" title={it.comment}>{it.comment}</td>
                 </tr>
               ))}
               {items.length === 0 && (
