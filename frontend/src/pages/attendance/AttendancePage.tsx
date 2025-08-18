@@ -130,7 +130,7 @@ const AttendancePage: React.FC<AttendancePageProps> = ({ className }) => {
             </div>
             <div className="flex flex-col items-end gap-2">
               <Button
-                className="bg-teal-600 hover:bg-teal-700"
+                className="bg-teal-500 hover:bg-teal-700 cursor-pointer"
                 disabled={marking || !classId || !courseId || !courseDate || !term}
                 onClick={() => {
                   setSaveSuccess(null);
