@@ -33,7 +33,7 @@ export const StudentPicker: React.FC<StudentPickerProps> = ({
     <Card className={cn('h-full w-full max-w-full overflow-hidden bg-white border border-gray-200 shadow-sm rounded-[15px]', className)}>
       <CardContent className="p-4 h-full flex flex-col">
         <div className="flex items-center gap-3 mb-3">
-          <SearchInput placeholder="Search students..." onSearch={setSearch} className="w-full" />
+          <SearchInput placeholder="Search students..." onSearch={setSearch} className="w-full text-lg" />
         </div>
 
         <div className="flex-1 overflow-y-auto min-h-0 max-h-[80vh]">
@@ -47,7 +47,7 @@ export const StudentPicker: React.FC<StudentPickerProps> = ({
                   'w-full text-left px-3 py-2 rounded-md border transition-colors',
                   selectedStudentId === st.id
                     ? 'border-violet-600 bg-violet-50'
-                    : 'border-gray-200 hover:bg-gray-50'
+                    : 'border-gray-200 hover:bg-gray-200 cursor-pointer'
                 )}
               >
                 <div className="text-sm font-medium text-gray-900">{(st as any).name || (st as any).fullname || st.id}</div>
