@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, send_file
+from flask import Blueprint, request, jsonify, send_from_directory, current_app
 from flask_jwt_extended import get_jwt
 from app.auth import role_required
 from marshmallow import ValidationError
@@ -9,6 +9,7 @@ from ...models import Evaluation, Student, Employee, Enrolment, StudentAttendanc
 from ...models.pdf import generate_report
 from extensions import db
 import datetime, os
+from pathlib import Path
 
 evaluation_bp = Blueprint("evaluation_bp", __name__, url_prefix="/evaluation")
 
@@ -414,6 +415,18 @@ def export_evaluation():
         if not teacher_id:
             return response, status
         
+        evaluation = db.session.query(Evaluation).filter_by(
+            student_id=student_id.id,
+            course_id=course_id.id
+        ).all()
+
+        if not evaluation:
+            return jsonify({"message": "No evaluation found"}), HTTPStatus.NOT_FOUND
+        
+        evaluation_to_grade = {
+            eval.assessment_type: eval.grade for eval in evaluation
+        }
+
         pdf_data = {
             "student_id": student_id.id,
             "course_id": course_id.id,
@@ -421,22 +434,26 @@ def export_evaluation():
             "student_name": student_id.fullname,
             "course_name": course_id.name,
             "teacher_name": teacher_id.full_name,
-            "evaluation_details": data.get("details", "No details provided.")
+            "evaluation_details": evaluation_to_grade
         }
 
-        logo_path = "C:\\Users\\nguye\\OneDrive\\Documents\\ISE\\ISE-English-Centre-Management\\backend\\src\\test.png"
-        output_path = os.path.join("backend/assets", f"evaluation_report_{pdf_data['student_id']}.pdf")
+        app_root = Path(current_app.root_path).parent
 
-        if not os.path.exists("backend/assets"):
-            os.makedirs("backend/assets")
+        logo_path = app_root / "src" / "test.png"
+        assets_dir = app_root / "assets"
+    
+        assets_dir.mkdir(parents=True, exist_ok=True)
 
-        generate_report(pdf_data, output_path, logo_path)
+        output_filename = f"evaluation_report_{pdf_data['student_id']}.pdf"
+        output_path = assets_dir / output_filename
 
-        return send_file(
-            output_path, 
+        generate_report(pdf_data, str(output_path), str(logo_path))
+
+        return send_from_directory(
+            assets_dir,
+            path=output_filename,
             as_attachment=True,
             download_name=f"evaluation_report_{pdf_data['student_id']}.pdf",
-            mimetype="application/pdf"
         )
 
     except Exception as e:
