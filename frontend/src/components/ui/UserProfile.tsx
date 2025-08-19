@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import Avatar from "./Avatar";
+import settingIcon from "../../assets/header/settings.svg"
+import logoutIcon from "../../assets/header/logout.svg"
 
 interface UserProfileProps {
   className?: string;
@@ -12,13 +14,15 @@ interface UserProfileProps {
 
 interface ProfileMenuItem {
   id: string;
+  icon: string,
   label: string;
+  description: string,
   onClick?: () => void;
 }
 
 const UserProfile: React.FC<UserProfileProps> = ({
   className,
-  onProfileClick,
+  onProfileClick,  
   // onSettingClick,
   onLogoutClick,
   isLoading = false,
@@ -28,7 +32,9 @@ const UserProfile: React.FC<UserProfileProps> = ({
   const menuItems: ProfileMenuItem[] = [
     {
       id: "profile",
+      icon: settingIcon,
       label: "Profile",
+      description: "Profile setting",
       onClick: onProfileClick,
     },
     // {
@@ -38,7 +44,9 @@ const UserProfile: React.FC<UserProfileProps> = ({
     // },
     {
       id: "logout",
+      icon: logoutIcon,
       label: "Log out",
+      description: "",
       onClick: onLogoutClick,
     },
   ];
@@ -86,27 +94,53 @@ const UserProfile: React.FC<UserProfileProps> = ({
           )}
         >
           {/* Menu Items */}
-          <div className="overflow-hidden rounded-[15px]">
-            {menuItems.map((item, index) => (
-              <button
-                key={item.id}
-                onClick={() => handleItemClick(item)}
-                disabled={isLoading && item.id === "logout"}
-                className={cn(
-                  "w-full my-1 px-8 py-2 text-left h-fit",
-                  "font-comfortaa text-[13px] font-normal text-black-500",
-                  "transition-all duration-200 ease-out",
-                  "hover:bg-[#D9D9D9] hover:cursor-pointer",
-                  "focus:outline-none focus:bg-[#D9D9D9]",
-                  // Add border between items (except last)
-                  //index < menuItems.length - 1 && "border-b border-black",
-                  // Disabled state for logout button
-                  isLoading && item.id === "logout" && "opacity-50 cursor-not-allowed"
-                )}
-              >
-                {isLoading && item.id === "logout" ? "Logging out..." : item.label}
-              </button>
-            ))}
+          <div className="w-sm flex flex-col items-center overflow-hidden rounded-[15px]
+                          ">
+            <div className="w-full flex flex-row items-center
+                            bg-gradient-to-b from-blue-200 to-purple-300">
+              <Avatar 
+              name="User"
+              size="lg"
+              className="mx-5 my-2 outline-offset-1 outline-violet-500 outline-2"
+              />
+              <div>
+                <p>Name here</p>
+              </div>
+            </div>
+            <div className="w-full flex flex-col gap-2 my-3">
+              {menuItems.map((item, index) => (
+                <button
+                  key={item.id}
+                  onClick={() => handleItemClick(item)}
+                  disabled={isLoading && item.id === "logout"}
+                  className={cn(
+                    "w-full rounded-sm px-8 py-2 text-left h-fit",
+                    "font-comfortaa  font-semibold text-black-500",
+                    "transition-all duration-200 ease-in-out",
+                    "",
+                    "hover:bg-blue-50 hover:cursor-pointer",
+                    "focus:outline-none focus:bg-[#D9D9D9]",
+                    // Add border between items (except last)
+                    //index < menuItems.length - 1 && "border-b border-black",
+                    // Disabled state for logout button
+                    isLoading && item.id === "logout" && "opacity-50 cursor-not-allowed"
+                  )}
+                >
+                  {isLoading && item.id === "logout" ? "Logging out..." : (
+                    <div className="flex flex-row gap-4 items-center group p-2">
+                      <div className="bg-sky-200 w-fit h-fit rounded-lg duration-600 ease-in-out group-hover:scale-107 group-hover:shadow-sm">
+                        <img src={item.icon} alt="icon" className="w-5 h-5 m-2" />
+                      </div>
+                      <div className="flex flex-col">
+                        <p className="text-lg group-hover:underline">{item.label}</p>
+                        <p className="text-[12px] text-gray-600">{item.description}</p>
+                      </div>
+                      
+                    </div>
+                  )}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       )}

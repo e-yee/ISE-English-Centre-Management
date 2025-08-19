@@ -12,7 +12,7 @@ interface ColleagueProfilePanelProps {
 const AttributeCard: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
     <Card>
       <CardContent className="p-4">
-        <label className="block text-sm font-bold text-gray-700 mb-2">{title}</label>
+        <label className="block text-sm font-bold text-purple-600 mb-2">{title}</label>
         <div className="text-sm text-gray-600 bg-gray-50 p-3 rounded-md max-h-[120px] overflow-y-auto">
           {children}
         </div>
@@ -33,12 +33,12 @@ const ColleagueProfilePanel: React.FC<ColleagueProfilePanelProps> = ({ colleague
   }
 
   return (
-    <div className="h-full overflow-y-auto relative">
+    <div className="selection:bg-purple-400 selection:text-white h-full overflow-y-auto relative">
       {/* Minimize Button */}
       {onMinimize && (
         <button
           onClick={onMinimize}
-          className="absolute top-4 right-4 z-20 p-2 hover:bg-fuchsia-200 rounded-full transition-colors"
+          className="cursor-pointer absolute top-4 right-4 z-20 p-2 hover:bg-fuchsia-200 rounded-full transition-colors"
           title="Minimize panel"
         >
           <img 
@@ -53,23 +53,27 @@ const ColleagueProfilePanel: React.FC<ColleagueProfilePanelProps> = ({ colleague
         <div className="absolute top-0 left-0 w-full h-40 bg-gradient-to-b from-blue-100 to-rose-100 rounded-t-lg overflow-hidden">          
         </div>
         <div className="relative pt-14 px-6 pl-2">
-          <div className="flex items-end">
+          <div className="flex items-end ml-6">
             <Avatar 
               name={colleague.name}
               src={colleague.avatar}
               size="xl"
-              className="mr-2 z-10 border-4 border-white shadow-lg"
+              className="mr-3 z-10 border-4 border-white shadow-lg"
             />
             <div className="z-10 pb-6">
-              <h1 className="text-3xl font-bold text-gray-900 font-comfortaa">
+              <h1 className="text-3xl font-bold text-indigo-600 font-comfortaa">
                 {colleague.name}
               </h1>
-              <p className="text-lg text-gray-600">
-                {colleague.email} | {colleague.phone}
-              </p>
-              <p className="text-sm text-blue-600 font-medium">
-                Employee ID: {colleague.id}
-              </p>
+              <div className="ml-1 flex flex-row gap-2 text-lg">
+                <p className="select-all">{colleague.email}</p>
+                <p className="select-none">|</p>
+                <p className="select-all">{colleague.phone}</p>
+              </div>
+              
+              <div className="ml-1 flex flex-row gap-2 text-sm text-blue-500">
+                <p className="underline font-bold select-none">Employee ID:</p>
+                <p className="select-all">{colleague.id}</p>
+              </div>              
             </div>
           </div>
         </div>
@@ -88,9 +92,15 @@ const ColleagueProfilePanel: React.FC<ColleagueProfilePanelProps> = ({ colleague
           </AttributeCard>
           
           <AttributeCard title="Contact">
-            <div>
-              <p>Email: {colleague.email}</p>
-              <p className="mt-1">Phone: {colleague.phone}</p>
+            <div className="flex flex-col justify-center items-start">
+              <div className="flex flex-row gap-2">
+                <p className="font-semibold text-black ">Email:</p>
+                <p className="font-normal select-all">{colleague.email}</p>
+              </div>    
+              <div className="flex flex-row gap-2">
+                <p className="font-semibold text-black ">Phone: </p>
+                <p className="font-normal select-all">{colleague.phone}</p>
+              </div>                         
             </div>
           </AttributeCard>
         </div>
