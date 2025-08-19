@@ -125,7 +125,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
                 >
                   {isLoading && item.id === "logout" ? "Logging out..." : (
                     <div className="flex flex-row gap-4 items-center group p-2">
-                      <div className="bg-sky-200 w-fit h-fit rounded-lg group-hover:scale-107 group-hover:shadow-sm">
+                      <div className="bg-sky-200 w-fit h-fit rounded-lg duration-600 ease-in-out group-hover:scale-107 group-hover:shadow-sm">
                         <img src={item.icon} alt="icon" className="w-5 h-5 m-2" />
                       </div>
                       <p className="group-hover:underline">{item.label}</p>
