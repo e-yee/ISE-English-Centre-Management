@@ -114,6 +114,7 @@ const FeatureButtonList: React.FC<FeatureButtonListProps> = ({ className, classI
               "focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-1",
               "text-[14px] font-semibold text-black leading-[1em] font-comfortaa",
               "whitespace-nowrap hover:text-white",
+              "cursor-pointer",
               // Active state styling
               activeButton === button.id && "bg-gray-100 scale-105",
               // Responsive sizing based on sidebar state - reduced sizes
