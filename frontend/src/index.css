@@ -236,7 +236,7 @@ input:-webkit-autofill {
 
 .sidebar-menu-item:hover {
   transform: scale(1.05) !important;
-  background-color: #87bef2 !important;    
+  background-color: #bfa4fa !important;     
 }
 
 /* Sidebar icon styling - exact Figma specs */
