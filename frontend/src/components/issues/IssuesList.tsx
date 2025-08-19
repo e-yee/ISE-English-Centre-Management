@@ -148,7 +148,7 @@ const IssuesList: React.FC<IssuesListProps> = ({ className }) => {
         <div className="flex-1 h-px bg-gray-200"></div>
       </div>
 
-      <div className="space-y-4">
+      <div className="flex flex-col-reverse gap-y-4">
         {issuesArray.map((issue: any) => (
           <Card key={issue.id} className="shadow-md hover:shadow-lg transition-shadow duration-200 border-0 bg-white">
             <CardContent className="p-6">
