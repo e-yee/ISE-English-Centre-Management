@@ -16,6 +16,7 @@ interface ProfileMenuItem {
   id: string;
   icon: string,
   label: string;
+  description: string,
   onClick?: () => void;
 }
 
@@ -33,6 +34,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
       id: "profile",
       icon: settingIcon,
       label: "Profile",
+      description: "Profile setting",
       onClick: onProfileClick,
     },
     // {
@@ -44,6 +46,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
       id: "logout",
       icon: logoutIcon,
       label: "Log out",
+      description: "",
       onClick: onLogoutClick,
     },
   ];
@@ -112,7 +115,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
                   disabled={isLoading && item.id === "logout"}
                   className={cn(
                     "w-full rounded-sm px-8 py-2 text-left h-fit",
-                    "font-comfortaa text-md font-semibold text-black-500",
+                    "font-comfortaa  font-semibold text-black-500",
                     "transition-all duration-200 ease-in-out",
                     "",
                     "hover:bg-blue-50 hover:cursor-pointer",
@@ -128,7 +131,11 @@ const UserProfile: React.FC<UserProfileProps> = ({
                       <div className="bg-sky-200 w-fit h-fit rounded-lg duration-600 ease-in-out group-hover:scale-107 group-hover:shadow-sm">
                         <img src={item.icon} alt="icon" className="w-5 h-5 m-2" />
                       </div>
-                      <p className="group-hover:underline">{item.label}</p>
+                      <div className="flex flex-col">
+                        <p className="text-lg group-hover:underline">{item.label}</p>
+                        <p className="text-[12px] text-gray-600">{item.description}</p>
+                      </div>
+                      
                     </div>
                   )}
                 </button>
