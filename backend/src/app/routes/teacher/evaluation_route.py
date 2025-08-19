@@ -5,7 +5,7 @@ from marshmallow import ValidationError
 from ...http_status import HTTPStatus
 from sqlalchemy.exc import IntegrityError, OperationalError
 from ...schemas.evaluation_schema import evaluation_schema
-from ...models import Evaluation, Student, Employee, Enrolment, StudentAttendance, Course
+from ...models import Evaluation, Student, Employee, Enrolment, StudentAttendance, Course, Class
 from ...models.pdf import generate_report
 from extensions import db
 import datetime, os
@@ -101,60 +101,92 @@ def validate_course(course_id):
     
     return course, None, None
 
-@evaluation_bp.get("/")
-@role_required("Teacher")
-def get_evaluation():
+@evaluation_bp.get("/by-class")
+@role_required("Teacher", "Learning Advisor", "Manager")
+def get_class_students_with_evaluations():
     try:
-        id = get_jwt().get("employee_id")
-        
-        teacher, response, status = validate_teacher(id)
-        if not teacher:
-            return response, status
-        
-        # Optional filters via query params
-        student_id = request.args.get("student_id")
+        class_id = request.args.get("class_id")
+        if not class_id:
+            return jsonify({
+                "message": "Missing class ID in query params"
+            }), HTTPStatus.BAD_REQUEST
+
         course_id = request.args.get("course_id")
+        if not course_id:
+            return jsonify({
+                "message": "Missing course ID in query params"
+            }), HTTPStatus.BAD_REQUEST
+
         course_date_str = request.args.get("course_date")
-        assessment_type = request.args.get("assessment_type")
+        if not course_date_str:
+            return jsonify({
+                "message": "Missing course date in query params"
+            }), HTTPStatus.BAD_REQUEST
+        try:
+            course_date = datetime.date.fromisoformat(course_date_str)
+        except ValueError:
+            return jsonify({
+                "message": "Invalid course_date format; expected YYYY-MM-DD"
+            }), HTTPStatus.BAD_REQUEST
 
-        query = db.session.query(Evaluation).filter_by(teacher_id=id)
+        term = request.args.get("term")
+        if not term:
+            return jsonify({
+                "message": "Missing class term in query params"
+            }), HTTPStatus.BAD_REQUEST
 
-        if student_id:
-            query = query.filter_by(student_id=student_id)
-        if course_id:
-            query = query.filter_by(course_id=course_id)
-        if course_date_str:
-            try:
-                course_date = datetime.date.fromisoformat(course_date_str)
-                query = query.filter_by(course_date=course_date)
-            except ValueError:
-                return jsonify({
-                    "message": "Invalid course_date format; expected YYYY-MM-DD"
-                }), HTTPStatus.BAD_REQUEST
-        if assessment_type:
-            query = query.filter_by(assessment_type=assessment_type)
+        class_ = db.session.get(Class, (class_id, course_id, course_date_str, term))
+        if not class_:
+            return jsonify({
+                "message": "Class not found"
+            }), HTTPStatus.NOT_FOUND
 
-        evaluations = query.all()
+        # Collect students in this class
+        students = [sa.student for sa in class_.student_attendance]
 
-        # Serialize minimally
-        data = [
-            {
-                "student_id": e.student_id,
-                "course_id": e.course_id,
-                "course_date": e.course_date.isoformat() if e.course_date else None,
-                "assessment_type": e.assessment_type,
-                "teacher_id": e.teacher_id,
-                "grade": e.grade,
-                "comment": e.comment,
-                "enrolment_id": e.enrolment_id,
-                "evaluation_date": e.evaluation_date.isoformat() if e.evaluation_date else None,
-            }
-            for e in evaluations
-        ]
+        # If the caller is a Teacher, restrict to their evaluations; otherwise include all
+        jwt_employee_id = get_jwt().get("employee_id")
+        teacher_obj, _, _ = validate_teacher(jwt_employee_id)
+        teacher_filter_id = teacher_obj.id if teacher_obj else None
+
+        result = []
+        for s in students:
+            query = (
+                db.session.query(Evaluation)
+                .filter_by(student_id=s.id, course_id=course_id, course_date=course_date)
+            )
+            if teacher_filter_id:
+                query = query.filter_by(teacher_id=teacher_filter_id)
+            evals = query.all()
+
+            eval_payload = [
+                {
+                    "student_id": e.student_id,
+                    "course_id": e.course_id,
+                    "course_date": e.course_date.isoformat() if e.course_date else None,
+                    "assessment_type": e.assessment_type,
+                    "teacher_id": e.teacher_id,
+                    "grade": e.grade,
+                    "comment": e.comment,
+                    "enrolment_id": e.enrolment_id,
+                    "evaluation_date": e.evaluation_date.isoformat() if e.evaluation_date else None,
+                }
+                for e in evals
+            ]
+
+            result.append({
+                "student": {
+                    "id": s.id,
+                    "fullname": s.fullname,
+                    "contact_info": s.contact_info,
+                    "date_of_birth": s.date_of_birth.isoformat() if s.date_of_birth else None,
+                },
+                "evaluations": eval_payload,
+            })
 
         return jsonify({
-            "message": "Evaluations retrieved successfully",
-            "data": data,
+            "message": "Class students with evaluations retrieved successfully",
+            "data": result,
         }), HTTPStatus.OK
 
     except Exception as e:
@@ -382,17 +414,18 @@ def export_evaluation():
         if not teacher_id:
             return response, status
         
-        pdf_data = jsonify({
-            "student_id": student_id,
-            "course_id": course_id,
-            "teacher_id": teacher_id,
+        pdf_data = {
+            "student_id": student_id.id,
+            "course_id": course_id.id,
+            "teacher_id": teacher_id.id,
             "student_name": student_id.fullname,
             "course_name": course_id.name,
-            "teacher_name": teacher_id.full_name
-        })
+            "teacher_name": teacher_id.full_name,
+            "evaluation_details": data.get("details", "No details provided.")
+        }
 
-        logo_path = "frontend/src/assets/logo.svg"
-        output_path = os.path.join("backend/assets", f"evaluation_report_{pdf_data["student_id"]}.pdf")
+        logo_path = "C:\\Users\\nguye\\OneDrive\\Documents\\ISE\\ISE-English-Centre-Management\\backend\\src\\test.png"
+        output_path = os.path.join("backend/assets", f"evaluation_report_{pdf_data['student_id']}.pdf")
 
         if not os.path.exists("backend/assets"):
             os.makedirs("backend/assets")

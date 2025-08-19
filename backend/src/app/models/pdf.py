@@ -43,8 +43,8 @@ def generate_report(data, output_path, logo_path=None):
     pdf.chapter_title("Teacher Information")
     pdf.chapter_body(f"ID: {data['teacher_id']}\nName: {data['teacher_name']}")
 
-    pdf.chapter_title("Assessment")
-    pdf.chapter_body(f"Type: {data['assessment_type']}\n\nComment: {data['comment']}")
+    # pdf.chapter_title("Assessment")
+    # pdf.chapter_body(f"Type: {data['assessment_type']}\n\nComment: {data['comment']}")
 
-    bytes = pdf.output(dest='S').encode('latin1')
+    bytes = pdf.output(dest='S').encode('utf-8')
     return io.BytesIO(bytes)
