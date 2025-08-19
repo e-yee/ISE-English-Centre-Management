@@ -23,6 +23,12 @@ const AttendancePage: React.FC<AttendancePageProps> = ({ className }) => {
     useParams<{ classId: string; courseId: string; courseDate: string; term: string }>();
   const [attendance, setAttendance] = useState<Record<string, AttendanceStatus>>({});
   const [selectedDate, setSelectedDate] = useState("Today");
+
+  React.useEffect(() => {
+    // Reset attendance state when class context changes
+    setAttendance({});
+  }, [classId, courseId, courseDate, term]);
+
   const { mutate: markAttendance, isPending: marking } = useMarkAttendance();
   const [saveSuccess, setSaveSuccess] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);

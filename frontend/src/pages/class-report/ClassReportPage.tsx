@@ -98,6 +98,11 @@ const ClassReportPage: React.FC<ClassReportPageProps> = ({ className }) => {
   const [showNotification, setShowNotification] = useState(false);
 
   React.useEffect(() => {
+    // On route change, clear previous student data to avoid showing stale reports
+    setStudents([]);
+  }, [classId, courseId, courseDate, term]);
+
+  React.useEffect(() => {
     setStudents(adaptedStudents);
   }, [adaptedStudents]);
 

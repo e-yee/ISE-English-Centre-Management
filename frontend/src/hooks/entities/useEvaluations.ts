@@ -36,7 +36,11 @@ export function useEvaluations(args: UseEvaluationsArgs = {}) {
     { enabled, staleTime: 5 * 60 * 1000 }
   );
 
-  const invalidate = () => queryClient.invalidateQueries({ queryKey });
+  const invalidate = () => {
+    // Invalidate both the evaluations for the specific student and the class-wide report
+    queryClient.invalidateQueries({ queryKey: ['evaluations'] });
+    queryClient.invalidateQueries({ queryKey: ['class-report'] });
+  };
 
   const create = async (payload: CreateEvaluationPayload) => {
     const res = await evaluationService.createEvaluation(payload);

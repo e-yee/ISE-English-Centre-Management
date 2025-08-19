@@ -43,11 +43,17 @@ const ScoringPage: React.FC<ScoringPageProps> = ({ className }) => {
 
   const [selected, setSelected] = React.useState<{ id: string; name: string } | null>(null);
   React.useEffect(() => {
-    // Do not pre-select automatically; wait for explicit click to avoid premature API calls
-    if (selected && !students.find((s: any) => s.id === selected.id)) {
+    // When route changes, reset the selected student to ensure clean state
+    setSelected(null);
+  }, [classId, qpCourseId, qpCourseDate, qpTerm]);
+
+  React.useEffect(() => {
+    // When the student list changes (e.g., after a refetch),
+    // ensure the selected student still exists in the list.
+    if (selected && students.length > 0 && !students.find((s: any) => s.id === selected.id)) {
       setSelected(null);
     }
-  }, [students]);
+  }, [students, selected]);
 
   // Evaluations for selected student (lazy)
   const { data: evals = [], create, update } = useEvaluations({
