@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { useDataFetching } from '../base/useDataFetching';
 import evaluationService, { type Evaluation, type EvaluationKey, type CreateEvaluationPayload } from '@/services/entities/evaluationService';
 
@@ -50,7 +50,12 @@ export function useEvaluations(args: UseEvaluationsArgs = {}) {
     return res;
   };
 
-  return { data: data ?? [], loading: isLoading, error, refetch, create, update } as const;
+  const { mutateAsync: exportReport, isPending: isExporting } = useMutation({
+    mutationFn: ({ studentId, courseId, teacherId }: { studentId: string, courseId: string, teacherId: string }) =>
+      evaluationService.exportEvaluationReport(studentId, courseId, teacherId),
+  });
+
+  return { data: data ?? [], loading: isLoading, error, refetch, create, update, exportReport, isExporting } as const;
 }
 
 // Class report: fetch students with their evaluations for a class/course/date

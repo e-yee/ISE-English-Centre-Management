@@ -32,7 +32,7 @@ type FormData = z.infer<typeof contractFormSchema>;
 interface ContractFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (contractData: CreateContractData | UpdateContractData) => Promise<void> | void;
+  onSubmit: (contractData: CreateContractData | UpdateContractData) => Promise<boolean>;
   selectedCourse: Course | null;
   isCreating?: boolean;
   error?: string | null;
@@ -89,8 +89,11 @@ const ContractForm: React.FC<ContractFormProps> = ({
         student_id: data.student_id,
         course_date: format(data.course_date, 'yyyy-MM-dd'),
       };
-      await onSubmit(updateData);
-      setSuccessMsg('Contract updated successfully');
+      const ok = await onSubmit(updateData);
+      if (ok) {
+        setSuccessMsg('Contract updated successfully');
+        form.reset();
+      }
     } else {
       // Create mode
       const contractData: CreateContractData = {
@@ -98,10 +101,12 @@ const ContractForm: React.FC<ContractFormProps> = ({
         course_id: data.course_id,
         course_date: format(data.course_date, 'yyyy-MM-dd'),
       };
-      await onSubmit(contractData);
-      setSuccessMsg('Contract created successfully');
+      const ok = await onSubmit(contractData);
+      if (ok) {
+        setSuccessMsg('Contract created successfully');
+        form.reset();
+      }
     }
-    form.reset();
   };
 
   if (!selectedCourse) {
@@ -164,6 +169,7 @@ const ContractForm: React.FC<ContractFormProps> = ({
                 )}
               />
 
+              {/* Bind actual course_id to a hidden input while displaying course name read-only */}
               <FormField
                 control={form.control}
                 name="course_id"
@@ -171,12 +177,14 @@ const ContractForm: React.FC<ContractFormProps> = ({
                   <FormItem>
                     <FormLabel>Course *</FormLabel>
                     <FormControl>
-                      <Input 
-                        {...field} 
-                        value={selectedCourse?.name || field.value || ''}
-                        disabled
-                        className="bg-gray-50"
-                      />
+                      <>
+                        <input type="hidden" {...field} value={selectedCourse?.id || field.value || ''} />
+                        <Input 
+                          value={selectedCourse?.name || ''}
+                          disabled
+                          className="bg-gray-50"
+                        />
+                      </>
                     </FormControl>
                     <FormDescription>
                       Course: {selectedCourse?.name || ''} • ${selectedCourse?.fee || 0} • {selectedCourse?.duration || 0} months

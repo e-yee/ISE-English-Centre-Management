@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { cn } from "@/lib/utils";
+import { cn, getUserRole } from "@/lib/utils";
 import ClassList from "@/components/class/ClassList";
 import { SearchInput } from "@/components/ui/SearchInput";
 import { Button } from "@/components/ui/button";
@@ -58,6 +58,10 @@ const CourseClassesPage: React.FC = () => {
  
   
   const { data: classes, isLoading, error, refetch } = useClassesByCourse(courseId || '', courseDate || '');
+
+  // Role-based permission
+  const userRole = getUserRole();
+  const canAddClass = userRole === 'Learning Advisor';
 
   // Transform backend data to frontend format with proper type checking
   const transformedClasses: ClassData[] = React.useMemo(() => {
@@ -201,28 +205,23 @@ const CourseClassesPage: React.FC = () => {
         </div>
       </div>
 
+      {/* Classes header + Add button */}
+      <div className="flex items-center justify-between px-4 pb-2">
+        <h2 className="text-xl font-semibold">Classes</h2>
+        {canAddClass && (
+          <button
+            className="bg-white border border-black/20 rounded-[10px] shadow-[2px_2px_3px_0px_rgba(0,0,0,0.15)] px-4 py-2 transition-all duration-200 ease-in-out hover:shadow-[3px_3px_4px_0px_rgba(0,0,0,0.2)] hover:scale-105 focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-1"
+            onClick={openAndPrefill}
+          >
+            <span className="text-[16px] font-semibold text-black leading-[1em] font-comfortaa whitespace-nowrap">Add Class</span>
+          </button>
+        )}
+      </div>
+
       {/* Class List Container - Full width and height */}
       <div className="flex-1 overflow-hidden">
         {transformedClasses.length > 0 ? (
-          <>
-            <div className="flex items-center justify-between px-4 pb-2">
-              <h2 className="text-xl font-semibold">Classes</h2>
-              <button
-                className="bg-white border border-black/20 rounded-[10px] shadow-[2px_2px_3px_0px_rgba(0,0,0,0.15)] px-4 py-2 transition-all duration-200 ease-in-out hover:shadow-[3px_3px_4px_0px_rgba(0,0,0,0.2)] hover:scale-105 focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-1"
-                onClick={openAndPrefill}
-              >
-                <span className="text-[16px] font-semibold text-black leading-[1em] font-comfortaa whitespace-nowrap">Add Class</span>
-              </button>
-            </div>
-            <ClassList classes={transformedClasses} maxClasses={8} onClassClick={handleClassClick} />
-            <AddClassForm
-              open={openAdd}
-              onOpenChange={setOpenAdd}
-              courseId={courseId || ''}
-              courseDate={courseDate || ''}
-              onSuccess={async () => { await refetch(); }}
-            />
-          </>
+          <ClassList classes={transformedClasses} maxClasses={8} onClassClick={handleClassClick} />
         ) : (
           <div className="flex items-center justify-center h-full">
             <div className="text-center">
@@ -232,6 +231,17 @@ const CourseClassesPage: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Add Class Form (kept outside conditional so it's always accessible) */}
+      {canAddClass && (
+        <AddClassForm
+          open={openAdd}
+          onOpenChange={setOpenAdd}
+          courseId={courseId || ''}
+          courseDate={courseDate || ''}
+          onSuccess={async () => { await refetch(); }}
+        />
+      )}
     </div>
   );
 };

@@ -36,26 +36,29 @@ const ContractPage: React.FC = () => {
   // Update contract hook
   const { updateContract, isUpdating, error: updateError } = useUpdateContract();
 
-  const handleAddContract = async (contractData: CreateContractData) => {
+  const handleAddContract = async (contractData: CreateContractData): Promise<boolean> => {
     const result = await createContract(contractData);
-    if (result) {
+    const ok = !!result;
+    if (ok) {
       setIsFormOpen(false);
       setEditingContract(null);
       // Refetch contracts to show the new one
       refetchContracts();
     }
+    return ok;
   };
 
-  const handleUpdateContract = async (contractData: UpdateContractData) => {
-    if (!editingContract) return;
+  const handleUpdateContract = async (contractData: UpdateContractData): Promise<boolean> => {
+    if (!editingContract) return false;
     
-    const result = await updateContract(editingContract.id, contractData);
-    if (result) {
+    const ok = await updateContract(editingContract.id, contractData);
+    if (ok) {
       setIsFormOpen(false);
       setEditingContract(null);
       // Refetch contracts to show the updated one
       refetchContracts();
     }
+    return ok;
   };
 
   const handleEditContract = (contract: Contract) => {
@@ -67,13 +70,13 @@ const ContractPage: React.FC = () => {
     navigate('/dashboard/courses', { state: { selectedCourseId: courseId } });
   };
 
-  const handleFormSubmit = async (contractData: CreateContractData | UpdateContractData) => {
+  const handleFormSubmit = async (contractData: CreateContractData | UpdateContractData): Promise<boolean> => {
     if (editingContract) {
       // Update mode
-      await handleUpdateContract(contractData as UpdateContractData);
+      return await handleUpdateContract(contractData as UpdateContractData);
     } else {
       // Create mode
-      await handleAddContract(contractData as CreateContractData);
+      return await handleAddContract(contractData as CreateContractData);
     }
   };
 
@@ -205,6 +208,7 @@ const ContractPage: React.FC = () => {
           onOpenChange={setIsFormOpen}
           onSubmit={handleFormSubmit}
           selectedCourse={selectedCourse || null}
+          courseDate={selectedCourse?.created_date ? new Date(selectedCourse.created_date).toISOString().split('T')[0] : undefined}
           isCreating={isCreating || isUpdating}
           error={createError || updateError}
           editingContract={editingContract}

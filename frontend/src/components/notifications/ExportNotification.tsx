@@ -155,18 +155,6 @@ export function ExportNotification({
               >
                 Dismiss
               </Button>
-              <Button
-                size="sm"
-                className="flex-1 bg-teal-600 hover:bg-teal-700"
-                onClick={() => {
-                  // Handle download action
-                  console.log("Download initiated")
-                  onClose()
-                }}
-              >
-                <Download className="h-4 w-4 mr-2" />
-                Download
-              </Button>
             </div>
           </CardContent>
         </Card>
