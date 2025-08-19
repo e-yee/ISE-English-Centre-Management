@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import Avatar from "./Avatar";
 import settingIcon from "../../assets/header/settings.svg"
 import logoutIcon from "../../assets/header/logout.svg"
+import { useAuth } from "@/contexts/AuthContext";
 
 interface UserProfileProps {
   className?: string;
@@ -20,6 +21,7 @@ interface ProfileMenuItem {
   onClick?: () => void;
 }
 
+
 const UserProfile: React.FC<UserProfileProps> = ({
   className,
   onProfileClick,  
@@ -28,7 +30,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
   isLoading = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-
+  const { user } = useAuth();
   const menuItems: ProfileMenuItem[] = [
     {
       id: "profile",
@@ -105,7 +107,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
               className="mx-5 my-2 outline-offset-1 outline-indigo-500 outline-2"
               />
               <div>
-                <p>Name here</p>
+                <p>{user?.username || "User"}</p>
               </div>
             </div>
             <div className="w-full flex flex-col gap-2 my-3">
