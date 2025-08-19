@@ -30,6 +30,7 @@ import StaffPage from '../pages/dashboard/staff/StaffPage';
 import StatisticsPage from '../pages/dashboard/StatisticsPage';
 import MakeupClassesPage from '../pages/makeup/MakeupClassesPage';
 import RoomPage from '../pages/room/RoomPage';
+import RootRedirector from './RootRedirector';
 
 export const router = createBrowserRouter([
   {
@@ -52,6 +53,10 @@ export const router = createBrowserRouter([
         path: '/',
         element: <AppLayout />, // AppLayout provides Header, Sidebar, and Outlet for child routes
         children: [
+          {
+            index: true,
+            element: <RootRedirector />,
+          },
           // --- Teacher Routes (accessible by Teacher, Learning Advisor, Manager) ---
           {path: 'home', element: <Homescreen />},
           {path: 'colleagues', element: <ColleaguesPage />},
