@@ -28,7 +28,7 @@ interface StudentReportCardProps {
 const StudentReportCard: React.FC<StudentReportCardProps> = ({ student, evaluations = [], className, courseId }) => {
   const { index, name, studentId } = student as any;
   const { user } = useAuth();
-  const { exportReport, isExporting } = useEvaluations();
+  const { exportReport, isExporting } = useEvaluations({ enabled: false }); // Prevent fetching all evals
   const [showNotification, setShowNotification] = useState(false);
 
   const handleExport = async () => {

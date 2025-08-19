@@ -458,3 +458,64 @@ def export_evaluation():
 
     except Exception as e:
         return jsonify({"message": "An error occurred", "error": str(e)}), HTTPStatus.INTERNAL_SERVER_ERROR
+    
+@evaluation_bp.get("/")
+@role_required("Teacher")
+def get_evaluation():
+    try:
+        id = get_jwt().get("employee_id")
+        
+        teacher, response, status = validate_teacher(id)
+        if not teacher:
+            return response, status
+        
+        # Optional filters via query params
+        student_id = request.args.get("student_id")
+        course_id = request.args.get("course_id")
+        course_date_str = request.args.get("course_date")
+        assessment_type = request.args.get("assessment_type")
+
+        query = db.session.query(Evaluation).filter_by(teacher_id=id)
+
+        if student_id:
+            query = query.filter_by(student_id=student_id)
+        if course_id:
+            query = query.filter_by(course_id=course_id)
+        if course_date_str:
+            try:
+                course_date = datetime.date.fromisoformat(course_date_str)
+                query = query.filter_by(course_date=course_date)
+            except ValueError:
+                return jsonify({
+                    "message": "Invalid course_date format; expected YYYY-MM-DD"
+                }), HTTPStatus.BAD_REQUEST
+        if assessment_type:
+            query = query.filter_by(assessment_type=assessment_type)
+
+        evaluations = query.all()
+
+        # Serialize minimally
+        data = [
+            {
+                "student_id": e.student_id,
+                "course_id": e.course_id,
+                "course_date": e.course_date.isoformat() if e.course_date else None,
+                "assessment_type": e.assessment_type,
+                "teacher_id": e.teacher_id,
+                "grade": e.grade,
+                "comment": e.comment,
+                "enrolment_id": e.enrolment_id,
+                "evaluation_date": e.evaluation_date.isoformat() if e.evaluation_date else None,
+            }
+            for e in evaluations
+        ]
+
+        return jsonify({
+            "message": "Evaluations retrieved successfully",
+            "data": data,
+        }), HTTPStatus.OK
+    except Exception as e:
+        return jsonify({
+            "message": "An error occurred",
+            "error": str(e)
+        }), HTTPStatus.INTERNAL_SERVER_ERROR
