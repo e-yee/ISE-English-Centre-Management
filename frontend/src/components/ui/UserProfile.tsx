@@ -94,14 +94,15 @@ const UserProfile: React.FC<UserProfileProps> = ({
           )}
         >
           {/* Menu Items */}
-          <div className="w-sm flex flex-col items-center overflow-hidden rounded-[15px]
+          <div className="w-sm flex flex-col items-center overflow-hidden rounded-md
                           ">
             <div className="w-full flex flex-row items-center
-                            bg-gradient-to-b from-blue-200 to-purple-300">
+                            bg-gradient-to-b from-blue-200 to-purple-300
+                            border border-violet-500 border-2 rounded-t-md">
               <Avatar 
               name="User"
               size="lg"
-              className="mx-5 my-2 outline-offset-1 outline-violet-500 outline-2"
+              className="mx-5 my-2 outline-offset-1 outline-indigo-500 outline-2"
               />
               <div>
                 <p>Name here</p>
@@ -118,7 +119,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
                     "font-comfortaa  font-semibold text-black-500",
                     "transition-all duration-200 ease-in-out",
                     "",
-                    "hover:bg-blue-50 hover:cursor-pointer",
+                    "hover:bg-blue-50 cursor-pointer",
                     "focus:outline-none focus:bg-[#D9D9D9]",
                     // Add border between items (except last)
                     //index < menuItems.length - 1 && "border-b border-black",
@@ -128,7 +129,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
                 >
                   {isLoading && item.id === "logout" ? "Logging out..." : (
                     <div className="flex flex-row gap-4 items-center group p-2">
-                      <div className="bg-sky-200 w-fit h-fit rounded-lg duration-600 ease-in-out group-hover:scale-107 group-hover:shadow-sm">
+                      <div className="bg-sky-200 w-fit h-fit rounded-lg duration-400 ease-in-out group-hover:scale-107 group-hover:shadow-lg">
                         <img src={item.icon} alt="icon" className="w-5 h-5 m-2" />
                       </div>
                       <div className="flex flex-col">
@@ -140,6 +141,13 @@ const UserProfile: React.FC<UserProfileProps> = ({
                   )}
                 </button>
               ))}
+            </div>
+            <div className="w-full flex flex-col items-center relative overflow-hidden">
+              <div className="w-[80%] h-px bg-black"></div>
+              <div className="w-fit py-2 px-4 rounded-md text-center flex flex-col my-3 
+                              bg-gradient-to-r from-lime-400 to-sky-500">                
+                <p className="text-white font-semibold relative z-10">You're doing amazing, keep it up!</p>                
+              </div>              
             </div>
           </div>
         </div>
