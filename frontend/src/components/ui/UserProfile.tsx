@@ -104,10 +104,10 @@ const UserProfile: React.FC<UserProfileProps> = ({
               <Avatar 
               name="User"
               size="lg"
-              className="mx-5 my-2 outline-offset-1 outline-indigo-500 outline-2"
+              className="mx-5 mr-3 my-2 outline-offset-1 outline-indigo-500 outline-2"
               />
-              <div>
-                <p>{user?.username || "User"}</p>
+              <div className="mb-5">
+                <p className="capitalize font-bold text-xl">{user?.username || "User"}</p>
               </div>
             </div>
             <div className="w-full flex flex-col gap-2 my-3">
