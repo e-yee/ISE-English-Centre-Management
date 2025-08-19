@@ -21,9 +21,9 @@ class PDF(FPDF):
     def header(self):
         if self.logo_path:
             self.image(self.logo_path, 10, 8, 25)
-            self.ln(25)
-        self.set_font("Times", "B", 14)
-        self.cell(0, 10, "Student Assessment", ln=True, align="C")
+            self.ln(15)
+        self.set_font("Times", "B", 16)
+        self.cell(0, 10, "Report Card", ln=True, align="C")
         self.ln(10)
 
     def footer(self):
@@ -34,7 +34,7 @@ class PDF(FPDF):
     def chapter_title(self, title):
         self.set_font("Times", "B", 12)
         self.set_fill_color(200, 220, 255)
-        self.cell(0, 10, title, 0, 1, "L", fill=True)
+        self.cell(190, 10, title, 0, 1, "L", fill=True)
         self.ln(5)
 
     def chapter_body(self, body):
@@ -44,49 +44,60 @@ class PDF(FPDF):
 
     def create_table(self, headers, data):
         self.set_font("Times", "B", 11)
-        col_width = self.w / (len(headers) + 1)
+
+        # Set custom column widths
+        col_widths = [40, 25, self.w - 40 - 25 - 20]  # adjust numbers to fit nicely (last 20 = margin)
         
-        for header in headers:
-            self.cell(col_width, 10, header, 1, 0, 'C')
+        # Print headers
+        for i, header in enumerate(headers):
+            self.cell(col_widths[i], 10, header, 1, 0, 'C')
         self.ln()
         
         self.set_font("Times", "", 11)
         for row in data:
-            for item in row:
-                self.cell(col_width, 10, str(item), 1, 0, 'L')
+            for i, item in enumerate(row):
+                align = "C" if i == 1 else "L"
+                self.cell(col_widths[i], 10, str(item), 1, 0, align)
             self.ln()
 
 
+
 def generate_report(data, output_path, logo_path=None):
-    """
-    Generates a PDF report from a dictionary of data and saves it to a file.
-    """
     pdf = PDF(logo_path=logo_path)
     pdf.add_page()
 
-    pdf.chapter_title("Student Information")
-    pdf.chapter_body(f"ID: {data['student_id']}\nName: {data['student_name']}")
+    # --- Student & Teacher side by side ---
+    pdf.set_font("Times", 'B', 12)
+    pdf.set_fill_color(200, 220, 255)
+    pdf.cell(95, 8, "Student Information", 0, 0, 'L', fill=True)
+    pdf.cell(95, 8, "Teacher Information", 0, 1, 'L', fill=True)
+
+    pdf.set_font("Times", '', 12)
+    # Student Info
+    pdf.multi_cell(95, 8, f"ID: {data['student_id']}\nName: {data['student_name']}", border=0)
+    x = pdf.get_x()
+    y = pdf.get_y()
+    pdf.set_xy(x + 95, y - 16)  # Move to right column for teacher
+    pdf.multi_cell(95, 8, f"ID: {data['teacher_id']}\nName: {data['teacher_name']}", border=0)
+    pdf.ln(5)
 
     pdf.chapter_title("Course Information")
     pdf.chapter_body(f"Course ID: {data['course_id']}\nCourse Name: {data['course_name']}")
 
-    pdf.chapter_title("Teacher Information")
-    pdf.chapter_body(f"ID: {data['teacher_id']}\nName: {data['teacher_name']}")
-
-
+    # --- Evaluation Section ---
     pdf.chapter_title("Evaluation Details")
-    
-    evaluation_headers = ['Assessment Type', 'Grade']
-    evaluation_data = list(data['evaluation_details'].items())
-    
+
+    evaluation_headers = ["Assessment Type", "Grade", "Comment"]
+    evaluation_data = data['evaluation_details']
+
     if evaluation_data:
         pdf.create_table(evaluation_headers, evaluation_data)
     else:
         pdf.chapter_body("No evaluation details provided.")
-    
-    pdf.ln(10) 
-    
-    pdf.set_font(pdf.font_family, 'I', 9)
+
+    # --- Report Footer ---
+    pdf.ln(10)
+    pdf.set_font("Times", 'I', 9)
     report_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     pdf.cell(0, 10, f"Report generated on: {report_date}", 0, 1, 'R')
 

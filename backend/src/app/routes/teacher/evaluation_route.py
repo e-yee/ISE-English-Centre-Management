@@ -423,9 +423,9 @@ def export_evaluation():
         if not evaluation:
             return jsonify({"message": "No evaluation found"}), HTTPStatus.NOT_FOUND
         
-        evaluation_to_grade = {
-            eval.assessment_type: eval.grade for eval in evaluation
-        }
+        evaluation_to_grade = [
+            (eval.assessment_type, eval.grade, eval.comment) for eval in evaluation
+        ]
 
         pdf_data = {
             "student_id": student_id.id,
