@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 export type AssessmentType =
   | 'Quiz 1'
@@ -49,6 +50,7 @@ interface EvaluationFormProps {
     grade: string;
     comment: string;
   }>;
+  successMessage?: string;
 }
 
 export const EvaluationForm: React.FC<EvaluationFormProps> = ({
@@ -59,6 +61,7 @@ export const EvaluationForm: React.FC<EvaluationFormProps> = ({
   className,
   disabledTypes = [],
   prefill,
+  successMessage,
 }) => {
   const [assessmentType, setAssessmentType] = React.useState<AssessmentType | ''>('');
   const [courseDate, setCourseDate] = React.useState<string>(new Date().toISOString().slice(0, 10));
@@ -128,7 +131,7 @@ export const EvaluationForm: React.FC<EvaluationFormProps> = ({
             </div>
             <div className="space-y-2">
               <Label>Course date</Label>
-              <Input type="date" value={courseDate} onChange={(e) => setCourseDate(e.target.value)} />
+              <Input type="date" value={courseDate} onChange={(e) => setCourseDate(e.target.value)} disabled />
             </div>
           </div>
 
@@ -147,7 +150,12 @@ export const EvaluationForm: React.FC<EvaluationFormProps> = ({
             </div>
           </div>
 
-          <div className="flex justify-end gap-2 pt-2">
+          <div className="flex items-center justify-end gap-2 pt-2">
+            {successMessage && (
+              <Badge variant="outline" className="mr-auto border-green-500 bg-green-50 text-green-700">
+                {successMessage}
+              </Badge>
+            )}
             <Button type="button" variant="outline" onClick={() => { setGrade(''); setComment(''); }}>Reset</Button>
             <Button className="bg-green-400" type="submit" disabled={!canSubmit || submitting}>Save</Button>
           </div>

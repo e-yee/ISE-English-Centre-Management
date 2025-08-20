@@ -86,7 +86,7 @@ export function LoginForm({ onForgotPassword, onSubmit, isLoading = false }: Log
           </div>
 
           {/* Password Field */}
-          <div className="relative">
+          <div>
             <label
               htmlFor="password"
               className="block text-[22px] font-comfortaa font-bold text-[#000000] text-left leading-[1.4]"
@@ -116,10 +116,8 @@ export function LoginForm({ onForgotPassword, onSubmit, isLoading = false }: Log
             />
             </div>
                                             
-            
-
             {/* Forgot Password Link - Positioned to the right, below password field */}
-            <div className="absolute right-0 top-full mt-2">
+            <div className="flex justify-end mt-2">
               <button
                 type="button"
                 onClick={onForgotPassword}

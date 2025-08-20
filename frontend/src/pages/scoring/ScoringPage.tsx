@@ -33,6 +33,8 @@ const ScoringPage: React.FC<ScoringPageProps> = ({ className }) => {
   const qpCourseDate = routeCourseDate || search.get('courseDate') || '';
   const qpTerm = routeTerm || search.get('term') || '';
 
+  const [successMessage, setSuccessMessage] = React.useState('');
+
   // Students in class (lazy by params presence)
   const { data: students = [] } = useClassStudents(
     classId,
@@ -73,6 +75,8 @@ const ScoringPage: React.FC<ScoringPageProps> = ({ className }) => {
   }) => {
     try {
       await create(payload as any);
+      setSuccessMessage('Evaluation created successfully!');
+      setTimeout(() => setSuccessMessage(''), 3000);
       // After create, sync form with saved values
       setPrefill({
         assessment_type: payload.assessment_type,
@@ -85,6 +89,8 @@ const ScoringPage: React.FC<ScoringPageProps> = ({ className }) => {
       if (msg.includes('already') || msg.includes('exists') || msg.includes('409')) {
         const { student_id, course_id, course_date, assessment_type, ...rest } = payload;
         await update({ student_id, course_id, course_date, assessment_type }, rest);
+        setSuccessMessage('Evaluation updated successfully!');
+        setTimeout(() => setSuccessMessage(''), 3000);
         // After update, sync form with latest values
         setPrefill({
           assessment_type,
@@ -138,6 +144,7 @@ const ScoringPage: React.FC<ScoringPageProps> = ({ className }) => {
                   courseId={qpCourseId}
                   onSubmit={handleSubmit}
                   disabledTypes={evals.map((e) => e.assessment_type as AssessmentType)}
+                  successMessage={successMessage}
                   prefill={{
                     ...prefill,
                     course_date: qpCourseDate || prefill?.course_date,
