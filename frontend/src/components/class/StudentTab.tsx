@@ -93,6 +93,7 @@ const StudentTab: React.FC<StudentTabProps> = ({ studentData, className }) => {
       <Card className={cn(
         "student-tab-container bg-white border border-[rgba(0,0,0,0.2)] shadow-[5px_4px_4px_0px_rgba(0,0,0,0.15)] transition-all duration-200 ease-in-out",
         "w-full min-h-[120px] rounded-[15px]",
+        "border border-blue-500 border-1",
         "hover:shadow-[6px_6px_10px_0px_rgba(0,0,0,0.2)] hover:-translate-y-0.5 hover:bg-gray-50",
         className
       )}>
@@ -103,19 +104,19 @@ const StudentTab: React.FC<StudentTabProps> = ({ studentData, className }) => {
           {/* Student Name and ID Section - Reduced sizes */}
           <div className="flex flex-row items-start mb-3">
             {/* Index Number - Reduced size */}
-            <span className="w-fit pr-1 text-left text-[24px] font-semibold text-[rgba(0,0,0,0.75)] leading-[1.2em] font-comfortaa">
+            <span className="w-fit pr-1 text-sky-700 text-left text-[24px] font-semibold text-[rgba(0,0,0,0.75)] leading-[1.2em] font-comfortaa">
               {index}.
             </span>
 
             {/* Name and ID Column - Vertically aligned with reduced sizes */}
             <div className="flex flex-col justify-center">
               {/* Student Name - Reduced from 40px to 24px */}
-              <div className="text-[24px] font-semibold text-[rgba(0,0,0,0.75)] leading-[1.2em] font-comfortaa">
+              <div className="text-[24px] text-sky-700 font-semibold text-[rgba(0,0,0,0.75)] leading-[1.2em] font-comfortaa">
                 {name}
               </div>
 
               {/* Student ID - Reduced from 20px to 14px */}
-              <div className="text-[14px] font-medium text-[rgba(0,0,0,0.9)] leading-[1.2em] font-comfortaa">
+              <div className="text-[14px] underline font-medium text-[rgba(0,0,0,0.9)] leading-[1.2em] font-comfortaa">
                 ID: {studentId}
               </div>
             </div>
@@ -125,14 +126,14 @@ const StudentTab: React.FC<StudentTabProps> = ({ studentData, className }) => {
           <div className="grid grid-cols-2 gap-x-3 gap-y-2">
             {/* Row 1 - Contact and DoB */}
             <div className="space-y-1">
-              <label className="text-[12px] font-semibold text-black font-comfortaa leading-[1.2em]">
+              <label className="text-[14px] font-semibold text-black font-comfortaa leading-[1.2em]">
                 Contact:
               </label>
               <div className="relative flex items-center gap-1">
                 <Input
                   value={contact || ''}
                   readOnly
-                  className="flex-1 h-7 rounded-[3px] border border-[rgba(0,0,0,0.45)] bg-[rgba(217,217,217,0.3)] px-2 text-[12px] font-normal text-[rgba(0,0,0,0.65)] font-comfortaa text-center"
+                  className="flex-1 h-7 rounded-[3px] border border-blue-500 border-1 bg-sky-100 px-2 text-[12px] font-normal text-black/80 font-comfortaa text-center"
                   placeholder=""
                 />
                 <button
@@ -155,14 +156,14 @@ const StudentTab: React.FC<StudentTabProps> = ({ studentData, className }) => {
             </div>
 
             <div className="space-y-1">
-              <label className="text-[12px] font-semibold text-black font-comfortaa leading-[1.2em]">
+              <label className="text-[14px] font-semibold text-black font-comfortaa leading-[1.2em]">
                 DoB:
               </label>
               <div className="relative flex items-center gap-1">
                 <Input
                   value={formatDateOfBirth(dateOfBirth)}
                   readOnly
-                  className="flex-1 h-7 rounded-[3px] border border-[rgba(0,0,0,0.45)] bg-[rgba(217,217,217,0.3)] px-2 text-[12px] font-normal text-[rgba(0,0,0,0.65)] font-comfortaa text-center"
+                  className="flex-1 h-7 rounded-[3px] border border-blue-500 border-1 bg-sky-100 px-2 text-[12px] font-normal text-black/80 font-comfortaa text-center"
                   placeholder=""
                 />
                 <button
