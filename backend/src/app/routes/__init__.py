@@ -9,7 +9,6 @@ from .class_route import class_bp
 from .room_route import room_bp
 from .manager.dashboard_route import dashboard_bp
 from .checkin_route import checkin_bp
-from .homepage_route import homepage_bp
 from ..auth.auth import auth_bp
 from .account_route import account_bp
 from .employee_route import employee_bp
@@ -30,7 +29,6 @@ def register_blueprints(app):
         dashboard_bp, 
         evaluation_bp,
         employee_bp, 
-        homepage_bp,
         student_bp,
         issue_bp,
         room_bp,
