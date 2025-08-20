@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import UserProfile from "@/components/ui/UserProfile";
 import { useAuth } from "@/contexts/AuthContext";
@@ -8,9 +8,21 @@ interface HeaderProps {
   isRegistered?: boolean;
 }
 
+// Role-based navigation helper
+const getDefaultRouteForRole = (role: string): string => {
+  switch (role) {
+    case 'Manager':
+    case 'Learning Advisor':
+      return '/dashboard'; // Staff dashboard
+    case 'Teacher':
+      return '/home'; // Teacher's main page
+    default:
+      return '/home';
+  }
+};
+
 const Header: React.FC<HeaderProps> = ({ isRegistered = false }) => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const { logout, isLoading } = useAuth();
+  const { logout, isLoading, user } = useAuth();
 
   // Safely get navigate function - only works in router context
   let navigate: ((path: string) => void) | null = null;
@@ -30,7 +42,12 @@ const Header: React.FC<HeaderProps> = ({ isRegistered = false }) => {
 
   const handleLogoClick = () => {
     if (navigate) {
-      navigate("/home");
+      if (user) {
+        const homePath = getDefaultRouteForRole(user.role);
+        navigate(homePath);
+      } else {
+        navigate("/home");
+      }
     } else {
       console.log("Navigation to /home (demo mode - navigation disabled)");
     }
