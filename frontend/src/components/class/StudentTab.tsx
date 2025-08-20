@@ -185,7 +185,7 @@ const StudentTab: React.FC<StudentTabProps> = ({ studentData, className }) => {
             </div>
 
             {/* Row 2 - Presence spans both columns for better balance */}
-            <div className="col-span-2 space-y-1">
+            <div className="col-span-2 space-y-1 hidden">
               <label className="text-[12px] font-semibold text-black font-comfortaa leading-[1.2em]">
                 Presence:
               </label>
