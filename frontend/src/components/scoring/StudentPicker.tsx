@@ -47,7 +47,7 @@ export const StudentPicker: React.FC<StudentPickerProps> = ({
                   'w-full text-left px-3 py-2 rounded-md border transition-colors',
                   selectedStudentId === st.id
                     ? 'border-violet-600 bg-violet-50'
-                    : 'border-gray-200 hover:bg-gray-200 cursor-pointer'
+                    : 'border-gray-200 hover:border-indigo-400 hover:bg-blue-200 cursor-pointer'
                 )}
               >
                 <div className="text-sm font-medium text-gray-900">{(st as any).name || (st as any).fullname || st.id}</div>
