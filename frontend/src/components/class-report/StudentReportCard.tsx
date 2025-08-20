@@ -89,21 +89,35 @@ const StudentReportCard: React.FC<StudentReportCardProps> = ({ student, evaluati
       )}>
         <CardContent className="p-0">
           {/* Student Information Section */}
-          <div className="flex flex-col items-center mb-6">
-            <div className="text-[30px] font-semibold text-black leading-[1.4em] font-comfortaa text-center">
-              {index}. {name}
+          <div className="flex flex-row items-center mb-6">
+            <div className="w-full flex flex-col items-start">
+              <div className="flex flex-row gap-1">
+                <div className="text-[26px] font-semibold text-blue-900 leading-[1.4em] font-comfortaa text-left">
+                  {index}.
+                </div>
+                <div className="flex flex-col">
+                  <p className="text-[26px] font-semibold text-blue-900 leading-[1.4em] font-comfortaa text-left">
+                    {name}
+                  </p>
+                  <p className="text-[18px] underline font-semibold text-black/50 leading-[1.4em] font-comfortaa text-left">
+                    ID: {studentId}
+                  </p>
+                </div>
+              </div>                            
             </div>
-            <div className="text-[24px] font-semibold text-black/50 leading-[1.4em] font-comfortaa text-center">
-              ID: {studentId}
+            <div className="w-full flex flex-row justify-end">
+              <Button disabled={!courseId || isExporting} onClick={handleExport} className="bg-[#7C8FD5] hover:scale-94 hover:bg-indigo-600">
+                {isExporting ? 'Exporting...' : 'Export'}
+              </Button>
             </div>
           </div>
 
           {/* Export + Grid */}
-          <div className="flex justify-end mb-3">
+          {/* <div className="flex justify-end mb-3">
             <Button disabled={!courseId || isExporting} onClick={handleExport} className="bg-[#7C8FD5] hover:bg-indigo-600">
               {isExporting ? 'Exporting...' : 'Export'}
             </Button>
-          </div>
+          </div> */}
           {/* Dynamic Assessment Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             {evaluations.map((ev, i) => {
