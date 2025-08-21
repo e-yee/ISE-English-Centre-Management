@@ -19,7 +19,7 @@ interface EvaluationListProps {
 
 export const EvaluationList: React.FC<EvaluationListProps> = ({ items, className, onSelect }) => {
   return (
-    <Card className={cn('w-full max-w-full overflow-hidden bg-white border border-gray-200 shadow-sm rounded-[15px]', className)}>
+    <Card className={cn('w-full max-w-full h-[40%] overflow-y-auto bg-white border border-gray-200 shadow-sm rounded-[15px]', className)}>
       <CardContent className="p-0">
         <div className="overflow-x-auto w-full max-h-[80vh] overflow-y-auto">
           <table className="w-full table-fixed text-sm">
