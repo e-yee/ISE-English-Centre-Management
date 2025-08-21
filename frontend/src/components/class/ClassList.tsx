@@ -72,7 +72,7 @@ const ClassList: React.FC<ClassListProps> = ({
           if (enableRevealOnScroll) {
             return (
               <RevealOnScroll
-                key={classData.id}
+                key={`${classData.id}-${classData.courseId}`}
                 delay={50}
                 variant="fade-up"
                 className="w-full"
@@ -83,7 +83,7 @@ const ClassList: React.FC<ClassListProps> = ({
           }
 
           return (
-            <div key={classData.id} className="w-full">
+            <div key={`${classData.id}-${classData.courseId}`} className="w-full">
               {classComponent}
             </div>
           );

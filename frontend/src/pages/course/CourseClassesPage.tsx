@@ -79,9 +79,9 @@ const CourseClassesPage: React.FC = () => {
   }, [classes]);
 
   // Map backend classes by id to retrieve composite key on click without widening ClassData
-  const classById = React.useMemo(() => {
+  const classByCompositeKey = React.useMemo(() => {
     const map = new Map<string, Class>();
-    (classes || []).forEach((c) => map.set(c.id, c));
+    (classes || []).forEach((c) => map.set(`${c.id}::${c.course_id}`, c));
     return map;
   }, [classes]);
 
@@ -117,7 +117,7 @@ const CourseClassesPage: React.FC = () => {
   };
 
   const handleClassClick = (item: ClassData) => {
-    const original = classById.get(item.id);
+    const original = classByCompositeKey.get(`${item.id}::${item.courseId}`);
     const cid = original?.course_id || item.courseId;
     const cdate = original?.course_date || '';
     const term = original?.term != null ? String(original.term) : '';

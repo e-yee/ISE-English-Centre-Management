@@ -146,14 +146,6 @@ const ClassScreen: React.FC<ClassScreenProps> = ({ className }) => {
         "border-b border-black"
       )}>
         <div className="flex items-center justify-between">
-          {role !== 'Teacher' && (
-            <button
-              onClick={() => window.history.back()}
-              className="bg-white border border-black/20 rounded-[10px] shadow-[2px_2px_3px_0px_rgba(0,0,0,0.15)] px-4 py-2 transition-all duration-200 ease-in-out hover:shadow-[3px_3px_4px_0px_rgba(0,0,0,0.2)] hover:scale-105 focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-1"
-            >
-              <span className="text-[16px] font-semibold text-black leading-[1em] font-comfortaa whitespace-nowrap">Back</span>
-            </button>
-          )}
           {role === 'Learning Advisor' && (
             <button
               onClick={() => setAddStudentOpen(true)}

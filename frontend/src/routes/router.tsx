@@ -66,7 +66,9 @@ export const router = createBrowserRouter([
           { path: 'time-entries', element: <TimeEntriesPage /> },
           { path: 'profile', element: <ProfileSettingPage /> },
           { path: 'class/:classId', element: <ClassScreen /> },
-          { path: 'class-info/:classId', element: <ClassInformationPage /> },
+          //{ path: 'class-info/:classId', element: <ClassInformationPage /> },
+          // Manager/Learning Advisor variant: include all params in URL as requested
+          { path: 'class-info/:classId/:courseId/:courseDate/:term', element: <ClassInformationPage /> },
           { path: 'attendance/:classId/:courseId/:courseDate/:term', element: <AttendancePage /> },
           { path: 'scoring/:classId/:courseId/:courseDate/:term', element: <ScoringPage /> },
           { path: 'materials', element: <AddMaterialsPage /> },

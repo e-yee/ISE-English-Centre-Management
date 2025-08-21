@@ -88,7 +88,10 @@ const HomescreenPage: React.FC<HomescreenPageProps> = ({ className }) => {
   };
 
   const handleClassClick = (item: ClassData) => {
-    const original = (classes || []).find((c: any) => c.id === item.id) as Class | undefined;
+    // Match by both class id and course id to avoid cross-course collisions
+    const original = (classes || []).find(
+      (c: any) => c.id === item.id && c.course_id === item.courseId
+    ) as Class | undefined;
     const cid = original?.course_id || item.courseId;
     const cdate = original?.course_date || '';
     const term = original?.term != null ? String(original.term) : '';

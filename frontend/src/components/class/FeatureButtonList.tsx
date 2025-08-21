@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { cn, getUserRole } from '@/lib/utils';
 import { useSidebar } from '@/components/ui/sidebar';
+import { useQueryClient } from '@tanstack/react-query';
+import studentService from '@/services/entities/studentService';
+import classService from '@/services/entities/classService';
 
 interface FeatureButtonListProps {
   className?: string;
@@ -24,70 +27,121 @@ const FeatureButtonList: React.FC<FeatureButtonListProps> = ({ className, classI
   const [activeButton, setActiveButton] = useState<string | null>(null);
   const navigate = useNavigate();
   const role = getUserRole() || 'Teacher';
+  const queryClient = useQueryClient();
 
-  // Hide the entire feature bar for Learning Advisor and Manager
-  if (role === 'Learning Advisor' || role === 'Manager') {
-    return null;
-  }
-
-  // Determine if we're currently on the class page or a feature page (not used currently)
+  const prefetchInfo = async () => {
+    try {
+      if (classId && courseId && courseDate && term) {
+        await Promise.all([
+          queryClient.prefetchQuery({
+            queryKey: ['students', 'class', classId, courseId, courseDate, String(term), role],
+            queryFn: () => studentService.getClassStudents(classId, courseId, courseDate, String(term)),
+            staleTime: 5 * 60 * 1000
+          }),
+          queryClient.prefetchQuery({
+            queryKey: ['classes', 'course', courseId, courseDate, role],
+            queryFn: () => classService.getAllClassesByCourse(courseId, courseDate),
+            staleTime: 5 * 60 * 1000
+          })
+        ]);
+      }
+    } catch {}
+  };
 
   // Feature buttons with routing
-  const featureButtons: FeatureButton[] = [
-    {
-      id: "back",
-      title: "Back",
-      route: undefined,
-      onClick: () => navigate(-1)
-    },
-    {
-      id: "information",
-      title: "Information",
-      route: classId ? `/class-info/${classId}` : "/class-info/1", // Default classId if not provided
-      onClick: () => navigate(classId ? `/class-info/${classId}` : "/class-info/1")
-    },
-    {
-      id: "scoring",
-      title: "Scoring", 
-      route:
-        classId && courseId && courseDate && term
-          ? `/scoring/${classId}/${courseId}/${courseDate}/${term}`
-          : undefined,
-      onClick: () =>
-        navigate(
+  const featureButtons: FeatureButton[] = (() => {
+    const common: FeatureButton[] = [
+      {
+        id: "back",
+        title: "Back",
+        onClick: () => navigate(-1)
+      }
+    ];
+
+    if (role === 'Learning Advisor' || role === 'Manager') {
+      // Manager/LA: show Information with full params in URL
+      return [
+        ...common,
+        {
+          id: "information",
+          title: "Information",
+          route:
+            classId && courseId && courseDate && term
+              ? `/class-info/${classId}/${courseId}/${courseDate}/${term}`
+              : undefined,
+          onClick: () =>
+            navigate(
+              classId && courseId && courseDate && term
+                ? `/class-info/${classId}/${courseId}/${courseDate}/${term}`
+                : '/class-info/1/COURSE/2024-01-01/1'
+            )
+        }
+      ];
+    }
+
+    // Teacher: full feature list, Information uses classId only
+    return [
+      ...common,
+      {
+        id: "information",
+        title: "Information",
+        route:
+          classId && courseId && courseDate && term
+            ? `/class-info/${classId}/${courseId}/${courseDate}/${term}`
+            : (classId ? `/class-info/${classId}` : "/class-info/1"),
+        onClick: () =>
+          navigate(
+            classId && courseId && courseDate && term
+              ? `/class-info/${classId}/${courseId}/${courseDate}/${term}`
+              : (classId ? `/class-info/${classId}` : "/class-info/1")
+          )
+      },
+      {
+        id: "scoring",
+        title: "Scoring",
+        route:
           classId && courseId && courseDate && term
             ? `/scoring/${classId}/${courseId}/${courseDate}/${term}`
-            : '/scoring/1/COURSE/2024-01-01/1'
+            : undefined,
+        onClick: () =>
+          navigate(
+            classId && courseId && courseDate && term
+              ? `/scoring/${classId}/${courseId}/${courseDate}/${term}`
+              : '/scoring/1/COURSE/2024-01-01/1'
+          )
+      },
+      {
+        id: "daily-attendance",
+        title: "Daily Attendance",
+        route: classId && courseId && courseDate && term ? `/attendance/${classId}/${courseId}/${courseDate}/${term}` : undefined,
+        onClick: () => navigate(
+          classId && courseId && courseDate && term
+            ? `/attendance/${classId}/${courseId}/${courseDate}/${term}`
+            : '/attendance/1/COURSE/2024-01-01/1'
         )
-    },
-    {
-      id: "daily-attendance",
-      title: "Daily Attendance",
-      route: classId && courseId && courseDate && term ? `/attendance/${classId}/${courseId}/${courseDate}/${term}` : undefined,
-      onClick: () => navigate(
-        classId && courseId && courseDate && term
-          ? `/attendance/${classId}/${courseId}/${courseDate}/${term}`
-          : '/attendance/1/COURSE/2024-01-01/1'
-      )
-    },
-    {
-      id: "report",
-      title: "Report",
-      route:
-        classId && courseId && courseDate && term
-          ? `/report/${classId}/${courseId}/${courseDate}/${term}`
-          : undefined,
-      onClick: () =>
-        navigate(
+      },
+      {
+        id: "report",
+        title: "Report",
+        route:
           classId && courseId && courseDate && term
             ? `/report/${classId}/${courseId}/${courseDate}/${term}`
-            : '/report/1/COURSE/2024-01-01/1'
-        )
-    }
-  ];
+            : undefined,
+        onClick: () =>
+          navigate(
+            classId && courseId && courseDate && term
+              ? `/report/${classId}/${courseId}/${courseDate}/${term}`
+              : '/report/1/COURSE/2024-01-01/1'
+          )
+      }
+    ];
+  })();
 
   const handleButtonClick = (buttonId: string) => {
     setActiveButton(buttonId);
+    if (buttonId === 'information') {
+      prefetchInfo();
+    }
     const button = featureButtons.find(btn => btn.id === buttonId);
     if (button?.onClick) {
       button.onClick();
@@ -105,6 +159,7 @@ const FeatureButtonList: React.FC<FeatureButtonListProps> = ({ className, classI
           <button
             key={button.id}
             onClick={() => handleButtonClick(button.id)}
+            onMouseEnter={button.id === 'information' ? prefetchInfo : undefined}
             className={cn(
               // Base styling reduced to match status button size
               "bg-white border border-black/20 rounded-[10px]",
