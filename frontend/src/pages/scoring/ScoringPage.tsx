@@ -149,11 +149,11 @@ const ScoringPage: React.FC<ScoringPageProps> = ({ className }) => {
                     ...prefill,
                     course_date: qpCourseDate || prefill?.course_date,
                   }}
-                  className="flex-1"
+                  className=""
                 />
                 <EvaluationList
                   items={evals as any}
-                  className="flex-1"
+                  className=""
                   onSelect={(row) => setPrefill(row)}
                 />
               </>
