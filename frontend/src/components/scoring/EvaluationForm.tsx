@@ -102,52 +102,49 @@ export const EvaluationForm: React.FC<EvaluationFormProps> = ({
   };
 
   return (
-    <Card className={cn('h-full w-full max-w-full overflow-hidden bg-white border border-gray-200 shadow-sm rounded-[15px]', className)}>
-      <CardContent className="p-4 h-full">
+    <Card className={cn('h-fit w-full max-w-full overflow-hidden bg-white border border-indigo-500 border-2 shadow-md rounded-[15px]', className)}>
+      <CardContent className="p-4 h-fit">
         <form onSubmit={handleSubmit} className="">
           <div>
             <div className="text-lg font-semibold text-gray-900">{studentName || 'Select a student'}</div>
             <div className="text-xs text-gray-500">{studentId}</div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-            <div className="space-y-2">
-              <Label>Assessment type</Label>
-              <Select value={assessmentType} onValueChange={(v) => setAssessmentType(v as AssessmentType)}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select assessment" />
-                </SelectTrigger>
-                <SelectContent>
-                  {ASSESSMENT_OPTIONS.map((opt) => {
-                    const isDisabled = disabledTypes.includes(opt) && assessmentType !== opt;
-                    return (
-                      <SelectItem key={opt} value={opt} disabled={isDisabled} className={isDisabled ? 'opacity-50 cursor-not-allowed' : ''}>
-                        {opt}
-                      </SelectItem>
-                    );
-                  })}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label>Course date</Label>
-              <Input type="date" value={courseDate} onChange={(e) => setCourseDate(e.target.value)} disabled />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Grade</Label>
-              <Input
-                placeholder="e.g., A, A+"
-                value={grade}
-                onChange={(e) => setGrade(e.target.value.slice(0, 2))}
-              />
-            </div>
-            <div className="space-y-2 md:col-span-1 col-span-1">
-              <Label>Comment</Label>
-              <Textarea placeholder="Optional notes" value={comment} onChange={(e) => setComment(e.target.value)} />
-            </div>
+          <div className="flex flex-col mt-2">
+            <div className="w-full flex flex-row justify-between mb-2">
+              <div className="w-[48%]">
+                <Label>Assessment type</Label>
+                <Select value={assessmentType} onValueChange={(v) => setAssessmentType(v as AssessmentType)}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select assessment" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {ASSESSMENT_OPTIONS.map((opt) => {
+                      const isDisabled = disabledTypes.includes(opt) && assessmentType !== opt;
+                      return (
+                        <SelectItem key={opt} value={opt} disabled={isDisabled} className={isDisabled ? 'opacity-50 cursor-not-allowed' : ''}>
+                          {opt}
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="w-[48%]">
+                <Label>Grade</Label>
+                <Input
+                  placeholder="e.g., A, A+"
+                  value={grade}
+                  onChange={(e) => setGrade(e.target.value.slice(0, 2))}
+                />
+              </div>    
+            </div>   
+            <div className="w-full">
+              <div className="w-full">
+                <Label>Comment</Label>
+                <Textarea placeholder="Teacher Evaluation (Optional)" value={comment} onChange={(e) => setComment(e.target.value)} />
+              </div>
+            </div>                           
           </div>
 
           <div className="flex items-center justify-end gap-2 pt-2">
