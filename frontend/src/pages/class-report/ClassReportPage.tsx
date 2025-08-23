@@ -122,7 +122,7 @@ const ClassReportPage: React.FC<ClassReportPageProps> = ({ className }) => {
       
       {/* Feature Button List - Beneath header like in Homescreen.tsx */}
       <div className={cn(
-        "pt-4 pb-3 flex-shrink-0 transition-all duration-300 ease-in-out",
+        "pt-3 pb-3 flex-shrink-0 transition-all duration-300 ease-in-out",
         "px-4"
       )}>
         <FeatureButtonList
