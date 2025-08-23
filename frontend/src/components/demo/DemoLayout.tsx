@@ -1,0 +1,55 @@
+import React from "react";
+import { cn } from "@/lib/utils";
+import Header from "@/components/layout/Header";
+import Sidebar from "@/components/layout/Sidebar";
+import { SidebarProvider, useSidebar } from "@/components/ui/sidebar";
+
+interface DemoLayoutProps {
+  children: React.ReactNode;
+  className?: string;
+}
+
+// Internal component that uses the sidebar context
+const DemoLayoutContent: React.FC<DemoLayoutProps> = ({ children, className }) => {
+  const { state } = useSidebar();
+  const isExpanded = state === "expanded";
+
+  return (
+    <div className={cn("h-screen w-screen bg-gray-50 overflow-hidden font-comfortaa", className)}>
+      {/* Header - Always at top, full width */}
+      <div className="w-full h-20">
+        <Header isRegistered={true} />
+      </div>
+
+      {/* Main content area with sidebar */}
+      <div className="relative h-[calc(100vh-5rem)]">
+        {/* Sidebar - positioned to touch bottom of header */}
+        <div className="absolute left-0 top-0 h-full">
+          <Sidebar />
+        </div>
+
+        {/* Content area - positioned to start from bottom of header */}
+        <div className={cn(
+          "absolute top-4 left-0 right-0 bottom-0 transition-all duration-300 ease-in-out overflow-hidden",
+          isExpanded ? "ml-[335px]" : "ml-[120px]"
+        )}>
+          {/* Page content renders here via children */}
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Main wrapper component that provides sidebar context
+const DemoLayout: React.FC<DemoLayoutProps> = ({ children, className }) => {
+  return (
+    <SidebarProvider defaultOpen={true}>
+      <DemoLayoutContent className={className}>
+        {children}
+      </DemoLayoutContent>
+    </SidebarProvider>
+  );
+};
+
+export default DemoLayout; 
