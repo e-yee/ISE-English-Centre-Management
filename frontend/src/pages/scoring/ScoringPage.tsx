@@ -124,9 +124,44 @@ const ScoringPage: React.FC<ScoringPageProps> = ({ className }) => {
       </div>
 
       {/* Content area */}
-      <div className="flex-1 overflow-hidden px-4">
-        <div className="grid grid-cols-12 gap-4 h-full">
-          <div className="col-span-4 h-full">
+      <div className="w-full flex flex-row overflow-hidden px-4 gap-x-4">
+        <div className="w-[34%]">
+           <StudentPicker
+              classId={classId}
+              items={students.map((s: any) => ({ id: s.id, name: s.fullname }))}
+              selectedStudentId={selected?.id}
+              onSelect={(s) => setSelected({ id: s.id, name: (s as any).name })}
+              className="h-full w-full"
+            />
+        </div>
+        <div className="w-[66%] flex flex-col gap-y-4">
+          {selected ? (
+            <>
+              <EvaluationForm
+                studentName={selected?.name}
+                studentId={selected?.id}
+                courseId={qpCourseId}
+                onSubmit={handleSubmit}
+                disabledTypes={evals.map((e) => e.assessment_type as AssessmentType)}
+                successMessage={successMessage}
+                prefill={{
+                  ...prefill,
+                  course_date: qpCourseDate || prefill?.course_date,
+                }}
+                className="h-[50%]"
+              />
+              <EvaluationList
+                items={evals as any}
+                className="h-[50%]"
+                onSelect={(row) => setPrefill(row)}
+              />
+            </>
+          ) : (
+            <div className="flex-1 flex items-center justify-center text-gray-500">Select a student to view evaluations</div>
+          )}
+        </div>
+        {/* <div className="grid grid-cols-12 gap-4">
+          <div className="col-span-4">
             <StudentPicker
               classId={classId}
               items={students.map((s: any) => ({ id: s.id, name: s.fullname }))}
@@ -161,7 +196,7 @@ const ScoringPage: React.FC<ScoringPageProps> = ({ className }) => {
               <div className="flex-1 flex items-center justify-center text-gray-500">Select a student to view evaluations</div>
             )}
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

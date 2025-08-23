@@ -31,8 +31,8 @@ export const StudentPicker: React.FC<StudentPickerProps> = ({
 
   return (
     <Card className={cn('h-full w-full max-w-full overflow-hidden bg-white border border-gray-200 shadow-sm rounded-[15px]', className)}>
-      <CardContent className="p-4 h-full flex flex-col">
-        <div className="flex items-center gap-3 mb-3">
+      <CardContent className="p-4 w-full h-full flex flex-col">
+        <div className="w-full items-center gap-3 mb-3">
           <SearchInput placeholder="Search students..." onSearch={setSearch} className="w-full text-lg" />
         </div>
 
