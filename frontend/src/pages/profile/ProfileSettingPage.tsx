@@ -8,7 +8,7 @@ interface ProfileSettingPageProps {
 
 const ProfileSettingPage: React.FC<ProfileSettingPageProps> = ({ className }) => {
   return (
-    <div className={cn("h-full overflow-auto flex items-center justify-center", className)}>
+    <div className={cn("h-full overflow-auto flex justify-center items-center", className)}>
       {/* Profile Card */}
       <div className="w-full max-w-4xl">
         <ProfileCard className="w-full" />
