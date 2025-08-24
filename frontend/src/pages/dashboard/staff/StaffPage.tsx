@@ -105,13 +105,15 @@ const StaffPage: React.FC<StaffPageProps> = ({ className }) => {
               <Plus className="mr-2 h-4 w-4" /> Add Staff
             </Button>
           </div>
-          <ColleagueList
-            colleagues={colleagues}
-            selectedColleagueId={selectedColleagueId}
-            onSelect={setSelectedColleagueId}
-            headerTitle={null}
-            compact
-          />
+          <div className="h-[90%]">
+            <ColleagueList
+              colleagues={colleagues}
+              selectedColleagueId={selectedColleagueId}
+              onSelect={setSelectedColleagueId}
+              headerTitle={null}
+              compact
+            />
+          </div>
         </div>
 
         {/* Profile Panel */}

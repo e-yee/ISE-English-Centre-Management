@@ -49,7 +49,7 @@ const ColleagueList: React.FC<ColleagueListProps> = ({
   }
 
   return (
-    <div className="h-[90%] flex flex-col max-h-screen">
+    <div className="h-full flex flex-col max-h-screen">
       {/* Optional Title */}
       {headerTitle !== null && (
         <div className={cn("flex-shrink-0", compact ? "px-6 pt-4 pb-2" : "px-6 pt-8 pb-4")}> 
