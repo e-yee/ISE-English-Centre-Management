@@ -136,7 +136,7 @@ export default function Dashboard() {
   const visible = MODULES.filter((m) => m.roles.includes(role));
 
   return (
-    <div className="pt-4 overflow-y-auto">
+    <div className="pt-4 overflow-y-auto h-full">
       <div className="mb-3">
         <h1 className="text-4xl text-cyan-600 font-bold">Dashboard</h1>
       </div>
