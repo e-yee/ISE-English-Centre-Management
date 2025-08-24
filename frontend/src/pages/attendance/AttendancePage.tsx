@@ -111,7 +111,7 @@ const AttendancePage: React.FC<AttendancePageProps> = ({ className }) => {
             </h1>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="w-40 justify-between">
+                <Button variant="outline" className="w-40 justify-between hidden">
                   {selectedDate}
                   <ChevronDown className="h-4 w-4" />
                 </Button>
