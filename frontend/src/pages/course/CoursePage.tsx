@@ -74,42 +74,13 @@ const CoursePage: React.FC = () => {
   return (
     <div className="h-full bg-gray-50 overflow-y-auto">
       <div className="max-w-6xl mx-auto space-y-6">
-        {/* Header - match ClassScreen theme and color */}
-        <div className="pt-4 pb-3 flex-shrink-0 transition-all duration-300 ease-in-out px-4">
-          <div className="flex items-center gap-4 justify-between">
-            <div className="flex items-center gap-4">
-              {!selectedCourse && (
-                <button
-                  onClick={() => navigate('/dashboard')}
-                  className="bg-white border border-black/20 rounded-[10px] shadow-[2px_2px_3px_0px_rgba(0,0,0,0.15)] px-4 py-2 transition-all duration-200 ease-in-out hover:shadow-[3px_3px_4px_0px_rgba(0,0,0,0.2)] hover:scale-105 focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-1 min-w-[90px]"
-                >
-                  <span className="text-[16px] font-semibold text-black leading-[1em] font-comfortaa whitespace-nowrap">Back</span>
-                </button>
-              )}
-              <div>
-            <h1
-              className="text-[60px] font-normal leading-[1.4em] text-center font-comfortaa"
-              style={{
-                background: 'linear-gradient(135deg, #AB2BAF 0%, #471249 100%), linear-gradient(90deg, #E634E1 0%, #E634E1 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-              }}
-            >
-              Course Management
-            </h1>
-            <p className="text-muted-foreground">Manage and view course details</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              {!selectedCourse && !isManager && (
-                <Button className="flex items-center gap-2" onClick={() => setIsFormOpen(true)}>
-                  + Add Course
-                </Button>
-              )}
-          </div>
-          </div>
-        </div>
+        {/* Header - match ClassScreen theme and color */}                 
+        <div className="flex flex-col items-center mt-4">
+          <h1 className="text-5xl font-normal text-left text-violet-600 font-comfortaa">
+            Course Management
+          </h1>
+          <p className="text-muted-foreground text-md">Manage and view course details</p>
+        </div>                                 
 
         {/* Error Messages */}
         {coursesError && (
@@ -121,7 +92,24 @@ const CoursePage: React.FC = () => {
           </div>
         )}
 
-        {/* Main Content */}
+        <div className="flex flex-row justify-between">
+          {!selectedCourse && (
+                <button
+                  onClick={() => navigate('/dashboard')}
+                  className="cursor-pointer bg-red-400 border border-black/20 rounded-[10px] py-1 px-4 shadow-sm hover:shadow-md hover:scale-96"
+                >
+                  <span className="text-[16px] font-semibold text-white leading-[1em] font-comfortaa whitespace-nowrap">Back</span>
+                </button>
+          )}
+          <div className="gap-2">
+                {!selectedCourse && !isManager && (
+                  <Button className="flex items-center gap-2" onClick={() => setIsFormOpen(true)}>
+                    + Add Course
+                  </Button>
+                )}
+          </div>
+        </div>
+        {/* Main Content */}        
         {selectedCourse ? (
           <div className="space-y-6">
             <CourseDetailCard 
