@@ -48,8 +48,8 @@ export default function RoomPage() {
   };
 
   return (
-    <div className="p-6 space-y-4">
-      <div className="flex items-center justify-between">
+    <div className="p-6 h-full space-y-4">
+      <div className="flex items-center justify-between h-fit">
         <div className="flex items-center gap-3">
           <Button asChild variant="ghost" size="sm">
             <Link to="/dashboard" aria-label="Back to Dashboard" className="flex items-center gap-2">
@@ -81,37 +81,39 @@ export default function RoomPage() {
       {isLoading ? (
         <div>Loading...</div>
       ) : (
-        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-          {rooms.map((r: Room) => (
-            <Card key={r.id}>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg">{r.name}</CardTitle>
-                  <Badge
-                    className={
-                      r.status === 'Free'
-                        ? 'bg-emerald-500 text-white'
-                        : r.status === 'Occupied'
-                        ? 'bg-amber-400 text-black'
-                        : r.status === 'Maintenance'
-                        ? 'bg-slate-500 text-white'
-                        : ''
-                    }
-                    variant="secondary"
-                  >
-                    {r.status}
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent className="flex items-center justify-between">
-                <div className="text-sm text-muted-foreground">ID: {r.id}</div>
-                <Button variant="destructive" size="sm" onClick={() => onDeleteClick(r)}>Delete</Button>
-              </CardContent>
-            </Card>
-          ))}
-          {rooms.length === 0 && (
-            <div className="text-sm text-muted-foreground">No rooms yet</div>
-          )}
+        <div className="flex-1 h-full">
+          <div className="grid gap-4 grid-cols-3 h-[90%] overflow-y-auto">
+            {rooms.map((r: Room) => (
+              <Card className="" key={r.id}>
+                <CardHeader className="">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg">{r.name}</CardTitle>
+                    <Badge
+                      className={
+                        r.status === 'Free'
+                          ? 'bg-emerald-500 text-white'
+                          : r.status === 'Occupied'
+                          ? 'bg-amber-400 text-black'
+                          : r.status === 'Maintenance'
+                          ? 'bg-slate-500 text-white'
+                          : ''
+                      }
+                      variant="secondary"
+                    >
+                      {r.status}
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent className="flex items-center justify-between">
+                  <div className="text-sm text-muted-foreground">ID: {r.id}</div>
+                  <Button variant="destructive" size="sm" onClick={() => onDeleteClick(r)}>Delete</Button>
+                </CardContent>
+              </Card>
+            ))}
+            {rooms.length === 0 && (
+              <div className="text-sm text-muted-foreground">No rooms yet</div>
+            )}
+          </div>
         </div>
       )}
 
