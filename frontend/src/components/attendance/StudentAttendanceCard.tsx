@@ -20,11 +20,11 @@ const StudentAttendanceCard: React.FC<StudentAttendanceCardProps> = ({
   const getAttendanceColor = (status: 'present' | 'absent' | 'unmarked') => {
     switch (status) {
       case "present":
-        return "bg-green-100 border-green-300 hover:bg-green-200"
+        return "bg-green-100 border-green-300 hover:border-green-500 hover:bg-green-200"
       case "absent":
-        return "bg-red-100 border-red-300 hover:bg-red-200"
+        return "bg-red-100 border-red-300 hover:border-red-500 hover:bg-red-200"
       default:
-        return "bg-gray-50 border-gray-200 hover:bg-gray-100"
+        return "bg-white border-gray-200 hover:border-gray-400 hover:bg-gray-100"
     }
   }
 
@@ -49,7 +49,7 @@ const StudentAttendanceCard: React.FC<StudentAttendanceCardProps> = ({
   return (
     <Card
       className={cn(
-        "cursor-pointer transition-all duration-200 hover:shadow-md",
+        "select-none cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-96",
         getAttendanceColor(status),
         className
       )}
