@@ -109,7 +109,7 @@ const ClassInformationPage: React.FC<ClassInformationPageProps> = ({ className }
           {/* Left side - Class Name */}
           <div className="flex items-center flex-1">
             <h1
-              className="text-5xl font-normal leading-[1.4em] font-comfortaa 
+              className="text-4xl font-normal leading-[1.4em] font-comfortaa 
                          text-violet-600">
               {transformedClassData.className}
             </h1>
