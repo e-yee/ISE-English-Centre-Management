@@ -58,7 +58,7 @@ const StaffProfilePanel: React.FC<StaffProfilePanelProps> = ({ colleague, onMini
         {onMinimize && (
           <button
             onClick={onMinimize}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+            className="p-2 cursor-pointer hover:bg-pink-200 rounded-full transition-colors"
             title="Minimize panel"
           >
             <img src="/src/assets/colleague_minimize.svg" alt="Minimize" className="w-6 h-6" />
