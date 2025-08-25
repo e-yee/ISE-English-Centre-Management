@@ -20,7 +20,7 @@ interface StaffProfilePanelProps {
 const AttributeCard: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
   <Card>
     <CardContent className="p-4">
-      <label className="block text-sm font-semibold text-gray-700 mb-2">{title}</label>
+      <label className="block text-sm font-semibold text-purple-600 mb-2">{title}</label>
       <div className="text-sm text-gray-600 bg-gray-50 p-3 rounded-md max-h-[120px] overflow-y-auto">
         {children}
       </div>
@@ -50,7 +50,7 @@ const StaffProfilePanel: React.FC<StaffProfilePanelProps> = ({ colleague, onMini
   }
 
   return (
-    <div className="h-full overflow-y-auto relative">
+    <div className="selection:bg-purple-400 selection:text-white h-full overflow-y-auto relative">
       <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
         <Button size="icon" variant="outline" title="Edit" onClick={() => setOpenEdit(true)}>
           <Pencil className="w-4 h-4" />
@@ -58,7 +58,7 @@ const StaffProfilePanel: React.FC<StaffProfilePanelProps> = ({ colleague, onMini
         {onMinimize && (
           <button
             onClick={onMinimize}
-            className="p-2 cursor-pointer hover:bg-pink-200 rounded-full transition-colors"
+            className="p-2 cursor-pointer hover:bg-fuchsia-200 rounded-full transition-colors"
             title="Minimize panel"
           >
             <img src="/src/assets/colleague_minimize.svg" alt="Minimize" className="w-6 h-6" />
@@ -67,31 +67,40 @@ const StaffProfilePanel: React.FC<StaffProfilePanelProps> = ({ colleague, onMini
       </div>
 
       {/* Bottom-right floating delete button */}
-      <div className="absolute bottom-4 right-4 z-20">
-        <Button size="icon" variant="destructive" title="Delete" onClick={() => setOpenDelete(true)}>
+      <div className="fixed bottom-4 right-4 z-20">
+        <Button className="shadow-sm hover:shadow-lg hover:scale-105 hover:bg-red-700" size="icon" variant="destructive" title="Delete" onClick={() => setOpenDelete(true)}>
           <Trash2 className="w-4 h-4" />
         </Button>
       </div>
 
-      <div className="relative mb-8 pb-16">
-        <div className="absolute top-0 left-0 w-full h-40 bg-gradient-to-b from-blue-100 to-blue-50 rounded-t-lg overflow-hidden">
-          <img src="/src/assets/frame.svg" alt="Background frame" className="w-full h-full object-cover opacity-50" />
+      <div className="relative mb-5">
+        <div className="absolute top-0 left-0 w-full h-40 bg-gradient-to-b from-blue-100 to-rose-100 rounded-t-lg overflow-hidden">          
         </div>
-        <div className="relative pt-21 px-6">
-          <div className="flex items-end">
+        <div className="relative pt-7 px-6">
+          <div className="flex flex-row items-end">
             <Avatar
               name={colleague.name}
               src={colleague.avatar}
               size="xl"
               className="mr-6 z-10 border-4 border-white shadow-lg"
             />
-            <div className="z-10 pb-4">
-              <h1 className="text-3xl font-bold text-gray-900 font-comfortaa mb-2">{colleague.name}</h1>
-              <p className="text-lg text-gray-600">{colleague.email} | {colleague.phone}</p>
+            <div className="z-10">
+              <h1 className="text-3xl font-bold text-indigo-600 font-comfortaa">{colleague.name}</h1>
+              <div className="flex flex-row gap-2">
+                <p className="text-lg text-gray-600 select-all">{colleague.email}</p>
+                <p className="text-lg text-gray-600 select-none">|</p>
+                <p className="text-lg text-gray-600 select-all">{colleague.phone}</p>
+              </div>              
               {role && (
-                <p className="text-sm text-purple-700 font-medium mt-1">Role: {role}</p>
+                <div className="flex flex-row gap-2">
+                  <p className="text-sm text-purple-700 font-semibold underline">Role:</p>
+                  <p className="text-sm text-purple-700 font-medium">{role}</p>
+                </div>
               )}
-              <p className="text-sm text-blue-600 font-medium mt-1">Employee ID: {colleague.id}</p>
+              <div className="flex flex-row gap-2">
+                <p className="text-sm text-blue-600 font-semibold underline select-none">Employee ID:</p>
+                <p className="text-sm text-blue-600 font-medium select-all">{colleague.id}</p>
+              </div>
             </div>
           </div>
         </div>
@@ -106,9 +115,15 @@ const StaffProfilePanel: React.FC<StaffProfilePanelProps> = ({ colleague, onMini
             <p>{colleague.philosophy}</p>
           </AttributeCard>
           <AttributeCard title="Contact">
-            <div>
-              <p>Email: {colleague.email}</p>
-              <p className="mt-1">Phone: {colleague.phone}</p>
+            <div className="flex flex-col justify-center items-start">
+              <div className="flex flex-row gap-2">
+                <p className="font-semibold text-black ">Email:</p>
+                <p className="font-normal select-all">{colleague.email}</p>
+              </div>    
+              <div className="flex flex-row gap-2">
+                <p className="font-semibold text-black ">Phone: </p>
+                <p className="font-normal select-all">{colleague.phone}</p>
+              </div>                         
             </div>
           </AttributeCard>
         </div>
