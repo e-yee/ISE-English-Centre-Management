@@ -433,10 +433,11 @@ def export_evaluation():
             "evaluation_details": evaluation_to_grade
         }
 
-        app_root = Path(current_app.root_path).parent
-
-        logo_path = app_root / "src" / "test.png"
-        assets_dir = app_root / "assets"
+        # Resolve project paths: current_app.root_path -> backend/src/app
+        # We want logo under backend/test.png and outputs under backend/assets
+        backend_root = Path(current_app.root_path).parent.parent
+        logo_path = backend_root / "test.png"
+        assets_dir = backend_root / "assets"
     
         assets_dir.mkdir(parents=True, exist_ok=True)
 

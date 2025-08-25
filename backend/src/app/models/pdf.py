@@ -23,6 +23,57 @@ class PDF(FPDF):
         # Stable pagination across environments
         self.set_auto_page_break(auto=True, margin=15)
 
+    def _get_font_dir(self):
+        """Resolve a usable fonts directory across environments.
+        Prefer `backend/fonts` relative to the Flask app root; fall back to paths relative to this file.
+        """
+        try:
+            app_root = Path(current_app.root_path)  # typically backend/src/app
+        except Exception:
+            app_root = Path(__file__).resolve()
+
+        candidates = [
+            # If app_root == backend/src/app -> backend/fonts
+            app_root.parent.parent / "fonts",
+            # If running relative to this file -> backend/fonts
+            Path(__file__).resolve().parents[3] / "fonts",
+            # Fallback: sibling fonts under src
+            app_root.parent / "fonts",
+        ]
+        for p in candidates:
+            if p.is_dir():
+                return str(p)
+        # Final fallback: current file directory
+        return str(Path(__file__).resolve().parent)
+
+    def _resolve_logo_path(self, provided_path):
+        """Return a valid logo path if available, otherwise None.
+        Tries the provided path, then common locations within the project.
+        """
+        if provided_path:
+            try:
+                p = Path(provided_path)
+                if p.is_file():
+                    return str(p)
+            except Exception:
+                pass
+
+        try:
+            app_root = Path(current_app.root_path)
+        except Exception:
+            app_root = Path(__file__).resolve()
+
+        candidates = [
+            # backend/src/test.png
+            app_root.parent / "test.png",
+            # backend/test.png
+            app_root.parent.parent / "test.png",
+        ]
+        for c in candidates:
+            if c.is_file():
+                return str(c)
+        return None
+
     def header(self):
         if self.logo_path:
             self.image(self.logo_path, 10, 8, 25)
@@ -75,34 +126,36 @@ class PDF(FPDF):
         # Effective page width (accounts for margins)
         epw = self.w - self.l_margin - self.r_margin
         # Column widths as ratios of effective width for consistency across machines
-        col_widths = [epw * 0.45, epw * 0.15, epw * 0.40]
+        col_widths = col_widths or [epw * 0.45, epw * 0.15, epw * 0.40]
         
         # Print headers
+        if header_fill:
+            self.set_fill_color(*header_fill)
         for i, header in enumerate(headers):
-            self.cell(col_widths[i], 10, header, 1, 0, 'C')
+            self.cell(col_widths[i], 10, header, 1, 0, 'C', fill=bool(header_fill))
         self.ln()
         
         self.set_font("Times", "", 11)
         for row in data:
             row = ["" if v is None else v for v in row]
-            row_h = self._row_height(row, widths, line_height)
+            row_h = self._row_height(row, col_widths, line_height)
             if self.get_y() + row_h > self.page_break_trigger:
                 # new page: reprint header
                 self.add_page()
                 self.set_font("Times", "B", 11)
                 if header_fill:
                     self.set_fill_color(*header_fill)
-                for header, w in zip(headers, widths):
+                for header, w in zip(headers, col_widths):
                     y_before = self.get_y()
                     x_before = self.get_x()
-                    self.multi_cell(w, line_height, str(header), border=1, align='C', fill=True)
+                    self.multi_cell(w, line_height, str(header), border=1, align='C', fill=bool(header_fill))
                     self.set_xy(x_before + w, y_before)
                 self.ln(row_h)
                 self.set_font("Times", "", 11)
 
             x_row = self.get_x()
             y_row = self.get_y()
-            for i, (cell, w) in enumerate(zip(row, widths)):
+            for i, (cell, w) in enumerate(zip(row, col_widths)):
                 align = 'C' if isinstance(cell, (int, float)) else 'L'
                 y_before = self.get_y()
                 x_before = self.get_x()
