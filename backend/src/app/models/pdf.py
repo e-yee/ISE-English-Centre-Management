@@ -6,15 +6,18 @@ from pathlib import Path
 class PDF(FPDF):
     def __init__(self, logo_path=None):
         super().__init__()
-        self.logo_path = logo_path
+        self.logo_path = self._resolve_logo_path(logo_path)
 
-        # Register Times New Roman with Unicode support
-        app_root = Path(current_app.root_path).parent
-        font_dir = app_root / "fonts"
-        self.add_font("Times", "", os.path.join(font_dir, "TIMES.TTF"), uni=True)
-        self.add_font("Times", "B", os.path.join(font_dir, "TIMESBD.TTF"), uni=True)
-        self.add_font("Times", "I", os.path.join(font_dir, "TIMESI.TTF"), uni=True)
-        self.add_font("Times", "BI", os.path.join(font_dir, "TIMESBI.TTF"), uni=True)
+        # Register Times New Roman with Unicode support using a portable font-dir strategy
+        font_dir = self._get_font_dir()
+        try:
+            self.add_font("Times", "", os.path.join(font_dir, "TIMES.TTF"), uni=True)
+            self.add_font("Times", "B", os.path.join(font_dir, "TIMESBD.TTF"), uni=True)
+            self.add_font("Times", "I", os.path.join(font_dir, "TIMESI.TTF"), uni=True)
+            self.add_font("Times", "BI", os.path.join(font_dir, "TIMESBI.TTF"), uni=True)
+        except Exception:
+            # If custom TTFs are not available, fall back to core font (limited Unicode)
+            pass
 
         self.set_font("Times", "", 12)  # Default font
         # Stable pagination across environments
@@ -44,7 +47,30 @@ class PDF(FPDF):
         self.multi_cell(0, 10, body)
         self.ln()
 
-    def create_table(self, headers, data):
+    def _compute_column_widths(self, headers, widths=None):
+        epw = self.w - self.l_margin - self.r_margin
+        num_cols = len(headers)
+        if widths and len(widths) == num_cols:
+            return widths
+        # Simple even distribution fallback
+        base = epw / num_cols
+        return [base for _ in headers]
+
+    def _row_height(self, texts, col_widths, line_height=8):
+        # Estimate row height using number of lines each cell will occupy
+        # Create a temporary MultiCell calculation by splitting text width
+        max_lines = 1
+        for text, width in zip(texts, col_widths):
+            # crude wrap estimate: number of lines = ceil(string_width / width)
+            self.set_font("Times", "", 11)
+            str_w = self.get_string_width(str(text))
+            lines = max(1, int((str_w // (width - 2)) + 1)) if width > 2 else 1
+            if lines > max_lines:
+                max_lines = lines
+        return max_lines * line_height
+
+    def create_table(self, headers, data, col_widths=None, header_fill=(230, 240, 255), line_height=8):
+        # Prepare
         self.set_font("Times", "B", 11)
         # Effective page width (accounts for margins)
         epw = self.w - self.l_margin - self.r_margin
@@ -58,10 +84,31 @@ class PDF(FPDF):
         
         self.set_font("Times", "", 11)
         for row in data:
-            for i, item in enumerate(row):
-                align = "C" if i == 1 else "L"
-                self.cell(col_widths[i], 10, str(item), 1, 0, align)
-            self.ln()
+            row = ["" if v is None else v for v in row]
+            row_h = self._row_height(row, widths, line_height)
+            if self.get_y() + row_h > self.page_break_trigger:
+                # new page: reprint header
+                self.add_page()
+                self.set_font("Times", "B", 11)
+                if header_fill:
+                    self.set_fill_color(*header_fill)
+                for header, w in zip(headers, widths):
+                    y_before = self.get_y()
+                    x_before = self.get_x()
+                    self.multi_cell(w, line_height, str(header), border=1, align='C', fill=True)
+                    self.set_xy(x_before + w, y_before)
+                self.ln(row_h)
+                self.set_font("Times", "", 11)
+
+            x_row = self.get_x()
+            y_row = self.get_y()
+            for i, (cell, w) in enumerate(zip(row, widths)):
+                align = 'C' if isinstance(cell, (int, float)) else 'L'
+                y_before = self.get_y()
+                x_before = self.get_x()
+                self.multi_cell(w, line_height, str(cell), border=1, align=align)
+                self.set_xy(x_before + w, y_before)
+            self.ln(row_h)
 
 
 
@@ -97,15 +144,19 @@ def generate_report(data, output_path, logo_path=None):
     pdf.set_xy(pdf.l_margin, max(y_after_left, y_after_right))
     pdf.ln(5)
 
+    # --- Course Section ---
     pdf.chapter_title("Course Information")
-    pdf.chapter_body(f"Course ID: {data['course_id']}\nCourse Name: {data['course_name']}")
+    course_lines = []
+    if data.get('course_id') is not None:
+        course_lines.append(f"Course ID: {data.get('course_id','')}")
+    if data.get('course_name'):
+        course_lines.append(f"Course Name: {data.get('course_name','')}")
+    pdf.chapter_body("\n".join(course_lines) if course_lines else "")
 
     # --- Evaluation Section ---
     pdf.chapter_title("Evaluation Details")
-
     evaluation_headers = ["Assessment Type", "Grade", "Comment"]
-    evaluation_data = data['evaluation_details']
-
+    evaluation_data = data.get('evaluation_details', []) or []
     if evaluation_data:
         pdf.create_table(evaluation_headers, evaluation_data)
     else:
