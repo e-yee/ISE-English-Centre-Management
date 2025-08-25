@@ -2,6 +2,7 @@ from fpdf import FPDF
 import os, datetime
 from flask import current_app
 from pathlib import Path
+import tkinter as tk
 
 class PDF(FPDF):
     def __init__(self, logo_path=None):
@@ -67,10 +68,12 @@ def generate_report(data, output_path, logo_path=None):
     pdf.add_page()
 
     # --- Student & Teacher side by side ---
+    root = tk.Tk()
+    h = root.winfo_screenheight()
     pdf.set_font("Times", 'B', 12)
     pdf.set_fill_color(200, 220, 255)
-    pdf.cell(95, 8, "Student Information", 0, 0, 'L', fill=True)
-    pdf.cell(95, 8, "Teacher Information", 0, 1, 'L', fill=True)
+    pdf.cell(h / 4, 8, "Student Information", 0, 0, 'L', fill=True)
+    pdf.cell(h / 4, 8, "Teacher Information", 0, 1, 'L', fill=True)
 
     pdf.set_font("Times", '', 12)
     # Student Info
@@ -101,4 +104,5 @@ def generate_report(data, output_path, logo_path=None):
     report_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     pdf.cell(0, 10, f"Report generated on: {report_date}", 0, 1, 'R')
 
+    root.destroy()
     pdf.output(output_path)
