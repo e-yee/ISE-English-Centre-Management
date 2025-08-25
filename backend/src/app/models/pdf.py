@@ -2,6 +2,7 @@ from fpdf import FPDF
 import os, datetime
 from flask import current_app
 from pathlib import Path
+import tkinter as tk
 
 class PDF(FPDF):
     def __init__(self, logo_path=None):
@@ -172,4 +173,5 @@ def generate_report(data, output_path, logo_path=None):
     report_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     pdf.cell(0, 10, f"Report generated on: {report_date}", 0, 1, 'R')
 
+    root.destroy()
     pdf.output(output_path)

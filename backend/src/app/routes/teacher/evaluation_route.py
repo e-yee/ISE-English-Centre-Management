@@ -386,10 +386,6 @@ def update_evaluation():
 @role_required("Teacher", "Learning Advisor")
 def export_evaluation():
     try:
-        if not request.is_json:
-            return jsonify({"message": "Invalid JSON"}), HTTPStatus.BAD_REQUEST
-
-        data = request.get_json()
         # Process the data and generate the PDF
         student_id, response, status = get_student_id()
         if not student_id:
