@@ -222,3 +222,4 @@ def generate_report(data, output_path, logo_path=None):
     pdf.cell(0, 10, f"Report generated on: {report_date}", 0, 1, 'R')
 
     pdf.output(output_path)
+
