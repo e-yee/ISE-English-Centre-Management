@@ -14,5 +14,9 @@ class ClassSchema(ma.Schema):
     class_date = fields.DateTime(required=True)
     course = Nested(CourseSchema, only=("name",))
     teacher = Nested(EmployeeSchema, only=("full_name",))
+    student_count = fields.Method("get_student_count")
+    
+    def get_student_count(self, obj):
+        return len(obj.student_attendance) if obj.student_attendance else 0
 
 class_schema = ClassSchema()

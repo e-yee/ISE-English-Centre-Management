@@ -23,6 +23,7 @@ export interface TeacherClass {
   teacher_id: string;
   room_id: string;
   class_date: string;
+  student_count: number;
 }
 
 class CheckinService extends ApiService {

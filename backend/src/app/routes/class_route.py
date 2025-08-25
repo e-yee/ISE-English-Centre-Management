@@ -443,6 +443,11 @@ def teacher_get_assigned_classes():
     try:
         teacher_id = get_jwt().get("employee_id")
         class_list = db.session.query(Class).filter_by(teacher_id=teacher_id).all()
+        
+        # Ensure student_attendance is loaded for each class to calculate student_count
+        for class_obj in class_list:
+            _ = class_obj.student_attendance  # Trigger lazy loading
+        
         return jsonify(class_schema.dump(class_list, many=True)), HTTPStatus.OK
     
     except Exception as e:
