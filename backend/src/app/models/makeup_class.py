@@ -1,0 +1,36 @@
+from typing import TYPE_CHECKING
+from extensions import db
+from sqlalchemy import ForeignKeyConstraint, Index, String, Date, Integer, text
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+import datetime
+
+if TYPE_CHECKING:
+    from app.models import Employee, Room, StudentAttendance
+
+class MakeupClass(db.Model):
+    __tablename__ = 'makeup_class'
+    __table_args__ = (
+        ForeignKeyConstraint(['room_id'], ['room.id'], name='FK_makeup_class_room'),
+        ForeignKeyConstraint(
+            ['student_id', 'class_id', 'course_id', 'course_date', 'term'], 
+            ['student_attendance.student_id', 'student_attendance.class_id', 'student_attendance.course_id', 'student_attendance.course_date', 'student_attendance.term'], name='FK_makeup_class_student_attendance'
+        ),
+        ForeignKeyConstraint(['teacher_id'], ['employee.id'], name='FK_makeup_class_employee'),
+        Index('FK_makeup_class_employee', 'teacher_id'),
+        Index('FK_makeup_class_room', 'room_id'),
+        Index('FK_makeup_class_student_attendance', 'student_id', 'class_id', 'course_id', 'course_date', 'term')
+    )
+
+    id: Mapped[str] = mapped_column(String(10), primary_key=True)
+    student_id: Mapped[str] = mapped_column(String(10), primary_key=True)
+    class_id: Mapped[str] = mapped_column(String(10), primary_key=True)
+    course_id: Mapped[str] = mapped_column(String(10), primary_key=True)
+    course_date: Mapped[datetime.date] = mapped_column(Date, primary_key=True)
+    term: Mapped[int] = mapped_column(Integer, primary_key=True)
+    teacher_id: Mapped[str] = mapped_column(String(10), nullable=False)
+    room_id: Mapped[str] = mapped_column(String(10), nullable=False)
+    created_date: Mapped[datetime.date] = mapped_column(Date, nullable=False, server_default=text('curdate()'))
+
+    room: Mapped['Room'] = relationship('Room', back_populates='makeup_class', uselist=False)
+    student_attendance: Mapped['StudentAttendance'] = relationship('StudentAttendance', back_populates='makeup_class', uselist=False)
+    teacher: Mapped['Employee'] = relationship('Employee', back_populates='makeup_class', uselist=False)

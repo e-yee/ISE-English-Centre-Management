@@ -66,14 +66,14 @@
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar: rgba(255, 255, 255, 0.5);
+  --sidebar-foreground: rgba(0, 0, 0, 0.5);
+  --sidebar-primary: #776F6F;
+  --sidebar-primary-foreground: rgba(255, 255, 255, 1);
+  --sidebar-accent: rgba(255, 255, 255, 0.8);
+  --sidebar-accent-foreground: rgba(0, 0, 0, 0.5);
+  --sidebar-border: rgba(0, 0, 0, 0.5);
+  --sidebar-ring: rgba(0, 0, 0, 0.3);
 }
 
 .dark {
@@ -114,7 +114,225 @@
   * {
     @apply border-border outline-ring/50;
   }
-  body {
+  html, body {
     @apply bg-background text-foreground;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
   }
+}
+
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0px 1000px transparent inset !important; /* Change 'white' to your bg */
+  -webkit-text-fill-color: black !important; /* Change to your text color */
+  transition: background-color 5000s ease-in-out 0s; /* Prevent flicker */
+}
+
+/* Font family utilities */
+.font-comfortaa {
+  font-family: 'Comfortaa', sans-serif;
+}
+
+/* Custom scrollbar styles matching Figma design */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 12px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #FFFFFF;
+  border-radius: 40px;
+  border: 3px solid #C2E8FA;
+  margin: 4px 0;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(217, 217, 217, 0.5);
+  border-radius: 40px;
+  border: 1px solid transparent;
+  background-clip: padding-box;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(217, 217, 217, 0.8);
+}
+
+/* Firefox scrollbar */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(217, 217, 217, 0.5) #FFFFFF;
+}
+
+/* Custom Sidebar Styling to match Figma design exactly */
+.sidebar-custom {
+  /* Backdrop blur effect */
+  backdrop-filter: blur(35px) !important;
+  -webkit-backdrop-filter: blur(35px) !important;
+
+  /* Custom positioning - touch bottom of header */
+  position: absolute !important; /* Changed from fixed to absolute */
+  left: 0 !important;
+  top: 1rem !important; /* Start from top of container */
+  z-index: 40 !important; /* Lower than header */
+
+  /* Full height of container */
+  height: 100% !important;
+
+  /* Remove default background */
+  background: transparent !important;
+}
+
+/* Sidebar expanded state styling - exact Figma specs */
+.sidebar-expanded {
+  background: rgba(255, 255, 255, 0.5) !important;
+  /* Gradient border as per Figma */
+  border-right: 1px solid transparent !important;
+  border-image: linear-gradient(135deg, rgba(0,0,0,0.5), rgba(102,102,102,0.5)) 1 !important;
+  backdrop-filter: blur(35px) !important;
+  width: 295px !important;
+  height: 100% !important; /* Full height */
+}
+
+/* Sidebar collapsed state styling - exact Figma specs */
+.sidebar-collapsed {
+  background: rgba(255, 255, 255, 0.5) !important;
+  border-right: 2px solid transparent !important;
+  border-image: linear-gradient(135deg, rgba(0,0,0,0.5), rgba(102,102,102,0.5)) 1 !important;
+  backdrop-filter: blur(35px) !important;
+  width: 80px !important;
+  height: 100% !important; /* Full height */
+}
+
+/* FEATURES title styling - exact Figma specs */
+.sidebar-features-title {
+  font-family: 'Comfortaa', sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 19px !important;
+  line-height: 1.4em !important;
+  text-align: center !important;
+  color: #363636 !important;
+}
+
+/* Menu item text styling - exact Figma specs */
+.sidebar-menu-text {
+  font-family: 'Comfortaa', sans-serif !important;
+  font-weight: 600 !important;
+  font-size: 17px !important;
+  line-height: 1.4em !important;
+  text-align: center !important;
+  color: rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Menu item container styling */
+.sidebar-menu-item {
+  border-radius: 10px !important;
+  transition: all 300ms ease-out !important;
+  transform: translateZ(0) !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.sidebar-menu-item:hover {
+  transform: scale(1.05) !important;
+  background-color: #bfa4fa !important;     
+}
+
+/* Sidebar icon styling - exact Figma specs */
+.sidebar-icon {
+  stroke: rgba(30, 30, 30, 0.6) !important;
+  stroke-width: 4px !important;
+  fill: none !important;
+}
+
+/* Override shadcn/ui default styles */
+[data-sidebar="sidebar"] {
+  background: transparent !important;
+}
+
+/* Sidebar trigger button styling - positioned outside as attachment */
+.sidebar-trigger {
+  background: rgba(255, 255, 255, 0.5) !important; /* Restore background */
+  border: 3px solid rgba(151, 151, 150, 0.77) !important; /* Restore border */
+  backdrop-filter: blur(35px) !important; /* Restore backdrop filter */
+  position: absolute !important;
+  z-index: 51 !important;
+
+  /* Override shadcn default button styles */
+  padding: 0 !important;
+  min-width: unset !important;
+  min-height: unset !important;
+
+  /* Ensure smooth hover animations */
+  transform-origin: left center !important;
+  will-change: transform !important;
+
+  /* Ensure button is always visible */
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Hide the default PanelLeftIcon from shadcn SidebarTrigger */
+.sidebar-trigger svg {
+  display: none !important;
+}
+
+/* Hide the sr-only text */
+.sidebar-trigger .sr-only {
+  display: none !important;
+}
+
+/* Create chevron icon using CSS - always visible */
+.sidebar-trigger::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  border-right: 2px solid rgba(0, 0, 0, 0.5);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.5);
+  transform: translate(-50%, -50%) rotate(135deg);
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Rotate chevron when collapsed (point right) */
+.sidebar-trigger-collapsed::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+/* Hide any img elements in the trigger button */
+.sidebar-trigger img {
+  display: none !important;
+}
+
+/* Sidebar trigger expanded state - positioned outside right edge */
+.sidebar-trigger-expanded {
+  border-radius: 0px 4px 4px 0px !important; /* Match Figma design */
+  border: 3px solid rgba(151, 151, 150, 0.77) !important;
+  border-left: 0px !important; /* No left border as per Figma */
+  right: -20px !important; /* Position outside sidebar - exact Figma width */
+  top: 60px !important; /* Align with dashboard item */
+  width: 20px !important; /* Exact Figma width */
+  height: 53px !important; /* Exact Figma height */
+}
+
+/* Sidebar trigger collapsed state - positioned outside right edge of collapsed sidebar */
+.sidebar-trigger-collapsed {
+  border-radius: 0px 4px 4px 0px !important; /* Keep same as expanded for consistency */
+  border: 3px solid rgba(151, 151, 150, 0.77) !important;
+  border-left: 0px !important; /* No left border when collapsed */
+  left: 80px !important; /* Position at right edge of collapsed sidebar (80px wide) */
+  top: 60px !important; /* Align with dashboard item */
+  width: 20px !important; /* Exact Figma width */
+  height: 53px !important; /* Exact Figma height */
+
+  /* Ensure visibility when collapsed */
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
 }
