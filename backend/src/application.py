@@ -4,7 +4,7 @@ from app.routes import register_blueprints
 from config import Config
 
 def create_app():
-    app = Flask(__name__)
+    app = Flask(__name__, template_folder="app/templates", static_folder="app/static")
     app.config.from_object(Config)
 
     db.init_app(app)

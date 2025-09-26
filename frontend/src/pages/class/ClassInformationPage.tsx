@@ -89,7 +89,7 @@ const ClassInformationPage: React.FC<ClassInformationPageProps> = ({ className }
     <div className={cn("h-full overflow-hidden flex flex-col", className)}>
       {/* Feature Button List - positioned between header and class info */}
       <div className={cn(
-        "pt-4 pb-3 flex-shrink-0 transition-all duration-300 ease-in-out",
+        "pt-3 pb-3 flex-shrink-0 transition-all duration-300 ease-in-out",
         "px-4"
       )}>
         <FeatureButtonList
@@ -109,7 +109,7 @@ const ClassInformationPage: React.FC<ClassInformationPageProps> = ({ className }
           {/* Left side - Class Name */}
           <div className="flex items-center flex-1">
             <h1
-              className="text-5xl font-normal leading-[1.4em] font-comfortaa 
+              className="text-4xl font-normal leading-[1.4em] font-comfortaa 
                          text-violet-600">
               {transformedClassData.className}
             </h1>

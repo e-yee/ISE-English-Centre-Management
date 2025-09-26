@@ -72,13 +72,13 @@ const ClassInfo: React.FC<ClassInfoProps> = ({
   if (isExpanded) {
     return (
       <Card className={cn(
-        "class-information-card w-full",
+        "class-information-card w-full h-full",
         // Glassmorphism styling with dark border
         "border-[3px] border-blue-300 rounded-[15px] backdrop-blur-[35px]",
-        "shadow-lg min-h-[400px] bg-white",
+        "shadow-lg bg-white",
         className
       )}>
-        <CardContent className="p-6 h-full flex flex-col">
+        <CardContent className="p-6 pb-8 h-full flex flex-col">
           {/* Top Section: Class ID, Course Name and Student Count */}
           <div className="flex justify-between items-start mb-6">
             {/* Left: Class ID and Course Name */}

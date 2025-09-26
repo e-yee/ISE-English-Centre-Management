@@ -84,18 +84,14 @@ const CheckInPage: React.FC<CheckInPageProps> = ({ className }) => {
   };
 
   return (
-    <div className={cn("h-full overflow-hidden flex flex-col", className)}>
-      {/* Main Content using Grid */}
-      <div className="flex-1 p-4 pt-8 grid grid-cols-1 lg:grid-cols-[48%_52%] gap-4 h-full max-h-screen overflow-hidden">
-        
+    <div className={cn("h-full w-full overflow-auto flex flex-col", className)}>
+      <PageTitle className="m-4"/>
+      {/* Main Content using Flex */}
+      <div className="h-full w-full flex flex-row gap-10 justify-start">
         {/* Left Column - Wider */}
-        <div className="flex flex-col gap-3 h-full max-h-screen">
-          
-          {/* Page Title */}
-          <PageTitle />
-
+        <div className="flex flex-col gap-3 h-full w-[50%]">
           {/* Stats Section - Side by side */}
-          <div className="grid grid-cols-2 gap-3 flex-shrink-0">
+          <div className="flex flex-row gap-3 w-full h-[24%]">
             {statCardsMock.map((stat, index) => (
               <StatCard
                 key={index}
@@ -108,12 +104,13 @@ const CheckInPage: React.FC<CheckInPageProps> = ({ className }) => {
                 }
                 value={index === 1 ? currentTime : stat.value}
                 label={stat.label}
+                className="w-full"
               />
             ))}
           </div>
 
           {/* Check-in Container - Takes remaining space with max height */}
-          <div className="flex-1 min-h-0 max-h-[calc(100vh-200px)]">
+          <div className="h-[70%]">
             <CheckInContainer 
               onCheckIn={handleCheckIn} 
               isLoading={isLoading}
@@ -126,12 +123,9 @@ const CheckInPage: React.FC<CheckInPageProps> = ({ className }) => {
         </div>
 
         {/* Right Column - Narrower */}
-        <div className="flex flex-col gap-0 h-full max-h-full">
-          {/* Empty space to align with page title */}
-          <div className="h-[55px] flex-shrink-0"></div>
-          
+        <div className="h-full w-[50%]">                    
           {/* Upcoming Classes Panel - Aligns with stats top and check-in bottom */}
-          <div className="flex-1 min-h-0 max-h-[calc(100vh-200px)]">
+          <div className="h-auto max-h-[94%]">
             <UpcomingClassesPanel 
               classes={isManagerOrAdvisor ? [] : teacherClasses} 
               isLoading={isManagerOrAdvisor ? false : isLoadingClasses}

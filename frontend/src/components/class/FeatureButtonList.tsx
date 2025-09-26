@@ -150,7 +150,7 @@ const FeatureButtonList: React.FC<FeatureButtonListProps> = ({ className, classI
 
   return (
     <div className={cn(
-      "w-full transition-all duration-300 ease-in-out",
+      "select-none w-full transition-all duration-300 ease-in-out",
       className
     )}>
       {/* Horizontal row of feature buttons */}

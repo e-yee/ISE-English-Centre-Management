@@ -57,8 +57,9 @@ function DashboardCard({
   return (
     <Card
       className={cn(
-        "group relative overflow-hidden border shadow-sm transition-all hover:shadow-xl focus-within:shadow-md",
+        "group relative overflow-hidden border transition-all focus-within:shadow-md",
         "focus-within:ring-2 focus-within:ring-foreground/20",
+        "hover:scale-98",
         className
       )}
     >
@@ -98,7 +99,7 @@ function DashboardCard({
       <CardFooter className="flex items-center justify-between">
         <div className="text-xs text-muted-foreground">{"Click anywhere"}</div>
         <div className="flex items-center gap-2">
-          <Button asChild className="group/btn z-10 bg-slate-500 hover:bg-slate-600 hover:scale-105 ">
+          <Button asChild className="group/btn z-10 bg-slate-500 hover:bg-slate-600 ">
             <Link to={href} aria-label={`Open ${title}`}>
               {"Open"}
               <ChevronRight className="h-4 w-4 transition-transform group-hover/btn:translate-x-0.5" />
@@ -135,7 +136,7 @@ export default function Dashboard() {
   const visible = MODULES.filter((m) => m.roles.includes(role));
 
   return (
-    <div className="pt-4 overflow-y-auto">
+    <div className="pt-4 overflow-y-auto h-full">
       <div className="mb-3">
         <h1 className="text-4xl text-cyan-600 font-bold">Dashboard</h1>
       </div>

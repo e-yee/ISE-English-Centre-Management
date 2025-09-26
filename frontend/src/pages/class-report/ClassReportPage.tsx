@@ -122,7 +122,7 @@ const ClassReportPage: React.FC<ClassReportPageProps> = ({ className }) => {
       
       {/* Feature Button List - Beneath header like in Homescreen.tsx */}
       <div className={cn(
-        "pt-4 pb-3 flex-shrink-0 transition-all duration-300 ease-in-out",
+        "pt-3 pb-3 flex-shrink-0 transition-all duration-300 ease-in-out",
         "px-4"
       )}>
         <FeatureButtonList
@@ -144,7 +144,7 @@ const ClassReportPage: React.FC<ClassReportPageProps> = ({ className }) => {
                 {/* Left Section - Report Badge and Class Name */}
                 <div className="flex items-center gap-4">
                   {/* Report Badge - Changed to black */}
-                  <div className="text-gray-500 px-1 rounded-[15px] font-semibold text-[30px] font-comfortaa border-2 border-gray-500">
+                  <div className="text-red-500 px-1 rounded-[15px] font-semibold text-[30px] font-comfortaa border-2 border-red-500">
                     Report
                   </div>
 

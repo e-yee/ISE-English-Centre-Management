@@ -54,7 +54,7 @@ const transformClassData = (classes: TeacherClass[]): TransformedClass[] => {
     .map(classData => ({
       id: classData.id,
       classTitle: classData.course_id,
-      studentCount: 0,
+      studentCount: classData.student_count || 0,
       room: classData.room_id,
       timeInfo: calculateTimeDifference(classData.class_date)
     }))

@@ -65,7 +65,7 @@ const AttendancePage: React.FC<AttendancePageProps> = ({ className }) => {
       } else if (current === "present") {
         next = "absent";
       } else {
-        next = "present";
+        next = "unmarked";
       }
 
       return { ...prev, [studentId]: next };
@@ -89,7 +89,7 @@ const AttendancePage: React.FC<AttendancePageProps> = ({ className }) => {
     <div className={cn("h-full overflow-hidden flex flex-col", className)}>
       {/* Feature Button List - positioned between header and class info */}
       <div className={cn(
-        "pt-4 pb-3 flex-shrink-0 transition-all duration-300 ease-in-out",
+        "pt-3 pb-3 flex-shrink-0 transition-all duration-300 ease-in-out",
         "px-4"
       )}>
         <FeatureButtonList
@@ -101,34 +101,179 @@ const AttendancePage: React.FC<AttendancePageProps> = ({ className }) => {
       </div>
 
       {/* Main Content */}
-      <main className="p-6 flex-1 overflow-hidden flex flex-col">
+      <main className="p-6 pt-2 flex-1 overflow-hidden flex flex-col">
         {/* Class Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-4">
-            <h1 className="text-4xl font-bold 
-                           text-violet-600">
-              Class {classId || ''}
-            </h1>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="w-40 justify-between">
-                  {selectedDate}
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                {dateOptions.map((date) => (
-                  <DropdownMenuItem
-                    key={date}
-                    onClick={() => setSelectedDate(date)}
-                  >
-                    {date}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+        <div className="flex items-center justify-between mb-4">
+          <div className="w-full flex flex-row items-center justify-between gap-4">
+            <div>
+              <h1 className="text-4xl font-bold 
+                            text-violet-600">
+                Class {classId || ''}
+              </h1>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="w-40 justify-between hidden">
+                    {selectedDate}
+                    <ChevronDown className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  {dateOptions.map((date) => (
+                    <DropdownMenuItem
+                      key={date}
+                      onClick={() => setSelectedDate(date)}
+                    >
+                      {date}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+            
+            <div className="w-[50%] flex flex-row justify-end">
+              <div className="w-fit flex flex-row justify-center items-center gap-4 px-2 py-2 bg-white rounded-sm border border-black/50 border-[1px] shadow-sm">
+                <div className="bg-green-200 border border-green-700 rounded-lg px-4 py-2">
+                  <div className="text-green-900 font-semibold">Present: {presentCount}</div>
+                </div>
+                <div className="bg-red-200 border border-red-700 rounded-lg px-4 py-2">
+                  <div className="text-red-900 font-semibold">Absent: {absentCount}</div>
+                </div>
+                <div className="bg-gray-200 border border-gray-700 rounded-lg px-4 py-2">
+                  <div className="text-gray-900 font-semibold">
+                    Unmarked: {totalStudents - presentCount - absentCount}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
+          {/* <div className="flex items-center gap-4">
+            <div className="flex flex-row items-center gap-1 text-sm text-gray-600">
+              <User className="h-6 w-6" />
+              <span className="text-xl mt-1">{totalStudents}</span>
+            </div>
+            <div className="flex flex-col items-end gap-2">
+              <Button
+                className="bg-teal-500 hover:bg-teal-700 cursor-pointer"
+                disabled={marking || !classId || !courseId || !courseDate || !term}
+                onClick={() => {
+                  setSaveSuccess(null);
+                  setSaveError(null);
+                  markAttendance(
+                    {
+                      classId,
+                      courseId,
+                      courseDate,
+                      term,
+                      enrolmentId: '',
+                      attendance,
+                    },
+                    {
+                      onSuccess: (res) => {
+                        setSaveSuccess(res?.message || 'Attendance updated successfully!');
+                        setSaveError(null);
+                        setTimeout(() => setSaveSuccess(null), 2000);
+                      },
+                      onError: (err: unknown) => {
+                        let message = 'Failed to update attendance';
+                        if (err instanceof Error) {
+                          const m = err.message || '';
+                          if (/network/i.test(m) || /failed to fetch/i.test(m) || /localhost/i.test(m)) {
+                            message = 'Unable to reach server. Please check your connection and try again.';
+                          } else {
+                            message = m;
+                          }
+                        }
+                        setSaveError(message);
+                        setSaveSuccess(null);
+                      },
+                    }
+                  );
+                }}
+              >
+                {marking ? 'SAVING...' : 'SAVE CHANGES'}
+              </Button>
+              {saveError && (
+                <Badge variant="destructive" className="gap-1">
+                  <AlertCircle className="h-3 w-3" />
+                  {saveError}
+                </Badge>
+              )}
+              {saveSuccess && (
+                <Badge className="gap-1 bg-green-100 text-green-800 border-green-200">
+                  <CheckCircle className="h-3 w-3" />
+                  {saveSuccess}
+                </Badge>
+              )}
+            </div>
+          </div> */}
+        </div>
+        {/* Attendance Stats */}
+        {/* <div className="flex gap-4 mb-4">
+          <div className="bg-green-50 border border-green-200 rounded-lg px-4 py-2">
+            <div className="text-green-800 font-semibold">Present: {presentCount}</div>
+          </div>
+          <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-2">
+            <div className="text-red-800 font-semibold">Absent: {absentCount}</div>
+          </div>
+          <div className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2">
+            <div className="text-gray-800 font-semibold">
+              Unmarked: {totalStudents - presentCount - absentCount}
+            </div>
+          </div>
+        </div> */}
+
+        {/* Bulk Actions */}
+        <div className="flex flex-row justify-start items-center mb-4 px-4 py-2 bg-white rounded-lg border border-slate-400 border-1 shadow-sm">
+          <div className="flex flex-1 gap-3">
+            <div className="flex items-center gap-2 text-sm text-black">
+              <span className="font-bold underline">Quick Actions:</span>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-green-700 border-green-300 hover:bg-green-100 hover:border-green-500 hover:text-green-800"
+              onClick={() => {
+                const allPresentAttendance = studentsForCard.reduce(
+                  (acc, student) => {
+                    acc[student.id] = "present";
+                    return acc;
+                  },
+                  {} as Record<string, AttendanceStatus>,
+                );
+                setAttendance(allPresentAttendance);
+              }}
+            >
+              Mark All Present
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-red-700 border-red-300 hover:bg-red-100 hover-border-red-500 hover:text-red-800"
+              onClick={() => {
+                const allAbsentAttendance = studentsForCard.reduce(
+                  (acc, student) => {
+                    acc[student.id] = "absent";
+                    return acc;
+                  },
+                  {} as Record<string, AttendanceStatus>,
+                );
+                setAttendance(allAbsentAttendance);
+              }}
+            >
+              Mark All Absent
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-gray-700 border-gray-300 hover:bg-gray-100 hover:border-gray-500"
+              onClick={() => setAttendance({})}
+            >
+              Clear All
+            </Button>
+          </div>
+          
+          {/*"Save changes" area*/}
           <div className="flex items-center gap-4">
             <div className="flex flex-row items-center gap-1 text-sm text-gray-600">
               <User className="h-6 w-6" />
@@ -189,69 +334,6 @@ const AttendancePage: React.FC<AttendancePageProps> = ({ className }) => {
               )}
             </div>
           </div>
-        </div>
-        {/* Attendance Stats */}
-        <div className="flex gap-4 mb-4">
-          <div className="bg-green-50 border border-green-200 rounded-lg px-4 py-2">
-            <div className="text-green-800 font-semibold">Present: {presentCount}</div>
-          </div>
-          <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-2">
-            <div className="text-red-800 font-semibold">Absent: {absentCount}</div>
-          </div>
-          <div className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2">
-            <div className="text-gray-800 font-semibold">
-              Unmarked: {totalStudents - presentCount - absentCount}
-            </div>
-          </div>
-        </div>
-
-        {/* Bulk Actions */}
-        <div className="flex gap-3 mb-6 p-4 bg-white rounded-lg border border-gray-200">
-          <div className="flex items-center gap-2 text-sm text-gray-600">
-            <span className="font-medium">Quick Actions:</span>
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            className="text-green-700 border-green-300 hover:bg-green-50 bg-transparent"
-            onClick={() => {
-              const allPresentAttendance = studentsForCard.reduce(
-                (acc, student) => {
-                  acc[student.id] = "present";
-                  return acc;
-                },
-                {} as Record<string, AttendanceStatus>,
-              );
-              setAttendance(allPresentAttendance);
-            }}
-          >
-            Mark All Present
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="text-red-700 border-red-300 hover:bg-red-50 bg-transparent"
-            onClick={() => {
-              const allAbsentAttendance = studentsForCard.reduce(
-                (acc, student) => {
-                  acc[student.id] = "absent";
-                  return acc;
-                },
-                {} as Record<string, AttendanceStatus>,
-              );
-              setAttendance(allAbsentAttendance);
-            }}
-          >
-            Mark All Absent
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="text-gray-700 border-gray-300 hover:bg-gray-50 bg-transparent"
-            onClick={() => setAttendance({})}
-          >
-            Clear All
-          </Button>
         </div>
 
         {/* Student Grid Container - Full width and height */}

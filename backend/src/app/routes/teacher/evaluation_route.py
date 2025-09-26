@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, send_from_directory, current_app
+from flask import Blueprint, request, jsonify, send_from_directory, current_app, url_for
 from flask_jwt_extended import get_jwt
 from app.auth import role_required
 from marshmallow import ValidationError
@@ -7,7 +7,9 @@ from sqlalchemy.exc import IntegrityError, OperationalError
 from ...schemas.evaluation_schema import evaluation_schema
 from ...models import Evaluation, Student, Employee, Enrolment, StudentAttendance, Course, Class
 from ...models.pdf import generate_report
+from ...models.pdf_weasy import render_report_html_to_pdf
 from extensions import db
+import base64
 import datetime, os
 from pathlib import Path
 
@@ -386,10 +388,6 @@ def update_evaluation():
 @role_required("Teacher", "Learning Advisor")
 def export_evaluation():
     try:
-        if not request.is_json:
-            return jsonify({"message": "Invalid JSON"}), HTTPStatus.BAD_REQUEST
-
-        data = request.get_json()
         # Process the data and generate the PDF
         student_id, response, status = get_student_id()
         if not student_id:
@@ -437,17 +435,62 @@ def export_evaluation():
             "evaluation_details": evaluation_to_grade
         }
 
-        app_root = Path(current_app.root_path).parent
-
-        logo_path = app_root / "src" / "test.png"
-        assets_dir = app_root / "assets"
+        # Resolve project paths: current_app.root_path -> backend/src/app
+        # We want logo under backend/test.png and outputs under backend/assets
+        app_root = Path(current_app.root_path)  # backend/src/app
+        backend_root = app_root.parent.parent   # backend
+        # Resolve logo like pdf.py does: check backend/src/test.png then backend/test.png
+        candidates = [app_root / "test.png", app_root.parent / "test.png", backend_root / "test.png"]
+        logo_path = next((p for p in candidates if p.is_file()), None)
+        assets_dir = backend_root / "assets"
     
         assets_dir.mkdir(parents=True, exist_ok=True)
 
         output_filename = f"evaluation_report_{pdf_data['student_id']}.pdf"
         output_path = assets_dir / output_filename
 
-        generate_report(pdf_data, str(output_path), str(logo_path))
+        engine = (request.args.get("engine") or "weasy").lower()
+        if engine == "fpdf":
+            # Existing FPDF flow
+            generate_report(pdf_data, str(output_path), str(logo_path))
+        else:
+            # Default: WeasyPrint HTML → PDF
+            today = datetime.date.today()
+            # 3 columns only: assessment type, grade, notes
+            rows = [(a, g, c or "") for (a, g, c) in pdf_data.get("evaluation_details", [])]
+
+            # Build logo URL to project logo (fallbacks to None if not present)
+            project_logo = None
+            if logo_path is not None:
+                try:
+                    # Prioritize data URI for better portability with WeasyPrint
+                    project_logo = "data:image/png;base64," + base64.b64encode(logo_path.read_bytes()).decode("ascii")
+                except Exception:
+                    # Fallback to file URI if encoding fails
+                    try:
+                        project_logo = logo_path.as_uri()
+                    except Exception:
+                        project_logo = None
+
+            data_ctx = {
+                "student_name": pdf_data.get("student_name"),
+                "student_id": pdf_data.get("student_id"),
+                "teacher_name": pdf_data.get("teacher_name"),
+                "teacher_id": pdf_data.get("teacher_id"),
+                "course_name": pdf_data.get("course_name"),
+                "course_id": pdf_data.get("course_id"),
+                "rows": rows,
+                "logo_url": project_logo,
+            }
+
+            # Compute filesystem CSS path to avoid HTTP fetch during render
+            css_path = backend_root / "src" / "app" / "static" / "pdf" / "report_card.css"
+            render_report_html_to_pdf(
+                data_ctx,
+                output_path=str(output_path),
+                base_url=request.url_root,
+                css_path=str(css_path) if css_path.is_file() else None,
+            )
 
         return send_from_directory(
             assets_dir,

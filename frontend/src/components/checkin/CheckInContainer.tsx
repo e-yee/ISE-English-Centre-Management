@@ -25,29 +25,28 @@ const CheckInContainer: React.FC<CheckInContainerProps> = ({
 }) => {
   return (
     <Card className={cn(
-      "bg-white/80 backdrop-blur-sm border border-black/20 rounded-[15px] p-6",
-      "flex flex-col items-center gap-4",
-      "w-full h-[calc(100%-1rem)]",
+      "bg-white backdrop-blur-sm border border-black/20 rounded-[15px] p-6",
+      "flex flex-col items-center gap-2",
+      "w-full h-full",
       className
     )}>
       <TodayCheckIn date={date} />
-      
-      {/* Error Message */}
-      {error && (
-        <div className="w-full p-3 bg-red-100 border border-red-400 text-red-700 rounded-md text-sm">
-          {error}
-        </div>
-      )}
-      
       <CheckInButton 
         onClick={onCheckIn} 
         disabled={disabled}
         loading={isLoading}
       />
 
+      {/* Error Message */}
+      {error && (
+        <div className="w-full h-fit px-4 py-1 bg-red-100 border border-red-400 text-red-700 rounded-md text-sm">
+          {error}
+        </div>
+      )}
+
       {/* Success Message Below Button */}
       {success && (
-        <div className="w-full mt-3 p-3 bg-green-100 border border-green-400 text-green-700 rounded-md text-sm">
+        <div className="w-full px-4 py-1 bg-green-100 border border-green-400 text-green-700 rounded-md text-sm">
           {success}
         </div>
       )}

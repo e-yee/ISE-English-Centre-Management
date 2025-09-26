@@ -33,6 +33,7 @@ Make sure you have the following installed on your machine:
 - [Git](https://git-scm.com/)
 - [Node.js](https://nodejs.org/en)
 - [npm](https://www.npmjs.com/) (Node Package Manager)
+- [GTK3](https://github.com/tschoonj/GTK-for-Windows-Runtime-Environment-Installer/releases)
 
 **Cloning the Repository**
 
